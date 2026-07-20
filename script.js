@@ -56,6 +56,42 @@ if (backToTopBtn) {
     });
 }
 
+// Contact form submission
+const contactForm = document.querySelector('#contact-form');
+const formStatus = document.querySelector('#form-status');
+
+if (contactForm && formStatus) {
+    contactForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(contactForm);
+
+        try {
+            const response = await fetch(contactForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    Accept: 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                formStatus.textContent = 'Thank you! Your message has been sent.';
+                formStatus.classList.remove('form-status-error');
+                formStatus.classList.add('form-status-success');
+                contactForm.reset();
+            } else {
+                throw new Error('Submission failed');
+            }
+        } catch (err) {
+            console.error('Could not send message:', err);
+            formStatus.textContent = 'Something went wrong. Please try again.';
+            formStatus.classList.remove('form-status-success');
+            formStatus.classList.add('form-status-error');
+        }
+    });
+}
+
 // Copy-email button
 const copyEmailBtn = document.getElementById('copyEmailBtn');
 
