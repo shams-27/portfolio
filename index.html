@@ -4,28 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portfolio</title>
+    <title>Shams Kabir — Portfolio</title>
     <meta name="description"
         content="Portfolio of Shams Kabir, a Software Engineering undergraduate at Daffodil International University building developer tools, automation scripts, and web projects.">
+    <meta name="theme-color" content="#101010">
     <meta property="og:title" content="Shams Kabir — Portfolio">
     <meta property="og:description"
         content="Software Engineering undergraduate at DIU building developer tools, automation scripts, and web projects.">
     <meta property="og:type" content="website">
     <link rel="icon"
-        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231a1c1e'/%3E%3Ctext x='50' y='68' font-family='monospace' font-size='52' font-weight='700' fill='%238da9c4' text-anchor='middle'%3ESK%3C/text%3E%3C/svg%3E">
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ffe14d'/%3E%3Ctext x='50' y='68' font-family='Arial Black,sans-serif' font-weight='900' font-size='52' fill='%23101010' text-anchor='middle'%3ESK%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <!-- Navigation -->
     <header>
         <nav>
-            <div class="logo">Shams Kabir</div>
+            <a href="#top" class="logo">Shams Kabir</a>
             <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false"
                 aria-controls="navLinks">
-                <span></span>
-                <span></span>
-                <span></span>
+                <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="navLinks">
                 <li><a href="#detailed-about">About</a></li>
@@ -37,338 +40,242 @@
         </nav>
     </header>
 
-    <!-- Hero -->
-    <section id="about" class="hero">
-        <div class="hero-inner">
-            <div class="hero-photo-wrap">
-                <img src="Shams.jpeg" alt="Portrait of Shams Kabir" class="hero-photo" width="280" height="280">
-            </div>
-            <div class="hero-content">
-                <h1 id="greeting">Hi, I'm Shams Kabir.</h1>
-                <p>Currently pursuing BSc. in Software Engineering, focused on building clean, efficient, and
-                    functional
-                    digital solutions.</p>
-
-                <div class="hero-buttons">
-                    <a href="#projects" class="btn">View My Work</a>
-                    <a href="https://github.com/shams-27" target="_blank" class="btn btn-secondary">
-                        <svg class="icon-svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
-                                0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
-                                -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
-                                .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
-                                -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0
-                                1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82
-                                1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01
-                                1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
-                        </svg>
-                        Visit GitHub
-                    </a>
+    <main id="top">
+        <!-- Hero -->
+        <section id="about" class="hero">
+            <div class="wrap hero-grid">
+                <p id="greeting">Hi, I'm</p>
+                <h1>
+                    <span class="line">Shams</span>
+                    <span class="line">Kabir</span>
+                </h1>
+                <div class="hero-foot">
+                    <div>
+                        <p class="hero-lead">Currently pursuing BSc. in Software Engineering, focused on building
+                            clean, efficient, and functional digital solutions.</p>
+                        <div class="hero-actions">
+                            <a href="#projects" class="btn">View my work</a>
+                            <a href="https://github.com/shams-27" target="_blank" rel="noopener" class="text-link">
+                                <svg class="icon-svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+                                </svg>
+                                GitHub
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hero-photo">
+                        <img src="Shams.jpeg" alt="Portrait of Shams Kabir" width="280" height="350">
+                    </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Traits strip -->
+        <div class="strip">
+            <div class="track">
+                <ul class="group">
+                    <li>Problem solver</li>
+                    <li>Linux enthusiast</li>
+                    <li>Automation junkie</li>
+                    <li>Lifelong learner</li>
+                </ul>
             </div>
         </div>
-    </section>
 
-    <!-- Detailed About -->
-    <section id="detailed-about" class="about-section reveal">
-        <div class="about-content">
-            <h2>About Me</h2>
-            <div class="about-text">
-                <p>
-                    Hello! I am a passionate <strong>Software Engineering undergraduate</strong> at Daffodil
-                    International University, driven by a deep curiosity for how things work under the hood. My
-                    programming journey stems from a strong analytical background in science and mathematics, which
-                    naturally guided me toward system architecture, logic, and problem-solving.
-                </p>
-                <p>
-                    Currently, I am heavily focused on mastering <strong>Computer Science
-                        fundamentals</strong>—specifically Data Structures and Algorithms (DSA), Object-Oriented
-                    Programming (OOP), and Operating Systems (OS). I thrive in <strong>Linux environments</strong>
-                    and
-                    enjoy writing clean, efficient code using <strong>C, C++, and Java</strong>. Whether I am
-                    writing
-                    Bash scripts to automate daily workflows or structuring relational databases with MySQL, I love
-                    building utilities that make systems faster and more reliable.
-                </p>
-                <p>
-                    When I am not coding or debugging in my terminal, I am constantly exploring new technologies,
-                    refining my backend architecture skills, and looking for challenging problems to solve. I am
-                    always
-                    open to collaborating on open-source projects or connecting with fellow developers!
-                </p>
-            </div>
-
-            <!-- Personality Highlights -->
-            <div class="about-highlights">
-                <div class="highlight-item">
-                    <span class="highlight-text">Problem Solver</span>
-                </div>
-                <div class="highlight-item">
-                    <span class="highlight-text">Linux Enthusiast</span>
-                </div>
-                <div class="highlight-item">
-                    <span class="highlight-text">Automation Junkie</span>
-                </div>
-                <div class="highlight-item">
-                    <span class="highlight-text">Lifelong Learner</span>
+        <!-- About -->
+        <section id="detailed-about" class="section">
+            <div class="wrap section-grid">
+                <h2 class="sec-title">About me</h2>
+                <div class="section-body about-body">
+                    <p>Hello! I am a passionate <strong>Software Engineering undergraduate</strong> at Daffodil
+                        International University, driven by a deep curiosity for how things work under the hood. My
+                        programming journey stems from a strong analytical background in science and mathematics, which
+                        naturally guided me toward system architecture, logic, and problem-solving.</p>
+                    <p>Currently, I am heavily focused on mastering <strong>Computer Science fundamentals</strong>—specifically
+                        Data Structures and Algorithms (DSA), Object-Oriented Programming (OOP), and Operating Systems
+                        (OS). I thrive in <strong>Linux environments</strong> and enjoy writing clean, efficient code
+                        using <strong>C, C++, and Java</strong>. Whether I am writing Bash scripts to automate daily
+                        workflows or structuring relational databases with MySQL, I love building utilities that make
+                        systems faster and more reliable.</p>
+                    <p>When I am not coding or debugging in my terminal, I am constantly exploring new technologies,
+                        refining my backend architecture skills, and looking for challenging problems to solve. I am
+                        always open to collaborating on open-source projects or connecting with fellow developers!</p>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Resume: Education & Skills -->
-    <section class="resume-wrapper reveal">
-        <div class="resume-container">
-            <!-- Education Column -->
-            <div class="education-column" id="education">
-                <h2>Education</h2>
-                <div class="compact-timeline">
-                    <div class="timeline-node">
-                        <div class="node-dot"></div>
-                        <div class="node-content">
-                            <span class="degree-type">Bachelor of Science</span>
-                            <h3>Daffodil International University</h3>
-                            <p class="timeline-meta">Expected Graduation: 2028</p>
-                            <div class="timeline-badges">
-                                <span>Software Engineering</span>
-                                <span>Ongoing</span>
+        <!-- Education -->
+        <section id="education" class="section">
+            <div class="wrap section-grid">
+                <h2 class="sec-title">Education</h2>
+                <div class="list">
+                    <article class="entry">
+                        <div class="when">2028<small>Expected</small></div>
+                        <div class="what">
+                            <h3>Bachelor of Science</h3>
+                            <p>Daffodil International University</p>
+                            <p class="meta">Software Engineering, ongoing</p>
+                        </div>
+                    </article>
+                    <article class="entry">
+                        <div class="when">2022</div>
+                        <div class="what">
+                            <h3>Higher Secondary School Certificate</h3>
+                            <p>Bogura Cantonment Public School &amp; College</p>
+                            <p class="meta">Science, GPA 5.00</p>
+                        </div>
+                    </article>
+                    <article class="entry">
+                        <div class="when">2020</div>
+                        <div class="what">
+                            <h3>Secondary School Certificate</h3>
+                            <p>BIAM Model School &amp; College, Bogura</p>
+                            <p class="meta">Science, GPA 5.00</p>
+                        </div>
+                    </article>
+                    <article class="entry">
+                        <div class="when">2018</div>
+                        <div class="what">
+                            <h3>Junior School Certificate</h3>
+                            <p>BIAM Model School &amp; College, Bogura</p>
+                            <p class="meta">GPA 5.00</p>
+                        </div>
+                    </article>
+                    <article class="entry">
+                        <div class="when">2015</div>
+                        <div class="what">
+                            <h3>Primary School Certificate</h3>
+                            <p>BIAM Model School &amp; College, Bogura</p>
+                            <p class="meta">GPA 5.00</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills -->
+        <section id="skills" class="section">
+            <div class="wrap section-grid">
+                <h2 class="sec-title">Skills</h2>
+            </div>
+            <dl class="skills">
+                <div class="skill-row">
+                    <dt class="wrap">Tools</dt>
+                    <dd>
+                        <div class="track"><ul class="group"><li>Git</li><li>GitHub</li><li>VS Code</li><li>IntelliJ IDEA</li><li>Linux</li><li>Canva</li></ul></div>
+                    </dd>
+                </div>
+                <div class="skill-row">
+                    <dt class="wrap">Languages</dt>
+                    <dd>
+                        <div class="track"><ul class="group"><li>C</li><li>C++</li><li>Java</li><li>Bash</li><li>HTML</li><li>CSS</li><li>JavaScript</li></ul></div>
+                    </dd>
+                </div>
+                <div class="skill-row">
+                    <dt class="wrap">Database</dt>
+                    <dd>
+                        <div class="track"><ul class="group"><li>MySQL</li><li>MariaDB</li></ul></div>
+                    </dd>
+                </div>
+                <div class="skill-row">
+                    <dt class="wrap">Fundamentals</dt>
+                    <dd>
+                        <div class="track">
+                            <ul class="group">
+                                <li><abbr title="Data Structures &amp; Algorithms">DSA</abbr></li>
+                                <li><abbr title="Object-Oriented Programming">OOP</abbr></li>
+                                <li><abbr title="Operating Systems">OS</abbr></li>
+                            </ul>
+                        </div>
+                    </dd>
+                </div>
+            </dl>
+        </section>
+
+        <!-- Projects -->
+        <section id="projects" class="section">
+            <div class="wrap section-grid">
+                <h2 class="sec-title">Projects</h2>
+                <div class="list">
+                    <article class="project">
+                        <div class="project-head">
+                            <h3>Conduit</h3>
+                            <span class="status status-ongoing">Ongoing</span>
+                        </div>
+                        <div class="project-info">
+                            <p class="project-desc">A clean, distraction-free study space for DIU students — everything
+                                you need for a productive session in one browser tab.</p>
+                            <p class="stack">HTML, CSS, JavaScript</p>
+                            <div class="project-links">
+                                <a href="https://shams-27.github.io/conduit" target="_blank" rel="noopener">Live demo</a>
+                                <a href="https://github.com/shams-27/conduit" target="_blank" rel="noopener">View on GitHub</a>
                             </div>
                         </div>
-                    </div>
-                    <div class="timeline-node">
-                        <div class="node-dot"></div>
-                        <div class="node-content">
-                            <span class="degree-type">Higher Secondary School Certificate</span>
-                            <h3>Bogura Cantonment Public School & College</h3>
-                            <p class="timeline-meta">Completed: 2022</p>
-                            <div class="timeline-badges">
-                                <span>Science</span>
-                                <span>GPA: 5.00</span>
+                    </article>
+                    <article class="project">
+                        <div class="project-head">
+                            <h3>Auto GCC</h3>
+                            <span class="status">Completed</span>
+                        </div>
+                        <div class="project-info">
+                            <p class="project-desc">Instantly installs GCC / G++ (MinGW-w64) on Windows with a single
+                                PowerShell command. No manual downloading, no PATH headaches.</p>
+                            <p class="stack">PowerShell</p>
+                            <div class="project-links">
+                                <a href="https://github.com/shams-27/Auto-GCC" target="_blank" rel="noopener">View on GitHub</a>
                             </div>
                         </div>
-                    </div>
-                    <div class="timeline-node">
-                        <div class="node-dot"></div>
-                        <div class="node-content">
-                            <span class="degree-type">Secondary School Certificate</span>
-                            <h3>BIAM Model School & College, Bogura</h3>
-                            <p class="timeline-meta">Completed: 2020</p>
-                            <div class="timeline-badges">
-                                <span>Science</span>
-                                <span>GPA: 5.00</span>
+                    </article>
+                    <article class="project">
+                        <div class="project-head">
+                            <h3>NeatFreak</h3>
+                            <span class="status">Completed</span>
+                        </div>
+                        <div class="project-info">
+                            <p class="project-desc">A Bash script that organizes your Downloads folder by sorting files
+                                into category subfolders — with a live terminal UI.</p>
+                            <p class="stack">Bash</p>
+                            <div class="project-links">
+                                <a href="https://github.com/shams-27/NeatFreak" target="_blank" rel="noopener">View on GitHub</a>
                             </div>
                         </div>
-                    </div>
-                    <div class="timeline-node">
-                        <div class="node-dot"></div>
-                        <div class="node-content">
-                            <span class="degree-type">Junior School Certificate</span>
-                            <h3>BIAM Model School & College, Bogura</h3>
-                            <p class="timeline-meta">Completed: 2018</p>
-                            <div class="timeline-badges">
-                                <span>GPA: 5.00</span>
+                    </article>
+                    <article class="project">
+                        <div class="project-head">
+                            <h3>EMS</h3>
+                            <span class="status">Completed</span>
+                        </div>
+                        <div class="project-info">
+                            <p class="project-desc">A simple, file-based Employee Management System built using C
+                                programming language for my SE133 (Software Development Capstone Project) course.</p>
+                            <p class="stack">C</p>
+                            <div class="project-links">
+                                <a href="https://github.com/shams-27/EmployeeManagementSystem" target="_blank" rel="noopener">View on GitHub</a>
                             </div>
                         </div>
-                    </div>
-                    <div class="timeline-node">
-                        <div class="node-dot"></div>
-                        <div class="node-content">
-                            <span class="degree-type">Primary School Certificate</span>
-                            <h3>BIAM Model School & College, Bogura</h3>
-                            <p class="timeline-meta">Completed: 2015</p>
-                            <div class="timeline-badges">
-                                <span>GPA: 5.00</span>
-                            </div>
-                        </div>
-                    </div>
+                    </article>
                 </div>
             </div>
+        </section>
 
-            <!-- Skills Column -->
-            <div class="skills-column" id="skills">
-                <h2>Skills</h2>
-                <div class="compact-timeline">
-                    <div class="timeline-node">
-                        <div class="node-dot"></div>
-                        <div class="node-content">
-                            <h3>Tools</h3>
-                            <div class="timeline-badges">
-                                <span>Git</span>
-                                <span>GitHub</span>
-                                <span>VS Code</span>
-                                <span>IntelliJ IDEA</span>
-                                <span>Linux</span>
-                                <span>Canva</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="timeline-node">
-                        <div class="node-dot"></div>
-                        <div class="node-content">
-                            <h3>Languages</h3>
-                            <div class="timeline-badges">
-                                <span>C</span>
-                                <span>C++</span>
-                                <span>Java</span>
-                                <span>Bash</span>
-                                <span>HTML</span>
-                                <span>CSS</span>
-                                <span>JavaScript</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="timeline-node">
-                        <div class="node-dot"></div>
-                        <div class="node-content">
-                            <h3>Database</h3>
-                            <div class="timeline-badges">
-                                <span>MySQL</span>
-                                <span>MariaDB</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="timeline-node">
-                        <div class="node-dot"></div>
-                        <div class="node-content">
-                            <h3>Fundamentals</h3>
-                            <div class="timeline-badges">
-                                <span title="Data Structures & Algorithms">DSA</span>
-                                <span title="Object-Oriented Programming">OOP</span>
-                                <span title="Operating Systems">OS</span>
-                            </div>
-                        </div>
+        <!-- Contact -->
+        <section id="contact" class="section contact">
+            <div class="wrap section-grid">
+                <h2 class="sec-title">Let's connect</h2>
+                <div class="section-body">
+                    <p class="contact-lead">I'm always open to discussing new projects or opportunities.</p>
+                    <div class="contact-links">
+                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=kabir.shams.2002@gmail.com"
+                            target="_blank" rel="noopener" class="btn">Email me</a>
+                        <button type="button" class="text-link" id="copyEmailBtn"
+                            data-email="kabir.shams.2002@gmail.com">Copy email</button>
+                        <a href="https://www.linkedin.com/in/shams-kbr/" target="_blank" rel="noopener"
+                            class="text-link">LinkedIn</a>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="projects-section reveal">
-        <h2>My Projects</h2>
-        <div class="project-grid">
-            <div class="project-card">
-                <div class="project-title-bar">
-                    <h3>Conduit</h3>
-                    <span class="status-badge status-ongoing">Ongoing</span>
-                </div>
-
-                <p class="project-desc">
-                    A clean, distraction-free study space for DIU students — everything you need for a productive
-                    session in one
-                    browser tab.
-                </p>
-
-                <div class="tags">
-                    <span>HTML</span>
-                    <span>CSS</span>
-                    <span>JS</span>
-                </div>
-
-                <div class="project-links">
-                    <a href="https://shams-27.github.io/conduit" target="_blank" class="project-link">
-                        Live Demo
-                    </a>
-                    <a href="https://github.com/shams-27/conduit" target="_blank" class="project-link">
-                        View on GitHub
-                    </a>
-                </div>
-            </div>
-            <div class="project-card">
-                <div class="project-title-bar">
-                    <h3>Auto GCC</h3>
-                    <span class="status-badge status-completed">Completed</span>
-                </div>
-
-                <p class="project-desc">
-                    Instantly installs GCC / G++ (MinGW-w64) on Windows with a single PowerShell command. No manual
-                    downloading,
-                    no
-                    PATH headaches.
-                </p>
-
-                <div class="tags">
-                    <span>PowerShell</span>
-                </div>
-
-                <a href="https://github.com/shams-27/Auto-GCC" target="_blank" class="project-link">
-                    View on GitHub
-                </a>
-            </div>
-            <div class="project-card">
-                <div class="project-title-bar">
-                    <h3>NeatFreak</h3>
-                    <span class="status-badge status-completed">Completed</span>
-                </div>
-
-                <p class="project-desc">
-                    A Bash script that organizes your Downloads folder by sorting files into category subfolders — with
-                    a live terminal UI.
-                </p>
-
-                <div class="tags">
-                    <span>Bash</span>
-                </div>
-
-                <a href="https://github.com/shams-27/NeatFreak" target="_blank" class="project-link">
-                    View on GitHub
-                </a>
-            </div>
-            <div class="project-card">
-                <div class="project-title-bar">
-                    <h3>EMS</h3>
-                    <span class="status-badge status-completed">Completed</span>
-                </div>
-
-                <p class="project-desc">
-                    A simple, file-based Employee Management System built using C programming language for my SE133
-                    (Software Development Capstone Project) course.
-                </p>
-
-                <div class="tags">
-                    <span>C</span>
-                </div>
-
-                <a href="https://github.com/shams-27/EmployeeManagementSystem" target="_blank" class="project-link">
-                    View on GitHub
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact-section reveal">
-        <h2>Let's Connect</h2>
-        <p>I'm always open to discussing new projects or opportunities.</p>
-        <div class="contact-buttons">
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=kabir.shams.2002@gmail.com" target="_blank"
-                class="btn">Email Me</a>
-            <button type="button" class="btn btn-secondary" id="copyEmailBtn" data-email="kabir.shams.2002@gmail.com">
-                Copy Email
-            </button>
-            <a href="https://www.linkedin.com/in/shams-kbr/" target="_blank" class="btn btn-secondary">
-                LinkedIn
-            </a>
-        </div>
-
-        <form id="contact-form" class="contact-form" action="https://formsubmit.co/ajax/kabir.shams.2002@gmail.com"
-            method="POST">
-            <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="message">Message</label>
-                <textarea id="message" name="message" rows="5" required></textarea>
-            </div>
-            <button type="submit" class="btn">Send Message</button>
-            <p id="form-status"></p>
-        </form>
-    </section>
+        </section>
+    </main>
 
     <button type="button" id="backToTop" class="back-to-top" aria-label="Back to top">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

@@ -1,8 +1,10 @@
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 // Time-based hero greeting
 const greetingElement = document.getElementById('greeting');
 const hour = new Date().getHours();
 const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-greetingElement.textContent = `${greeting}, I'm Shams Kabir.`;
+greetingElement.textContent = `${greeting}, I'm`;
 
 // Mobile nav toggle
 const navToggle = document.getElementById('navToggle');
@@ -23,72 +25,25 @@ if (navToggle && navLinks) {
     });
 }
 
-// Scroll-triggered reveal animation
-const revealElements = document.querySelectorAll('.reveal');
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-if (revealElements.length) {
-    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
-        revealElements.forEach((el) => el.classList.add('revealed'));
-    } else {
-        const revealObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('revealed');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15 });
-
-        revealElements.forEach((el) => revealObserver.observe(el));
-    }
-}
-
 // Back-to-top button
 const backToTopBtn = document.getElementById('backToTop');
+let scrollQueued = false;
 
-if (backToTopBtn) {
-    window.addEventListener('scroll', () => {
-        backToTopBtn.classList.toggle('visible', window.scrollY > 400);
-    });
-    backToTopBtn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+function onScroll() {
+    if (scrollQueued) return;
+    scrollQueued = true;
+    requestAnimationFrame(() => {
+        scrollQueued = false;
+        if (backToTopBtn) backToTopBtn.classList.toggle('visible', window.scrollY > 400);
     });
 }
 
-// Contact form submission
-const contactForm = document.querySelector('#contact-form');
-const formStatus = document.querySelector('#form-status');
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
 
-if (contactForm && formStatus) {
-    contactForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        const formData = new FormData(contactForm);
-
-        try {
-            const response = await fetch(contactForm.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    Accept: 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                formStatus.textContent = 'Thank you! Your message has been sent.';
-                formStatus.classList.remove('form-status-error');
-                formStatus.classList.add('form-status-success');
-                contactForm.reset();
-            } else {
-                throw new Error('Submission failed');
-            }
-        } catch (err) {
-            console.error('Could not send message:', err);
-            formStatus.textContent = 'Something went wrong. Please try again.';
-            formStatus.classList.remove('form-status-success');
-            formStatus.classList.add('form-status-error');
-        }
+if (backToTopBtn) {
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
     });
 }
 
