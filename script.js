@@ -191,13 +191,8 @@ function safeUrl(value) {
     }
 }
 
-// Project cards fade and rise into view as they scroll on screen (skipped for reduced motion).
-// Only the first render animates, so the sheet refresh after the cached copy doesn't replay it.
-let cardsAnimated = false;
-
-function revealCards(cards) {
-    if (cardsAnimated) return;
-    cardsAnimated = true;
+// Cards fade and rise into view as they scroll on screen (skipped for reduced motion).
+function revealOnScroll(cards) {
     if (prefersReducedMotion || !('IntersectionObserver' in window)) return;
 
     cards.forEach((card) => card.classList.add('will-reveal'));
@@ -216,6 +211,8 @@ function revealCards(cards) {
     }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
     cards.forEach((card) => io.observe(card));
 }
+
+let projectCardsAnimated = false;
 
 function renderProjects(rows) {
     const list = document.querySelector('#projects .list');
@@ -263,7 +260,12 @@ function renderProjects(rows) {
     });
 
     list.replaceChildren(...cards);
-    revealCards(cards);
+
+    // Only the first render animates, so the sheet refresh after the cached copy doesn't replay it
+    if (!projectCardsAnimated) {
+        projectCardsAnimated = true;
+        revealOnScroll(cards);
+    }
 }
 
 function renderSkills(rows) {
@@ -330,6 +332,9 @@ async function loadSheet(name, render) {
         console.warn('Could not load "' + name + '" from Google Sheets:', err.message);
     }
 }
+
+// Education entries, About facts and the trophy photo (the project cards are handled in renderProjects)
+revealOnScroll([...document.querySelectorAll('.entry, .fact, .trophy')]);
 
 loadSheet('projects', renderProjects);
 loadSheet('skills', renderSkills);
