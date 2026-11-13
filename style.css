@@ -43,7 +43,7 @@ a { color: inherit; text-decoration-thickness: 2px; text-underline-offset: 0.25e
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 
 /* Coloured surfaces use ink for lines, text and focus */
-.strip, #skills, .contact { --line: var(--ink); --focus: var(--ink); color: var(--ink); }
+.strip, #skills { --line: var(--ink); --focus: var(--ink); color: var(--ink); }
 
 .wrap { max-width: 1100px; margin-inline: auto; padding-inline: var(--gutter); }
 
@@ -136,15 +136,6 @@ nav {
 
 .text-link { --b-bg: var(--ink); --b-fg: var(--paper); }
 
-.contact .btn, .contact .text-link {
-    --b-line: var(--ink);
-    --b-sh: var(--ink);
-    --b-hov: var(--yellow);
-}
-.contact .btn { --b-bg: var(--paper); --b-fg: var(--ink); }
-.contact .text-link { --b-bg: var(--ink); --b-fg: var(--paper); }
-.contact .text-link:hover { color: var(--ink); }
-
 .icon-svg { width: 16px; height: 16px; }
 
 /* Static lists (traits strip, skills) */
@@ -158,41 +149,51 @@ nav {
         linear-gradient(90deg, rgba(244, 244, 240, 0.07) 1px, transparent 1px);
     background-size: 56px 56px;
     overflow: hidden;
+    min-height: calc(100vh - 4.25rem);   /* fallback */
+    min-height: calc(100svh - 4.25rem);  /* 4.25rem = sticky header */
+    display: flex;
 }
 
-.hero-grid { padding-top: clamp(2rem, 6vw, 4rem); padding-bottom: clamp(3rem, 8vw, 6rem); }
+.hero-grid {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: clamp(1rem, 4vh, 4rem);
+    padding-bottom: clamp(1.5rem, 5vh, 4rem);
+}
 
 #greeting {
     display: inline-block;
+    align-self: flex-start;
     font-size: 1.0625rem;
     font-weight: 700;
     color: var(--ink);
     background: var(--yellow);
     border: var(--bw) solid var(--paper);
     padding: 0.2rem 0.9rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: clamp(0.75rem, 2.5vh, 1.5rem);
     transform: rotate(-2deg);
 }
 
 .hero h1 {
     font-family: var(--display);
-    font-size: clamp(4.5rem, 20vw, 15rem);
+    font-size: clamp(3.5rem, min(20vw, 17vh), 15rem);
     font-weight: 900;
     font-stretch: 90%;
     line-height: 0.86;
     letter-spacing: -0.03em;
-    margin-bottom: 3rem;
+    margin-bottom: clamp(1rem, 4vh, 3rem);
     text-shadow: 0.045em 0.045em 0 var(--pink);
 }
 .hero h1 .line { display: block; }
 .hero h1 .line:nth-child(2) { padding-left: 0.3em; color: var(--yellow); }
 
-.hero-foot { display: grid; gap: 2.5rem; align-items: end; }
+.hero-foot { display: grid; gap: clamp(1.25rem, 3vh, 2.5rem); align-items: end; margin-top: auto; }
 
 .hero-lead { max-width: 30ch; font-size: clamp(1.25rem, 2.4vw, 1.625rem); font-weight: 600; line-height: 1.3; }
-.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 1.5rem; margin-top: 2rem; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 1.5rem; margin-top: clamp(1rem, 3vh, 2rem); }
 
-.hero-photo { width: min(13rem, 60%); margin-right: 12px; transform: rotate(2deg); }
+.hero-photo { width: min(clamp(6rem, 24vh, 13rem), 60%); margin-right: 12px; transform: rotate(2deg); }
 .hero-photo img {
     display: block;
     width: 100%;
@@ -214,7 +215,7 @@ nav {
     letter-spacing: -0.01em;
     line-height: 1.2;
 }
-.strip .group { gap: 0.5rem 1.25rem; max-width: 1100px; margin-inline: auto; padding-inline: var(--gutter); }
+.strip .group { gap: 0.5rem 1.25rem; padding-inline: var(--gutter); }
 .strip li { display: flex; align-items: center; gap: 1.25rem; }
 .strip li:not(:last-child)::after { content: ''; width: 0.4em; height: 0.4em; background: var(--ink); }
 
@@ -226,7 +227,6 @@ nav {
 #education { --sh: var(--pink); }
 #skills { --sh: var(--yellow); background: var(--blue); padding-bottom: 0; }
 #projects { --sh: var(--blue); }
-.contact { --sh: var(--paper); background: var(--pink); }
 
 .sec-title {
     font-family: var(--display);
@@ -339,19 +339,6 @@ abbr[title] { text-decoration: none; cursor: help; }
 }
 .project-links a:hover { background: var(--yellow); color: var(--ink); }
 
-/* Contact */
-.contact-lead {
-    font-family: var(--display);
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    max-width: 22ch;
-}
-.contact-links { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 1.5rem; margin-top: 2.25rem; }
-#copyEmailBtn.copied { background: var(--yellow); color: var(--ink); }
-
-
 /* Footer and back-to-top */
 footer { background: var(--ink); color: var(--paper); border-top: var(--bw) solid var(--paper); padding: 2rem var(--gutter); font-size: 0.9375rem; font-weight: 600; }
 footer p { max-width: 1100px; margin-inline: auto; }
@@ -382,12 +369,38 @@ footer p { max-width: 1100px; margin-inline: auto; }
     .entry { grid-template-columns: clamp(11rem, 28vw, 18rem) 1fr; }
     .when { border-bottom: 0; border-right: var(--bw) solid var(--paper); }
     .hero-foot { grid-template-columns: 1fr auto; }
-    .hero-photo { width: 13rem; }
+    .hero-photo { width: clamp(6rem, 24vh, 13rem); }
 }
 
 /* Desktop */
 @media (min-width: 860px) {
-    .about-body, .contact .section-body { margin-left: auto; }
+    .strip { font-size: clamp(1rem, 2vw, 2rem); }
+    /* Strip sits at the bottom of the first screen: hero fills the rest */
+    :root { --strip-h: calc(2rem + 6px + 1.2 * clamp(1rem, 2vw, 2rem)); }
+    .hero {
+        min-height: calc(100vh - 4.25rem - var(--strip-h));
+        min-height: calc(100svh - 4.25rem - var(--strip-h));
+    }
+
+    /* Hero: text left, photo right, no dead space */
+    .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        column-gap: clamp(2rem, 4vw, 4rem);
+        align-content: center;
+        max-width: 1400px;
+    }
+    #greeting { grid-column: 1; grid-row: 1; justify-self: start; }
+    .hero h1 { grid-column: 1; grid-row: 2; font-size: clamp(3.5rem, min(11vw, 22vh), 14rem); margin-bottom: clamp(1rem, 3vh, 2rem); }
+    .hero-foot { display: contents; }
+    .hero-lead { max-width: none; font-size: clamp(1.1rem, 1.5vw, 1.625rem); text-wrap: balance; }
+    .hero-foot > div:first-child { grid-column: 1; grid-row: 3; }
+    .hero-foot > .hero-photo { grid-column: 2; grid-row: 1 / span 3; align-self: center; width: clamp(9rem, 32vh, 16rem); }
+    .strip .group { flex-wrap: nowrap; }
+    /* Equal extra space per item, text centred: each square lands at the exact midpoint between two texts */
+    .strip li { position: relative; flex: 1 1 auto; justify-content: center; }
+    .strip li:not(:last-child)::after { position: absolute; right: 0; top: 50%; transform: translate(50%, -50%); }
+    .about-body { margin-left: auto; }
     #projects .list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
@@ -407,6 +420,30 @@ footer p { max-width: 1100px; margin-inline: auto; }
     }
     .nav-links.open { display: flex; }
     .nav-links a { padding: 1rem var(--gutter); font-size: 1.0625rem; border: 0; border-top: 2px solid var(--paper); }
+}
+
+/* Phones and small tablets: one tidy column, natural height */
+@media (max-width: 859px) {
+    .hero { min-height: 0; display: block; }
+    .hero-grid { padding-top: 1.75rem; padding-bottom: 2.5rem; }
+    .hero-foot { display: contents; }
+    #greeting { order: 1; align-self: flex-start; }
+    .hero h1 { order: 2; font-size: clamp(3rem, 18.5vw, 7rem); margin-bottom: 1.75rem; }
+    .hero-foot > .hero-photo { order: 3; width: min(11rem, 55%); margin: 0 0 2.25rem 0.25rem; align-self: flex-start; }
+    .hero-foot > div:first-child { order: 4; }
+    .hero-lead { max-width: none; font-size: 1.2rem; }
+    .hero-actions { gap: 0.9rem 1rem; margin-top: 1.5rem; }
+    .btn, .text-link { padding: 0.7rem 1.1rem; box-shadow: 4px 4px 0 var(--b-sh); }
+    .btn:hover, .text-link:hover { box-shadow: 2px 2px 0 var(--b-sh); }
+    .btn:active, .text-link:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--b-sh); }
+
+    .strip { font-size: clamp(1rem, 4.3vw, 1.375rem); }
+    .strip .group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; }
+    .strip li:not(:last-child)::after { display: none; }
+
+    .project-head { padding: 1rem 1.25rem; }
+    .project-info { padding: 1.25rem; }
+    .what { padding: 1.1rem 1.25rem; }
 }
 
 /* Motion: only smooth scrolling, and only when allowed */

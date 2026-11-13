@@ -47,23 +47,3 @@ if (backToTopBtn) {
     });
 }
 
-// Copy-email button
-const copyEmailBtn = document.getElementById('copyEmailBtn');
-
-if (copyEmailBtn) {
-    const originalLabel = copyEmailBtn.textContent.trim();
-    copyEmailBtn.addEventListener('click', async () => {
-        try {
-            await navigator.clipboard.writeText(copyEmailBtn.dataset.email);
-        } catch (err) {
-            console.error('Could not copy email:', err);
-            return;
-        }
-        copyEmailBtn.textContent = 'Copied!';
-        copyEmailBtn.classList.add('copied');
-        setTimeout(() => {
-            copyEmailBtn.textContent = originalLabel;
-            copyEmailBtn.classList.remove('copied');
-        }, 2000);
-    });
-}
