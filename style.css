@@ -1,5 +1,6 @@
 /* Neo-brutalism, dark: flat colour, 3px borders, hard offset shadows, zero radius. Static: no kinetic type, no sliding ribbons. */
 :root {
+    color-scheme: only light;
     --bg: #FAEEE7;
     --ink: #111111;
     --card: #FBF7E6;
@@ -90,6 +91,14 @@ nav {
     border: 2px solid transparent;
 }
 .nav-links a:hover { background: var(--c1); color: var(--ink); border-color: var(--ink); }
+
+/* Desktop topbar: wider and larger */
+@media (min-width: 768px) {
+    nav { max-width: 1600px; padding: 0.9rem clamp(1.5rem, 4vw, 4rem); }
+    .logo { font-size: 1.6rem; padding: 0.15rem 0.9rem; }
+    .nav-links { gap: 0.75rem; }
+    .nav-links a { font-size: 1.45rem; padding: 0.5rem 1.1rem; }
+}
 
 .nav-toggle {
     display: none;
@@ -833,4 +842,29 @@ main > .strip { position: relative; }   /* the traits band scrolls over the hero
     }
     .trophy figcaption { padding: 0.35rem 0.5rem 0.45rem; font-size: 0.6875rem; line-height: 1.25; }
     .trophy figcaption strong { font-size: 0.8125rem; margin-bottom: 0.1rem; }
+}
+
+/* Hero landing animation (uses translate/scale so the photo's rotate stays intact) */
+@media (prefers-reduced-motion: no-preference) {
+    #greeting, .hero h1 .line, .hero-lead, .hero-actions, .hero-photo {
+        animation: hero-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    #greeting { animation-name: hero-slide; animation-delay: 0.1s; }
+    .hero h1 .line:nth-child(1) { animation-delay: 0.25s; }
+    .hero h1 .line:nth-child(2) { animation-delay: 0.4s; }
+    .hero-photo { animation-name: hero-pop; animation-delay: 0.55s; animation-duration: 0.9s; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .hero-lead { animation-delay: 0.7s; }
+    .hero-actions { animation-delay: 0.85s; }
+}
+@keyframes hero-in {
+    from { opacity: 0; translate: 0 2.5rem; }
+    to { opacity: 1; translate: 0 0; }
+}
+@keyframes hero-slide {
+    from { opacity: 0; translate: -2rem 0; }
+    to { opacity: 1; translate: 0 0; }
+}
+@keyframes hero-pop {
+    from { opacity: 0; translate: 0 1.5rem; scale: 0.8; }
+    to { opacity: 1; translate: 0 0; scale: 1; }
 }

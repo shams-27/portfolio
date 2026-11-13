@@ -1,3 +1,15 @@
+// Xiaomi/Redmi browser: hand the page over to Chrome (Android intent). Runs once per session;
+// if Chrome isn't installed or the intent is blocked, the page just stays where it is.
+(function openInChrome() {
+    if (!/Android/i.test(navigator.userAgent) || !/MiuiBrowser|XiaoMi/i.test(navigator.userAgent)) return;
+    try {
+        if (sessionStorage.getItem('chromeRedirect')) return;
+        sessionStorage.setItem('chromeRedirect', '1');
+    } catch { return; }
+    const { host, pathname, search } = window.location;
+    window.location.replace('intent://' + host + pathname + search + '#Intent;scheme=https;package=com.android.chrome;end');
+})();
+
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Time-based hero greeting
