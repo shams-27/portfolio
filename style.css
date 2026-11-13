@@ -815,25 +815,22 @@ main > .strip { position: relative; }   /* the traits band scrolls over the hero
 /* Pinned sections need a solid background, or the one underneath shows through */
 #detailed-about, #education, #projects { background-color: var(--bg); }
 
-/* About on phones and tablets: small trophy photo beside the opening line, like the hero.
-   .about-body is flattened so its paragraphs can sit in the same grid as the photo. */
-@media (max-width: 859px) {
-    .about-top {
-        grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-areas:
-            "lead photo"
-            "one  one"
-            "two  two";
-        gap: 1rem 1.1rem;
-        align-items: start;
-    }
-    .about-top .about-body { display: contents; }
-    .about-top .about-body p:nth-child(1) { grid-area: lead; }
-    .about-top .about-body p:nth-child(2) { grid-area: one; }
-    .about-top .about-body p:nth-child(3) { grid-area: two; }
-    .about-top .about-body p + p { margin-top: 0; }
+/* About, 860px to 959px: explicit columns, since the photo now comes first in the markup */
+@media (min-width: 860px) and (max-width: 959px) {
+    .about-top .about-body { grid-column: 1; grid-row: 1; }
+    .trophy { grid-column: 2; grid-row: 1; }
+}
 
-    .trophy { grid-area: photo; align-self: start; width: clamp(7rem, 30vw, 10rem); margin-right: 8px; box-shadow: 5px 5px 0 var(--ink); }
+/* About on phones and tablets: the trophy photo floats at the right and the text wraps around it, like a magazine.
+   No grid, so there is no empty space under the opening line. */
+@media (max-width: 859px) {
+    .about-top { display: flow-root; }
+    .trophy {
+        float: right;
+        width: clamp(7rem, 30vw, 10rem);
+        margin: 0.4rem 8px 0.9rem 1.1rem;
+        box-shadow: 5px 5px 0 var(--ink);
+    }
     .trophy figcaption { padding: 0.35rem 0.5rem 0.45rem; font-size: 0.6875rem; line-height: 1.25; }
     .trophy figcaption strong { font-size: 0.8125rem; margin-bottom: 0.1rem; }
 }
