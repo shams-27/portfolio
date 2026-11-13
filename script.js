@@ -9,19 +9,36 @@ greetingElement.textContent = `${greeting}, I'm`;
 // Mobile nav toggle
 const navToggle = document.getElementById('navToggle');
 const navLinks = document.getElementById('navLinks');
+const navOverlay = document.getElementById('navOverlay');
+
+function setMenu(open) {
+    navLinks.classList.toggle('open', open);
+    navToggle.setAttribute('aria-expanded', String(open));
+    if (navOverlay) navOverlay.classList.toggle('show', open);
+}
 
 if (navToggle && navLinks) {
     navToggle.addEventListener('click', () => {
-        const isOpen = navLinks.classList.toggle('open');
-        navToggle.setAttribute('aria-expanded', isOpen);
+        setMenu(!navLinks.classList.contains('open'));
     });
 
     // Close the menu once a link is tapped
     navLinks.querySelectorAll('a').forEach((link) => {
-        link.addEventListener('click', () => {
-            navLinks.classList.remove('open');
-            navToggle.setAttribute('aria-expanded', 'false');
-        });
+        link.addEventListener('click', () => setMenu(false));
+    });
+
+    // Close when tapping the dimmed area or pressing Escape
+    if (navOverlay) navOverlay.addEventListener('click', () => setMenu(false));
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navLinks.classList.contains('open')) {
+            setMenu(false);
+            navToggle.focus();
+        }
+    });
+
+    // Reset if the viewport grows past the mobile breakpoint
+    window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => {
+        if (e.matches) setMenu(false);
     });
 }
 
