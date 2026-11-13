@@ -12,6 +12,32 @@
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Theme toggle: light by default, the choice is remembered (the saved theme is applied in <head> before paint)
+const themeToggle = document.getElementById('themeToggle');
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+const rootEl = document.documentElement;
+
+function applyTheme(dark) {
+    if (dark) rootEl.setAttribute('data-theme', 'dark');
+    else rootEl.removeAttribute('data-theme');
+    if (themeToggle) themeToggle.setAttribute('aria-pressed', String(dark));
+    if (themeColorMeta) themeColorMeta.setAttribute('content', dark ? '#131118' : '#FAEEE7');
+}
+
+applyTheme(rootEl.getAttribute('data-theme') === 'dark');
+
+if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+        const dark = rootEl.getAttribute('data-theme') !== 'dark';
+        if (!prefersReducedMotion) {
+            rootEl.classList.add('theme-anim');
+            setTimeout(() => rootEl.classList.remove('theme-anim'), 350);
+        }
+        applyTheme(dark);
+        try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch { /* storage unavailable */ }
+    });
+}
+
 // Time-based hero greeting
 const greetingElement = document.getElementById('greeting');
 const hour = new Date().getHours();
@@ -165,6 +191,32 @@ function safeUrl(value) {
     }
 }
 
+// Project cards fade and rise into view as they scroll on screen (skipped for reduced motion).
+// Only the first render animates, so the sheet refresh after the cached copy doesn't replay it.
+let cardsAnimated = false;
+
+function revealCards(cards) {
+    if (cardsAnimated) return;
+    cardsAnimated = true;
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) return;
+
+    cards.forEach((card) => card.classList.add('will-reveal'));
+    const io = new IntersectionObserver((entries) => {
+        // Cards entering together (one row) are staggered slightly
+        entries.filter((e) => e.isIntersecting).forEach((entry, i) => {
+            const card = entry.target;
+            io.unobserve(card);
+            card.style.setProperty('--reveal-delay', i * 90 + 'ms');
+            card.classList.add('revealed');
+            card.addEventListener('animationend', () => {
+                card.classList.remove('will-reveal', 'revealed');
+                card.style.removeProperty('--reveal-delay');
+            }, { once: true });
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    cards.forEach((card) => io.observe(card));
+}
+
 function renderProjects(rows) {
     const list = document.querySelector('#projects .list');
     if (!list) return;
@@ -211,6 +263,7 @@ function renderProjects(rows) {
     });
 
     list.replaceChildren(...cards);
+    revealCards(cards);
 }
 
 function renderSkills(rows) {
