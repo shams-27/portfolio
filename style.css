@@ -550,6 +550,24 @@ footer p { max-width: 1100px; margin-inline: auto; }
     .back-to-top { width: 42px; height: 42px; right: 0.75rem; bottom: 0.75rem; box-shadow: 3px 3px 0 var(--ink); }
 }
 
+/* Traits strip: a single line on small screens.
+   Motion allowed: it scrolls slowly in a loop. Reduced motion or no JS: swipe sideways. */
+.strip .group[aria-hidden="true"] { display: none; }
+@media (max-width: 859px) {
+    .strip { overflow: hidden; }
+    .strip .track { overflow-x: auto; scrollbar-width: none; }
+    .strip .track::-webkit-scrollbar { display: none; }
+    .strip .group { display: flex; flex-wrap: nowrap; gap: 1.25rem; width: max-content; padding: 0 var(--gutter); }
+    .strip li { white-space: nowrap; }
+    .strip li:not(:last-child)::after { display: block; }   /* bring the separators back */
+}
+@media (max-width: 859px) and (prefers-reduced-motion: no-preference) {
+    .strip .track { display: flex; width: max-content; overflow: visible; animation: strip-scroll 24s linear infinite; }
+    .strip .group, .strip .group[aria-hidden="true"] { display: flex; padding: 0 0.625rem; }
+    .strip li:last-child::after { content: ''; display: block; width: 0.4em; height: 0.4em; background: var(--ink); }
+}
+@keyframes strip-scroll { to { transform: translateX(-50%); } }
+
 /* Mobile menu: coloured, boxed links */
 @media (max-width: 767px) {
     .nav-toggle { background: var(--c1); box-shadow: 3px 3px 0 var(--ink); transition: transform 0.12s, box-shadow 0.12s, background 0.12s; }
