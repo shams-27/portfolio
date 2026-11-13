@@ -203,6 +203,7 @@ nav {
     background: var(--card);
     border: var(--bw) solid var(--ink);
     box-shadow: 10px 10px 0 var(--ink);
+    opacity: 0.88;
 }
 
 /* Traits strip: static band */
@@ -341,14 +342,13 @@ abbr[title] { text-decoration: none; cursor: help; }
 }
 .project h3 {
     font-family: var(--display);
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: clamp(1.5rem, 3.2vw, 2.25rem);
+    white-space: nowrap;   /* keep each project name on one line */
     font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1;
 }
 
-.status { font-size: 0.875rem; font-weight: 700; padding: 0.15rem 0.7rem; border: 2px solid var(--ink); }
-.status-ongoing { background: var(--ink); color: var(--accent); }
 
 .project-info { display: flex; flex-direction: column; flex: 1; padding: 1.5rem; }
 .stack { font-size: 0.9375rem; font-weight: 600; color: var(--muted); margin-top: 0.75rem; }
@@ -527,9 +527,8 @@ footer p { max-width: 1100px; margin-inline: auto; }
     .skill-row li { font-size: 1rem; padding: 0.3rem 0.65rem; box-shadow: 3px 3px 0 var(--ink); }
     .skill-row:nth-child(even) li { box-shadow: 3px 3px 0 var(--bg); }
 
-    .project h3 { font-size: 1.6rem; }
+    .project h3 { font-size: clamp(1.25rem, 6vw, 1.6rem); }
     .project-head { padding: 0.75rem 1rem; gap: 0.5rem 0.75rem; }
-    .status { font-size: 0.8125rem; padding: 0.1rem 0.55rem; }
     .project-info { padding: 1rem; }
     .stack { font-size: 0.875rem; margin-top: 0.5rem; }
     .project-links { gap: 0.5rem; padding-top: 1rem; }
