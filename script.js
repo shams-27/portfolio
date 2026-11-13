@@ -268,3 +268,57 @@ async function loadSheet(name, render) {
 
 loadSheet('projects', renderProjects);
 loadSheet('skills', renderSkills);
+
+// ---------------------------------------------------------------
+// Stacked sections
+// ---------------------------------------------------------------
+// CSS pins every section (position: sticky) so the next one slides over it. It needs each section's
+// height (--h) and the header height (--hdr) to work out where a tall section should pin.
+const mainEl = document.querySelector('main');
+const headerEl = document.querySelector('header');
+const stackItems = mainEl ? [...mainEl.children].filter((el) => el.matches('section, .strip')) : [];
+
+stackItems.forEach((el, i) => { el.style.zIndex = i + 1; });
+
+function measureStack() {
+    if (headerEl) document.documentElement.style.setProperty('--hdr', headerEl.offsetHeight + 'px');
+    stackItems.forEach((el) => el.style.setProperty('--h', el.offsetHeight + 'px'));
+}
+
+measureStack();
+window.addEventListener('resize', measureStack);
+window.addEventListener('load', measureStack);
+if ('ResizeObserver' in window) {
+    // Sections change height when the Google Sheets content loads or the layout changes
+    const ro = new ResizeObserver(measureStack);
+    stackItems.forEach((el) => ro.observe(el));
+    if (headerEl) ro.observe(headerEl);
+}
+
+// Pinned sections report their pinned position, so in-page links can't rely on the browser's own jump.
+// A section's natural position is the sum of the heights of everything above it.
+document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    link.addEventListener('click', (e) => {
+        const id = link.getAttribute('href').slice(1);
+        const target = id ? document.getElementById(id) : null;
+        if (!target || !mainEl) return;
+
+        let y;
+        if (target === mainEl) {
+            y = 0;
+        } else if (stackItems.includes(target)) {
+            y = mainEl.offsetTop;
+            for (const el of stackItems) {
+                if (el === target) break;
+                y += el.offsetHeight;
+            }
+            y -= headerEl ? headerEl.offsetHeight : 0;
+        } else {
+            return;
+        }
+
+        e.preventDefault();
+        window.scrollTo({ top: Math.max(0, y), behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+        history.replaceState(null, '', '#' + id);
+    });
+});

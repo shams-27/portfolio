@@ -268,6 +268,127 @@ nav {
 .about-body p:first-child { font-size: clamp(1.5rem, 3vw, 2.125rem); font-weight: 600; line-height: 1.25; letter-spacing: -0.01em; }
 .about-body strong { font-weight: 700; color: var(--ink); background: linear-gradient(transparent 55%, var(--c1) 55%); }
 
+/* About: prose + trophy photo, then quick facts */
+.about-top { display: grid; gap: 2.5rem; align-items: center; }
+
+.trophy {
+    width: min(15rem, 100%);
+    margin-right: 8px;
+    background: var(--card);
+    border: var(--bw) solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+    transform: rotate(2deg);
+}
+.trophy img { display: block; width: 100%; height: auto; border-bottom: var(--bw) solid var(--ink); }
+.trophy figcaption { padding: 0.7rem 0.9rem 0.8rem; background: var(--c1); font-size: 0.9375rem; font-weight: 600; line-height: 1.35; }
+.trophy figcaption strong { display: block; margin-bottom: 0.15rem; font-family: var(--display); font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+
+.about-facts { display: grid; gap: 1.5rem; }
+.fact { background: var(--card); border: var(--bw) solid var(--ink); box-shadow: 8px 8px 0 var(--ink); }
+.fact:nth-child(3n + 1) { --accent: var(--c1); }
+.fact:nth-child(3n + 2) { --accent: var(--c2); }
+.fact:nth-child(3n) { --accent: var(--c3); }
+.fact dt {
+    padding: 0.75rem 1.25rem;
+    background: var(--accent);
+    border-bottom: var(--bw) solid var(--ink);
+    font-family: var(--display);
+    font-size: clamp(1.25rem, 2.4vw, 1.625rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+.fact dd { padding: 1.1rem 1.25rem 1.25rem; }
+
+@media (min-width: 640px) {
+    .about-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+}
+@media (min-width: 860px) {
+    .about-top { grid-template-columns: minmax(0, 1fr) auto; gap: 4rem; }
+    .about-top .about-body { margin-left: 0; }
+    .trophy { width: 16rem; }
+}
+/* Laptops and desktops: the whole About section fits in one screen and scales with the window.
+   Title and text on the left, trophy on the right, the four facts in one full-width row. */
+@media (min-width: 960px) {
+    #detailed-about {
+        display: flex;
+        align-items: center;
+        min-height: calc(100vh - 4.75rem);   /* fallback */
+        min-height: calc(100svh - 4.75rem);  /* 4.75rem = sticky header */
+        padding-block: clamp(1.5rem, 4vh, 3.5rem);
+    }
+    #detailed-about .wrap { max-width: 1600px; }
+    #detailed-about .section-grid {
+        width: 100%;
+        grid-template-columns: minmax(0, 1fr) auto;
+        column-gap: clamp(2rem, 5vw, 5rem);
+        row-gap: clamp(1rem, 3vh, 2.25rem);
+        align-items: start;
+    }
+    /* Title ends its row and the text starts its row, so any spare height around the trophy falls above and below the pair */
+    #detailed-about .sec-title { grid-column: 1; grid-row: 1; align-self: end; font-size: clamp(2.75rem, min(13vh, 9vw), 8rem); }
+
+    /* Intro: big lead line, then the two paragraphs side by side */
+    .about-top { display: contents; }
+    .about-top .about-body {
+        grid-column: 1;
+        grid-row: 2;
+        align-self: start;
+        max-width: none;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        --about-gap: clamp(1.75rem, 3.5vw, 4rem);
+        gap: clamp(0.9rem, 2vh, 1.4rem) var(--about-gap);
+    }
+    #detailed-about .about-body p { font-size: clamp(1.0625rem, min(2.2vh, 1.5vw), 1.375rem); line-height: 1.55; }
+    #detailed-about .about-body p + p { margin-top: 0; }
+    /* Divider between the two paragraph columns: an ink zigzag with a pink copy offset behind it */
+    #detailed-about .about-body p:nth-child(3) {
+        --zig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='20' viewBox='0 0 16 20'%3E%3Cpath d='M13 -10L3 0L13 10L3 20L13 30' fill='none' stroke='black' stroke-width='3'/%3E%3C/svg%3E");
+        position: relative;
+    }
+    #detailed-about .about-body p:nth-child(3)::before,
+    #detailed-about .about-body p:nth-child(3)::after {
+        content: '';
+        position: absolute;
+        top: 0.25rem;
+        bottom: 0.25rem;
+        left: calc(var(--about-gap) / -2);
+        width: 16px;
+        background: var(--ink);
+        -webkit-mask: var(--zig) 0 0 / 16px 20px repeat-y;
+        mask: var(--zig) 0 0 / 16px 20px repeat-y;
+        transform: translateX(-50%);
+    }
+    #detailed-about .about-body p:nth-child(3)::before {
+        background: var(--c2);
+        transform: translate(calc(-50% + 4px), 4px);
+    }
+    #detailed-about .about-body p:first-child {
+        grid-column: 1 / -1;
+        max-width: 46rem;
+        font-size: clamp(1.375rem, min(3.6vh, 2.5vw), 2.5rem);
+        line-height: 1.25;
+    }
+
+    .trophy { grid-column: 2; grid-row: 1 / span 2; align-self: center; width: clamp(10rem, min(34vh, 18vw), 19rem); }
+    .trophy figcaption { padding: 0.8rem 1rem 0.9rem; font-size: clamp(0.9375rem, 1.8vh, 1.125rem); }
+    .trophy figcaption strong { font-size: clamp(1.25rem, 2.6vh, 1.625rem); }
+
+    .about-facts { grid-column: 1 / -1; grid-row: 3; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(1.25rem, 2vw, 2rem); }
+    .fact { box-shadow: 8px 8px 0 var(--ink); }
+    .fact dt { padding: 0.6rem 1.1rem; font-size: clamp(1.125rem, min(2.4vh, 1.6vw), 1.625rem); }
+    .fact dd { padding: 0.9rem 1.1rem 1.1rem; font-size: clamp(1rem, min(2.1vh, 1.4vw), 1.3125rem); line-height: 1.5; }
+}
+@media (max-width: 639px) {
+    .about-top { gap: 2rem; }
+    .trophy { box-shadow: 5px 5px 0 var(--ink); }
+    .fact { box-shadow: 5px 5px 0 var(--ink); }
+    .fact dt { padding: 0.6rem 1rem; }
+    .fact dd { padding: 0.8rem 1rem 1rem; }
+}
+
 /* Lists of cards (education, projects) */
 .list { display: grid; gap: 2rem; }
 .list > :nth-child(3n + 1) { --accent: var(--c1); }
@@ -632,3 +753,64 @@ footer p { max-width: 1100px; margin-inline: auto; }
 @media (prefers-reduced-motion: reduce) {
     .entry, .project, .btn, .text-link, .logo, .back-to-top, .nav-overlay { transition: none; }
 }
+
+/* Wide screens: Projects use a wider container and three columns */
+@media (min-width: 1200px) {
+    #projects .wrap { max-width: 1400px; }
+    #projects .list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #projects .project h3 { white-space: normal; font-size: clamp(1.5rem, 1.9vw, 1.9rem); }
+}
+
+/* Projects: a flex row layout so an incomplete last row is centred (1 or 2 leftover cards) */
+@media (min-width: 860px) {
+    #projects .list { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; }
+    #projects .list > .project { flex: 0 0 calc((100% - 2rem) / 2); min-width: 0; }
+}
+@media (min-width: 1200px) {
+    #projects .list > .project { flex-basis: calc((100% - 4rem) / 3); }
+}
+
+/* Education: compact cards, two columns on wide screens (a leftover card is centred) */
+#education { padding-block: clamp(2.5rem, 5vw, 4rem); }
+#education .section-grid { gap: 2rem; }
+#education .list { gap: 1.25rem; }
+#education .entry { box-shadow: 6px 6px 0 var(--ink); }
+#education .entry:hover { box-shadow: 9px 9px 0 var(--ink); }
+#education .when { padding: 0.6rem 1rem; font-size: clamp(1.75rem, 3vw, 2.25rem); }
+#education .when small { font-size: 0.75rem; margin-top: 0.1rem; }
+#education .what { padding: 0.7rem 1.25rem; }
+#education .entry h3 { font-size: 1.2rem; }
+#education .entry .what p { margin-top: 0; }
+#education .entry .what .meta { font-size: 0.875rem; margin-top: 0.2rem; }
+
+@media (min-width: 640px) {
+    #education .entry { grid-template-columns: clamp(6.5rem, 14vw, 8.5rem) 1fr; }
+    #education .when { display: flex; flex-direction: column; justify-content: center; }
+}
+@media (max-width: 639px) {
+    #education .list { gap: 1rem; }
+    #education .entry { box-shadow: 5px 5px 0 var(--ink); }
+    #education .entry:hover { box-shadow: 5px 5px 0 var(--ink); }
+    #education .when { display: flex; align-items: baseline; gap: 0.6rem; padding: 0.4rem 1rem; font-size: 1.5rem; }
+    #education .when small { margin-top: 0; }
+    #education .what { padding: 0.6rem 1rem; }
+    #education .entry h3 { font-size: 1.05rem; }
+}
+@media (min-width: 1200px) {
+    #education .wrap { max-width: 1400px; }
+    #education .list { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem 2rem; }
+    #education .list > .entry { flex: 0 0 calc((100% - 2rem) / 2); min-width: 0; }
+}
+
+/* Stacked sections: each section pins in place and the next one slides over it.
+   A section taller than the screen pins when its bottom edge reaches the bottom of the screen, so nothing is cut off.
+   --h (section height) and --hdr (header height) are set from script.js. */
+main > section {
+    position: sticky;
+    top: min(var(--hdr, 4.75rem), calc(100vh - var(--h, 0px)));
+    top: min(var(--hdr, 4.75rem), calc(100dvh - var(--h, 0px)));
+}
+main > .strip { position: relative; }   /* the traits band scrolls over the hero */
+
+/* Pinned sections need a solid background, or the one underneath shows through */
+#detailed-about, #education, #projects { background-color: var(--bg); }
