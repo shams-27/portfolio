@@ -80,8 +80,8 @@ if (stripTrack && stripTrack.firstElementChild) {
 // values (.csv)" > Publish, then paste each tab's link below. Leave a value as ''
 // to keep whatever is already written in index.html for that section.
 const SHEETS = {
-    projects: '',
-    skills: '',
+    projects: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRXXuVB514-q76YWrnec50cXnoXEU24bUA6PvUFhc7UltmmnEWVFdWD3_GiwPnYXTp8EiRnTktvKeGb/pub?gid=0&single=true&output=csv',
+    skills: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRXXuVB514-q76YWrnec50cXnoXEU24bUA6PvUFhc7UltmmnEWVFdWD3_GiwPnYXTp8EiRnTktvKeGb/pub?gid=1426459479&single=true&output=csv',
 };
 
 // Minimal CSV parser (quoted fields, escaped quotes, line breaks inside quotes)
