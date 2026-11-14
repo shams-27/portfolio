@@ -1,7 +1,8 @@
-/* Neo-brutalism, dark: flat colour, 3px borders, hard offset shadows, zero radius. Static: no kinetic type, no sliding ribbons. */
+/* Neo-brutalism: flat colour, 3px borders, hard offset shadows, zero radius. Static: no kinetic type, no sliding ribbons. */
 :root {
     color-scheme: only light;
     --bg: #FAEEE7;
+    --bar: #F0DACD;            /* top bar: a darker shade of --bg */
     --ink: #111111;
     --card: #FBF7E6;
     --muted: #6b5d57;
@@ -10,6 +11,9 @@
     --c3: #A990C5;
     --error: #8a0010;
     --bw: 3px;
+    --soft: rgb(17 17 17 / 0.2);   /* soft cast shadow under the hard offset shadow */
+    --bevel: inset 0 2px 0 rgb(255 255 255 / 0.4), inset 0 -3px 0 rgb(17 17 17 / 0.08);   /* lit top edge, shaded bottom edge */
+    --press: inset 0 3px 0 rgb(17 17 17 / 0.18);   /* pressed-in look */
     --on: #111111;            /* text on coloured (accent) surfaces: always dark */
     --ink-rgb: 17 17 17;      /* ink as r g b, for the translucent background patterns */
     --line: var(--ink);
@@ -55,7 +59,7 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: var(--bg);
+    background: var(--bar);
     border-bottom: var(--bw) solid var(--ink);
 }
 
@@ -79,11 +83,11 @@ nav {
     background: var(--c1);
     color: var(--on);
     border: var(--bw) solid var(--ink);
-    box-shadow: 4px 4px 0 var(--ink);
+    box-shadow: 4px 4px 0 var(--ink), calc(4px * 1.6) calc(4px * 2.2) calc(4px * 2.4) var(--soft), var(--bevel);
     padding: 0.2rem 0.7rem;
     transition: transform 0.12s, box-shadow 0.12s;
 }
-.logo:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+.logo:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink), calc(2px * 1.6) calc(2px * 2.2) calc(2px * 2.4) var(--soft), var(--bevel); }
 
 .nav-links { display: flex; gap: 0.5rem; }
 .nav-links a {
@@ -93,8 +97,9 @@ nav {
     font-weight: 700;
     text-decoration: none;
     border: 2px solid transparent;
+    transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
 }
-.nav-links a:hover { background: var(--c1); color: var(--on); border-color: var(--ink); }
+.nav-links a:hover { background: var(--c1); color: var(--on); border-color: var(--ink); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink), calc(3px * 1.6) calc(3px * 2.2) calc(3px * 2.4) var(--soft), var(--bevel); }
 
 /* Desktop topbar: wider and larger */
 @media (min-width: 768px) {
@@ -157,10 +162,7 @@ nav {
 /* Hero: the name is the memorable thing */
 .hero {
     background-color: var(--bg);
-    background-image:
-        linear-gradient(rgb(var(--ink-rgb) / 0.06) 1px, transparent 1px),
-        linear-gradient(90deg, rgb(var(--ink-rgb) / 0.06) 1px, transparent 1px);
-    background-size: 56px 56px;
+    isolation: isolate;   /* the grid pseudo-element sits behind the content but above this background */
     overflow: hidden;
     min-height: calc(100vh - 4.75rem);   /* fallback */
     min-height: calc(100svh - 4.75rem);  /* 4.75rem = sticky header */
@@ -185,6 +187,7 @@ nav {
     border: var(--bw) solid var(--ink);
     padding: 0.2rem 0.9rem;
     margin-bottom: clamp(0.75rem, 2.5vh, 1.5rem);
+    box-shadow: 4px 4px 0 var(--ink), 6px 9px 10px var(--soft), var(--bevel);
     transform: rotate(-2deg);
 }
 
@@ -331,7 +334,7 @@ nav {
     box-shadow: 8px 8px 0 var(--ink);
     transform: rotate(2deg);
 }
-.trophy img { display: block; width: 100%; height: auto; border-bottom: var(--bw) solid var(--ink); }
+.trophy img { display: block; width: 100%; height: auto; aspect-ratio: 800 / 1091; object-fit: cover; border-bottom: var(--bw) solid var(--ink); }
 .trophy figcaption { padding: 0.7rem 0.9rem 0.8rem; background: var(--c1); color: var(--on); font-size: 0.9375rem; font-weight: 600; line-height: 1.35; }
 .trophy figcaption strong { display: block; margin-bottom: 0.15rem; font-family: var(--display); font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
 
@@ -611,7 +614,7 @@ footer p { max-width: 1100px; margin-inline: auto; }
         right: 0;
         flex-direction: column;
         gap: 0;
-        background: var(--bg);
+        background: var(--bar);
         border-bottom: var(--bw) solid var(--ink);
     }
     .nav-links.open { display: flex; }
@@ -649,7 +652,7 @@ footer p { max-width: 1100px; margin-inline: auto; }
     body { font-size: 1rem; line-height: 1.5; }
 
     nav { padding: 0.5rem var(--gutter); }
-    .logo { font-size: 1.4rem; padding: 0.1rem 0.6rem; box-shadow: 3px 3px 0 var(--ink); }
+    .logo { font-size: 1.4rem; padding: 0.1rem 0.6rem; box-shadow: 3px 3px 0 var(--ink), calc(3px * 1.6) calc(3px * 2.2) calc(3px * 2.4) var(--soft), var(--bevel); }
     .nav-toggle { width: 42px; height: 42px; padding: 0 9px; }
     .nav-links a { padding: 0.8rem var(--gutter); font-size: 1.125rem; }
 
@@ -743,13 +746,13 @@ footer p { max-width: 1100px; margin-inline: auto; }
 
 /* Mobile menu: coloured, boxed links */
 @media (max-width: 767px) {
-    .nav-toggle { background: var(--c1); box-shadow: 3px 3px 0 var(--ink); transition: transform 0.12s, box-shadow 0.12s, background 0.12s; }
-    .nav-toggle[aria-expanded="true"] { background: var(--c2); transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink); }
+    .nav-toggle { background: var(--c1); box-shadow: 3px 3px 0 var(--ink), calc(3px * 1.6) calc(3px * 2.2) calc(3px * 2.4) var(--soft), var(--bevel); transition: transform 0.12s, box-shadow 0.12s, background 0.12s; }
+    .nav-toggle[aria-expanded="true"] { background: var(--c2); transform: translate(3px, 3px); box-shadow: var(--press); }
 
     .nav-links {
         gap: 0.7rem;
         padding: 1rem var(--gutter) 1.25rem;
-        background-color: var(--bg);
+        background-color: var(--bar);
         background-image: radial-gradient(rgb(var(--ink-rgb) / 0.14) 1.5px, transparent 1.6px);
         background-size: 20px 20px;
     }
@@ -765,13 +768,13 @@ footer p { max-width: 1100px; margin-inline: auto; }
         background: var(--c1);
         color: var(--on);
         border: var(--bw) solid var(--ink);
-        box-shadow: 4px 4px 0 var(--ink);
+        box-shadow: 4px 4px 0 var(--ink), calc(4px * 1.6) calc(4px * 2.2) calc(4px * 2.4) var(--soft), var(--bevel);
         transition: transform 0.12s, box-shadow 0.12s, background 0.12s, color 0.12s;
     }
     .nav-links a::after { content: '\2192'; font-family: var(--sans); font-weight: 700; }
     .nav-links li:nth-child(3n + 2) a { background: var(--c2); }
     .nav-links li:nth-child(3n) a { background: var(--c3); }
-    .nav-links li a:hover, .nav-links li a:active { background: var(--ink); color: var(--bg); transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink); }
+    .nav-links li a:hover, .nav-links li a:active { background: var(--ink); color: var(--bg); transform: translate(4px, 4px); box-shadow: var(--press); }
 }
 
 /* Mobile menu: dim the page behind the open menu */
@@ -794,14 +797,32 @@ footer p { max-width: 1100px; margin-inline: auto; }
 /* Motion: only smooth scrolling, and only when allowed */
 @media (prefers-reduced-motion: no-preference) {
     html { scroll-behavior: smooth; }
-    .hero { animation: grid-drift 6s linear infinite; }
+    .hero::before { animation: grid-drift 6s linear infinite; will-change: transform; }
+}
+
+/* Hero grid: drawn on a pseudo-element one cell larger on every side, so it can drift by one cell without gaps */
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: -56px;
+    z-index: -1;
+    background-image:
+        linear-gradient(rgb(var(--ink-rgb) / 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(var(--ink-rgb) / 0.06) 1px, transparent 1px);
+    background-size: 56px 56px;
+    pointer-events: none;
 }
 
 /* Hero grid drifts diagonally; one full cell = seamless loop */
 @keyframes grid-drift {
-    from { background-position: 0 0; }
-    to { background-position: 56px 56px; }
+    to { transform: translate(56px, 56px); }
 }
+
+/* Once the next sections have slid over the hero, stop every animation inside it */
+.hero.is-covered::before,
+.hero.is-covered *,
+.hero.is-covered *::before,
+.hero.is-covered *::after { animation-play-state: paused !important; }
 
 @media (prefers-reduced-motion: reduce) {
     .entry, .project, .btn, .text-link, .logo, .back-to-top, .nav-overlay { transition: none; }
@@ -973,87 +994,8 @@ main > .strip { position: relative; }   /* the traits band scrolls over the hero
     to { opacity: 1; translate: 0 0; scale: 1; }
 }
 
-/* ------------------------------------------------------------------
-   Theme toggle (nav button)
-   ------------------------------------------------------------------ */
-.nav-end { display: flex; align-items: center; gap: 0.6rem; }
-
-.theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: none;
-    width: 46px;
-    height: 46px;
-    background: var(--c1);
-    color: var(--on);
-    border: var(--bw) solid var(--ink);
-    box-shadow: 3px 3px 0 var(--ink);
-    cursor: pointer;
-    transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
-}
-.theme-toggle:hover { background: var(--c2); transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
-.theme-toggle:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink); }
-.theme-toggle svg {
-    width: 22px;
-    height: 22px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2.5;
-    stroke-linecap: square;
-    stroke-linejoin: miter;
-}
-.theme-toggle .icon-sun { display: none; }
-
-@media (min-width: 768px) {
-    .nav-end { gap: 1rem; }
-    .theme-toggle { width: 52px; height: 52px; box-shadow: 4px 4px 0 var(--ink); }
-    .theme-toggle:hover { box-shadow: 2px 2px 0 var(--ink); }
-}
-@media (max-width: 639px) {
-    .nav-end { gap: 0.5rem; }
-    .theme-toggle { width: 42px; height: 42px; }
-    .theme-toggle svg { width: 20px; height: 20px; }
-}
-
-/* ------------------------------------------------------------------
-   Dark theme: ink-black surfaces, cream lines, neon accents.
-   Same flat colour, 3px borders, hard shadows; only the palette flips.
-   ------------------------------------------------------------------ */
-:root[data-theme="dark"] {
-    color-scheme: only dark;
-    --bg: #131118;
-    --ink: #F6EFEA;
-    --card: #1D1A24;
-    --muted: #B0A6B0;
-    --c1: #B6FF3B;   /* lime */
-    --c2: #FF4D94;   /* hot pink */
-    --c3: #A78BFA;   /* violet */
-    --ink-rgb: 246 239 234;
-}
-:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
-:root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
-
-/* The traits band and the Skills section are solid colour: keep their light-theme lines, text and chips */
-:root[data-theme="dark"] .strip,
-:root[data-theme="dark"] #skills {
-    --ink: #111111;
-    --ink-rgb: 17 17 17;
-    --bg: #FAEEE7;
-    --card: #FBF7E6;
-}
-
-/* A highlighter stripe behind light text is hard to read, so the bold words take the accent colour instead */
-:root[data-theme="dark"] .about-body strong { background: none; color: var(--c1); }
-
-:root[data-theme="dark"] footer { background: var(--card); color: var(--ink); }
-
-/* Short colour cross-fade while switching (not applied for reduced motion; see script.js) */
-html.theme-anim *,
-html.theme-anim *::before,
-html.theme-anim *::after {
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s, text-shadow 0.3s !important;
-}
+/* Nav wrapper (links + mobile menu button) */
+.nav-end { display: flex; align-items: center; }
 
 /* ------------------------------------------------------------------
    Project cards: scroll-in and hover polish
@@ -1086,4 +1028,102 @@ html.theme-anim *::after {
     .fact:hover { transform: translate(-4px, -4px); box-shadow: 12px 12px 0 var(--ink); }
     .trophy { transition: transform 0.25s var(--ease); }
     .trophy:hover { transform: rotate(0deg) scale(1.03); }
+}
+
+/* ------------------------------------------------------------------
+   Layout stability: the Skills and Projects lists are filled from Google Sheets after load.
+   A minimum height keeps the stacked sections from jumping when the rows arrive.
+   ------------------------------------------------------------------ */
+#projects .list { min-height: 22rem; }
+#skills .skills { min-height: 18rem; }
+
+/* ------------------------------------------------------------------
+   "Open in Chrome" prompt (Xiaomi / Redmi browser only; see script.js)
+   ------------------------------------------------------------------ */
+.chrome-prompt {
+    position: relative;
+    z-index: 110;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem var(--gutter);
+    background: var(--c3);
+    color: var(--on);
+    border-bottom: var(--bw) solid var(--ink);
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+.chrome-prompt[hidden] { display: none; }
+.chrome-prompt p { flex: 1; }
+.chrome-open {
+    padding: 0.35rem 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    background: var(--c1);
+    color: var(--on);
+    border: 2px solid var(--ink);
+}
+.chrome-close {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.4rem;
+    line-height: 1;
+    background: transparent;
+    color: var(--on);
+    border: 2px solid var(--ink);
+    cursor: pointer;
+}
+
+/* ------------------------------------------------------------------
+   Contact ("Get in touch")
+   ------------------------------------------------------------------ */
+#contact {
+    --sh: var(--c3);   /* violet: pink was too close to the peach background */
+    background-color: var(--c1);   /* pinned sections need a solid background */
+    background-image: radial-gradient(rgb(var(--ink-rgb) / 0.16) 1.5px, transparent 1.6px);
+    background-size: 22px 22px;
+    /* Fill the whole screen below the header, so the Projects section never shows above it */
+    display: flex;
+    align-items: center;
+    min-height: calc(100vh - var(--hdr, 4.75rem));    /* fallback */
+    min-height: calc(100svh - var(--hdr, 4.75rem));
+}
+#contact .wrap { width: 100%; }
+#contact .btn { --b-bg: var(--card); --b-hov: var(--c2); }
+#contact .text-link { --b-bg: var(--card); --b-hov: var(--c2); }
+
+.contact-body { max-width: 46rem; }
+.contact-lead { font-size: clamp(1.25rem, 2.4vw, 1.625rem); font-weight: 600; line-height: 1.35; }
+.contact-email {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-family: var(--display);
+    font-size: clamp(1.1rem, 4.6vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+    text-decoration-thickness: 3px;
+}
+.contact-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 1.5rem; margin-top: 1.75rem; }
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* Six nav links: tighten them on small laptops and tablets so they still fit one row */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .nav-links { gap: 0.25rem; }
+    .nav-links a { font-size: 1.15rem; padding: 0.45rem 0.7rem; }
+}
+
+@media (max-width: 639px) {
+    .contact-lead { font-size: 1.0625rem; }
+    .contact-email { margin-top: 1rem; }
+    .contact-actions { gap: 0.8rem 1rem; margin-top: 1.25rem; }
 }

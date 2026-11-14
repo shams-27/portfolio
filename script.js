@@ -1,42 +1,27 @@
-// Xiaomi/Redmi browser: hand the page over to Chrome (Android intent). Runs once per session;
-// if Chrome isn't installed or the intent is blocked, the page just stays where it is.
-(function openInChrome() {
+// Xiaomi/Redmi browser: offer to open the page in Chrome (Android intent) instead of forcing it.
+// If Chrome isn't installed the intent falls back to this same page, so nobody is stranded.
+(function offerChrome() {
+    const prompt = document.getElementById('chromePrompt');
+    const open = document.getElementById('chromeOpen');
+    const close = document.getElementById('chromeClose');
+    if (!prompt || !open || !close) return;
     if (!/Android/i.test(navigator.userAgent) || !/MiuiBrowser|XiaoMi/i.test(navigator.userAgent)) return;
-    try {
-        if (sessionStorage.getItem('chromeRedirect')) return;
-        sessionStorage.setItem('chromeRedirect', '1');
-    } catch { return; }
-    const { host, pathname, search } = window.location;
-    window.location.replace('intent://' + host + pathname + search + '#Intent;scheme=https;package=com.android.chrome;end');
+    try { if (sessionStorage.getItem('chromePromptDismissed')) return; } catch { /* storage unavailable */ }
+
+    const { host, pathname, search, href } = window.location;
+    open.href = 'intent://' + host + pathname + search + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent(href) + ';end';
+    prompt.hidden = false;
+
+    close.addEventListener('click', () => {
+        prompt.hidden = true;
+        try { sessionStorage.setItem('chromePromptDismissed', '1'); } catch { /* storage unavailable */ }
+    });
 })();
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Theme toggle: light by default, the choice is remembered (the saved theme is applied in <head> before paint)
-const themeToggle = document.getElementById('themeToggle');
-const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-const rootEl = document.documentElement;
-
-function applyTheme(dark) {
-    if (dark) rootEl.setAttribute('data-theme', 'dark');
-    else rootEl.removeAttribute('data-theme');
-    if (themeToggle) themeToggle.setAttribute('aria-pressed', String(dark));
-    if (themeColorMeta) themeColorMeta.setAttribute('content', dark ? '#131118' : '#FAEEE7');
-}
-
-applyTheme(rootEl.getAttribute('data-theme') === 'dark');
-
-if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-        const dark = rootEl.getAttribute('data-theme') !== 'dark';
-        if (!prefersReducedMotion) {
-            rootEl.classList.add('theme-anim');
-            setTimeout(() => rootEl.classList.remove('theme-anim'), 350);
-        }
-        applyTheme(dark);
-        try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch { /* storage unavailable */ }
-    });
-}
+// Dark mode was removed; clear any theme choice saved by an earlier visit
+try { localStorage.removeItem('theme'); } catch { /* storage unavailable */ }
 
 // Time-based hero greeting
 const greetingElement = document.getElementById('greeting');
@@ -80,8 +65,48 @@ if (navToggle && navLinks) {
     });
 }
 
+// Contact: copy the email address (clipboard API, with a fallback for older or non-secure contexts)
+const copyBtn = document.getElementById('copyEmail');
+if (copyBtn) {
+    const copyLabel = document.getElementById('copyEmailLabel');
+    const copyStatus = document.getElementById('copyStatus');
+    let copyTimer;
+
+    async function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+            return;
+        }
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        ta.remove();
+        if (!ok) throw new Error('copy failed');
+    }
+
+    function flash(message) {
+        copyLabel.textContent = message;
+        if (copyStatus) copyStatus.textContent = message;
+        clearTimeout(copyTimer);
+        copyTimer = setTimeout(() => {
+            copyLabel.textContent = 'Copy address';
+            if (copyStatus) copyStatus.textContent = '';
+        }, 2000);
+    }
+
+    copyBtn.addEventListener('click', () => {
+        copyText(copyBtn.dataset.email).then(() => flash('Copied'), () => flash('Copy failed'));
+    });
+}
+
 // Back-to-top button
 const backToTopBtn = document.getElementById('backToTop');
+const heroEl = document.querySelector('.hero');
 let scrollQueued = false;
 
 function onScroll() {
@@ -90,6 +115,7 @@ function onScroll() {
     requestAnimationFrame(() => {
         scrollQueued = false;
         if (backToTopBtn) backToTopBtn.classList.toggle('visible', window.scrollY > 400);
+        if (heroEl) heroEl.classList.toggle('is-covered', window.scrollY > heroEl.offsetHeight);
     });
 }
 
