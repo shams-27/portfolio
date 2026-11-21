@@ -536,6 +536,7 @@ main > .strip { position: relative; }
         grid-template-areas: "lead photo" "actions actions";
         gap: 1rem 1.1rem;
         align-items: start;
+        margin-top: 0;   /* base rule uses auto, which pushed this block to the bottom and left a gap under the name */
     }
     .hero-foot > div:first-child { display: contents; }
     .hero-lead { grid-area: lead; align-self: center; font-size: 1rem; }
