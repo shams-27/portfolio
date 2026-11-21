@@ -245,6 +245,7 @@ nav {
     aspect-ratio: 800 / 1091;
     object-fit: cover;
     background: var(--bar);
+    border: var(--rule) solid var(--black);
 }
 .trophy figcaption { margin-top: 0.6rem; padding-top: 0.6rem; border-top: var(--rule) solid var(--black); font-size: 0.875rem; line-height: 1.35; }
 .trophy figcaption strong { display: block; font-size: 0.9375rem; font-weight: 700; }
