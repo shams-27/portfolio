@@ -301,24 +301,36 @@ function renderProjects(rows) {
     }
 }
 
-// Skill name -> Simple Icons slug. The icons are monochrome SVGs from the Simple Icons package on jsDelivr, so they stay black like the rest of the page.
+// Skill name -> Devicon folder name. The icons are full-colour SVGs from the Devicon package on jsDelivr (the one place the site shows colours other than the red accent).
 // Names are matched lowercase with everything except letters, digits, + and # removed ("Node.js" -> "nodejs"). A skill with no match, or an icon that fails to load, keeps its text chip.
-const SKILL_ICON_BASE = 'https://cdn.jsdelivr.net/npm/simple-icons@13/icons/';
+const SKILL_ICON_BASE = 'https://cdn.jsdelivr.net/npm/devicon@2.18.0/icons/';
+// Devicon ships most icons as <slug>/<slug>-original.svg (full colour); these have no -original, so they use another variant
+const SKILL_ICON_VARIANT = { django: 'plain' };
+// Local override: Devicon's C is a washed-out grey-blue, so C uses icon-c.svg in the site root (Simple Icons' C path filled #00599C, the same blue as the C++ icon)
+const SKILL_ICON_LOCAL = { c: 'icon-c.svg' };
+// Logos that are a plain square (sharp corners) get .icon-round so their corners clear the circular chip
+const SKILL_ICON_ROUND = new Set(['javascript', 'typescript']);
+function skillIconUrl(slug) {
+    if (SKILL_ICON_LOCAL[slug]) return SKILL_ICON_LOCAL[slug];
+    return SKILL_ICON_BASE + slug + '/' + slug + '-' + (SKILL_ICON_VARIANT[slug] || 'original') + '.svg';
+}
 const SKILL_ICONS = {
     python: 'python', javascript: 'javascript', js: 'javascript', typescript: 'typescript', ts: 'typescript',
     html: 'html5', html5: 'html5', css: 'css3', css3: 'css3',
-    c: 'c', 'c++': 'cplusplus', cpp: 'cplusplus', 'c#': 'csharp', java: 'openjdk', kotlin: 'kotlin', dart: 'dart',
+    c: 'c', 'c++': 'cplusplus', cpp: 'cplusplus', 'c#': 'csharp', java: 'java', kotlin: 'kotlin', dart: 'dart',
     go: 'go', golang: 'go', rust: 'rust', php: 'php',
     mysql: 'mysql', postgresql: 'postgresql', postgres: 'postgresql', sqlite: 'sqlite', mongodb: 'mongodb', firebase: 'firebase',
-    bash: 'gnubash', shell: 'gnubash', shellscripting: 'gnubash', zsh: 'zsh',
+    bash: 'bash', shell: 'bash', shellscripting: 'bash', zsh: 'zsh',
     linux: 'linux', archlinux: 'archlinux', arch: 'archlinux', ubuntu: 'ubuntu', debian: 'debian', fedora: 'fedora', kali: 'kalilinux', kalilinux: 'kalilinux',
     git: 'git', github: 'github', gitlab: 'gitlab', docker: 'docker',
-    nodejs: 'nodedotjs', node: 'nodedotjs', react: 'react', nextjs: 'nextdotjs', vue: 'vuedotjs', vuejs: 'vuedotjs', angular: 'angular', svelte: 'svelte',
+    nodejs: 'nodejs', node: 'nodejs', react: 'react', nextjs: 'nextjs', vue: 'vuejs', vuejs: 'vuejs', angular: 'angular', svelte: 'svelte',
     tailwind: 'tailwindcss', tailwindcss: 'tailwindcss', bootstrap: 'bootstrap', express: 'express', django: 'django', flask: 'flask', fastapi: 'fastapi',
     flutter: 'flutter', npm: 'npm', vite: 'vite', vim: 'vim', neovim: 'neovim', nvim: 'neovim',
-    vscode: 'visualstudiocode', visualstudiocode: 'visualstudiocode', figma: 'figma', postman: 'postman',
+    vscode: 'vscode', visualstudiocode: 'vscode', figma: 'figma', postman: 'postman',
     jupyter: 'jupyter', numpy: 'numpy', pandas: 'pandas', latex: 'latex', markdown: 'markdown', cmake: 'cmake', gcc: 'gcc', nginx: 'nginx',
     wordpress: 'wordpress', selenium: 'selenium',
+    intellij: 'intellij', intellijidea: 'intellij', idea: 'intellij', canva: 'canva', mariadb: 'mariadb',
+    antigravity: 'antigravity', googleantigravity: 'antigravity',
 };
 
 function skillIconSlug(name) {
@@ -332,8 +344,6 @@ function skillText(s) {
     abbr.title = s.full_name;
     return abbr;
 }
-
-let skillFilter = 'All';
 
 function renderSkills(rows) {
     const dl = document.querySelector('#skills .skills');
@@ -349,7 +359,6 @@ function renderSkills(rows) {
 
     const rowsEls = [...groups].map(([category, skills]) => {
         const row = el('div', 'skill-row');
-        row.dataset.category = category;
         row.appendChild(el('dt', 'wrap', category));
 
         const ul = el('ul', 'group');
@@ -360,14 +369,16 @@ function renderSkills(rows) {
                 // Icon only; the name stays available as alt text and as the hover tooltip
                 const label = s.full_name || s.skill;
                 const img = el('img');
-                img.src = SKILL_ICON_BASE + slug + '.svg';
+                img.src = skillIconUrl(slug);
+                if (SKILL_ICON_ROUND.has(slug)) img.classList.add('icon-round');
                 img.alt = label;
-                img.title = label;
+                li.dataset.name = label;   // shown as a pop-out label on hover (CSS .has-icon::after)
                 img.width = 28;
                 img.height = 28;
                 img.decoding = 'async';
                 img.addEventListener('error', () => {
                     li.classList.remove('has-icon');
+                    delete li.dataset.name;
                     img.replaceWith(skillText(s));
                 }, { once: true });
                 li.classList.add('has-icon');
@@ -387,35 +398,6 @@ function renderSkills(rows) {
     });
 
     dl.replaceChildren(...rowsEls);
-
-    // Category filter above the list; it is rebuilt on every render, and the choice survives the cached-then-fresh double render
-    document.querySelector('#skills .skill-filter')?.remove();
-    const names = ['All', ...groups.keys()];
-    if (!names.includes(skillFilter)) skillFilter = 'All';
-    const bar = el('div', 'skill-filter');
-    bar.setAttribute('role', 'group');
-    bar.setAttribute('aria-label', 'Filter skills by category');
-
-    const applyFilter = () => {
-        let first = true;
-        rowsEls.forEach((row) => {
-            const show = skillFilter === 'All' || row.dataset.category === skillFilter;
-            row.hidden = !show;
-            row.classList.toggle('first', show && first);   // the first visible row gets the heavy top rule
-            if (show) first = false;
-        });
-        bar.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.category === skillFilter)));
-    };
-
-    names.forEach((name) => {
-        const b = el('button', '', name);
-        b.type = 'button';
-        b.dataset.category = name;
-        b.addEventListener('click', () => { skillFilter = name; applyFilter(); });
-        bar.appendChild(b);
-    });
-    dl.before(bar);
-    applyFilter();
 }
 
 // Show the last good copy instantly, then refresh from the sheet.
@@ -448,6 +430,62 @@ revealOnScroll([...document.querySelectorAll('.entry, .stat, .fact, .trophy')]);
 
 loadSheet('projects', renderProjects);
 loadSheet('skills', renderSkills);
+
+// About stats: count-up on first reveal. The number ascends from zero to its value (3.90 runs 0.00 → 3.90, 100+ runs 000 → 100, 4th runs 0th → 4th) with an ease-out,
+// zero-padded to the final width so the mono font never shifts the suffix. The real text stays in a visually hidden span for screen readers.
+function shuffleStats() {
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) return;
+    const DURATION = 1400;
+
+    const items = new Map();
+    document.querySelectorAll('.stat dd').forEach((dd) => {
+        const final = dd.textContent.trim();
+        const m = final.match(/^(\d+)(?:\.(\d+))?(.*)$/);   // number, optional decimals, suffix ("+", "th")
+        if (!m) return;
+        const intLen = m[1].length;
+        const decimals = m[2] ? m[2].length : 0;
+        const target = parseFloat(m[1] + (m[2] ? '.' + m[2] : ''));
+        // Counting unit: the smallest unit the number is written in (3.90 in hundredths, 100 and 4 in ones). The jumps themselves are random multiples of it (see frame())
+        const step = Math.pow(10, -decimals);
+        const suffix = m[3];
+        const format = (v) => {
+            const [i, d] = v.toFixed(decimals).split('.');
+            return i.padStart(intLen, '0') + (d !== undefined ? '.' + d : '') + suffix;
+        };
+        const vis = el('span');
+        vis.setAttribute('aria-hidden', 'true');
+        vis.textContent = format(0);
+        dd.replaceChildren(el('span', 'visually-hidden', final), vis);
+        items.set(dd, { final, target, step, format, vis });
+    });
+
+    const io = new IntersectionObserver((entries) => {
+        entries.filter((e) => e.isIntersecting).forEach((entry) => {
+            io.unobserve(entry.target);
+            const { final, target, step, format, vis } = items.get(entry.target);
+            const start = performance.now();
+            // Random ascending jumps: every 60ms the value leaps forward by a random amount, never past the eased ceiling, so it
+            // always climbs, bigger numbers skip further, and it lands exactly on the final text when the time is up
+            let shown = 0;
+            let last = 0;
+            const frame = (now) => {
+                const p = Math.min(1, (now - start) / DURATION);
+                if (p >= 1) { vis.textContent = final; return; }
+                if (now - last >= 60) {
+                    last = now;
+                    const eased = 1 - Math.pow(1 - p, 3);   // ease-out cubic
+                    const ceiling = Math.floor(target * eased / step + 1e-9);
+                    if (ceiling > shown) shown += 1 + Math.floor(Math.random() * (ceiling - shown));
+                    vis.textContent = format(shown * step);
+                }
+                requestAnimationFrame(frame);
+            };
+            requestAnimationFrame(frame);
+        });
+    }, { threshold: 0.6 });
+    items.forEach((_, dd) => io.observe(dd));
+}
+shuffleStats();
 
 // ---------------------------------------------------------------
 // Stacked sections
