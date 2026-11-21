@@ -347,6 +347,10 @@ nav {
 }
 @media (hover: hover) { .skill-row li:hover { background: var(--black); color: var(--on); } }
 abbr[title] { text-decoration: none; cursor: help; }
+/* Icon chips: the skill is a monochrome icon; the name is its alt text and tooltip. On hover the chip fills black, so the icon is inverted to white. */
+.skill-row li.has-icon { display: flex; padding: 0.5rem; }
+.skill-row li img { display: block; width: 28px; height: 28px; }
+@media (hover: hover) { .skill-row li:hover img { filter: invert(1); } }
 .skill-row[hidden] { display: none; }
 .skill-row.first { border-top-width: var(--rule); }
 .skill-filter { max-width: 1400px; margin: clamp(2rem, 5vw, 3.5rem) auto 0; padding-inline: var(--gutter); display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -643,6 +647,7 @@ main > .strip { position: relative; }
     .skills { margin-top: 1.5rem; }
     .skill-row { padding: 0.9rem 0 1.1rem; }
     .skill-row li { font-size: 0.9375rem; padding: 0.3rem 0.65rem; }
+    .skill-row li img { width: 24px; height: 24px; }
     .skill-filter { margin-top: 1.5rem; }
     .skill-filter button { font-size: 0.9375rem; padding: 0.35rem 0.7rem; }
 
@@ -687,6 +692,7 @@ main > .strip { position: relative; }
     .entry .what .desc { font-size: 1.125rem; }
     .skill-row dt, .skill-row dt.wrap { font-size: 1.1875rem; }
     .skill-row li { font-size: 1.1875rem; }
+    .skill-row li img { width: 32px; height: 32px; }
     .stack { font-size: 1rem; }
     .project-index { font-size: 1rem; }
     .skill-filter button { font-size: 1.1875rem; }
@@ -724,6 +730,7 @@ main > .strip { position: relative; }
         }
         .btn { background-color: var(--black); background-image: linear-gradient(var(--accent), var(--accent)); }
         .text-link, .skill-row li { background-color: transparent; background-image: linear-gradient(var(--black), var(--black)); }
+        .skill-row li img { transition: filter 0.35s var(--ease); }
         /* The base :hover rules use the `background` shorthand, which resets the image, so the image is repeated here */
         .btn:hover { background-color: var(--black); background-image: linear-gradient(var(--accent), var(--accent)); background-size: 100% 100%; }
         .text-link:hover, .skill-row li:hover { background-color: transparent; background-image: linear-gradient(var(--black), var(--black)); background-size: 100% 100%; }

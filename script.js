@@ -301,6 +301,38 @@ function renderProjects(rows) {
     }
 }
 
+// Skill name -> Simple Icons slug. The icons are monochrome SVGs from the Simple Icons package on jsDelivr, so they stay black like the rest of the page.
+// Names are matched lowercase with everything except letters, digits, + and # removed ("Node.js" -> "nodejs"). A skill with no match, or an icon that fails to load, keeps its text chip.
+const SKILL_ICON_BASE = 'https://cdn.jsdelivr.net/npm/simple-icons@13/icons/';
+const SKILL_ICONS = {
+    python: 'python', javascript: 'javascript', js: 'javascript', typescript: 'typescript', ts: 'typescript',
+    html: 'html5', html5: 'html5', css: 'css3', css3: 'css3',
+    c: 'c', 'c++': 'cplusplus', cpp: 'cplusplus', 'c#': 'csharp', java: 'openjdk', kotlin: 'kotlin', dart: 'dart',
+    go: 'go', golang: 'go', rust: 'rust', php: 'php',
+    mysql: 'mysql', postgresql: 'postgresql', postgres: 'postgresql', sqlite: 'sqlite', mongodb: 'mongodb', firebase: 'firebase',
+    bash: 'gnubash', shell: 'gnubash', shellscripting: 'gnubash', zsh: 'zsh',
+    linux: 'linux', archlinux: 'archlinux', arch: 'archlinux', ubuntu: 'ubuntu', debian: 'debian', fedora: 'fedora', kali: 'kalilinux', kalilinux: 'kalilinux',
+    git: 'git', github: 'github', gitlab: 'gitlab', docker: 'docker',
+    nodejs: 'nodedotjs', node: 'nodedotjs', react: 'react', nextjs: 'nextdotjs', vue: 'vuedotjs', vuejs: 'vuedotjs', angular: 'angular', svelte: 'svelte',
+    tailwind: 'tailwindcss', tailwindcss: 'tailwindcss', bootstrap: 'bootstrap', express: 'express', django: 'django', flask: 'flask', fastapi: 'fastapi',
+    flutter: 'flutter', npm: 'npm', vite: 'vite', vim: 'vim', neovim: 'neovim', nvim: 'neovim',
+    vscode: 'visualstudiocode', visualstudiocode: 'visualstudiocode', figma: 'figma', postman: 'postman',
+    jupyter: 'jupyter', numpy: 'numpy', pandas: 'pandas', latex: 'latex', markdown: 'markdown', cmake: 'cmake', gcc: 'gcc', nginx: 'nginx',
+    wordpress: 'wordpress', selenium: 'selenium',
+};
+
+function skillIconSlug(name) {
+    return SKILL_ICONS[(name || '').toLowerCase().replace(/[^a-z0-9+#]/g, '')] || '';
+}
+
+// The text version of a skill: an <abbr> with the full name as tooltip when the sheet has one
+function skillText(s) {
+    if (!s.full_name) return document.createTextNode(s.skill);
+    const abbr = el('abbr', '', s.skill);
+    abbr.title = s.full_name;
+    return abbr;
+}
+
 let skillFilter = 'All';
 
 function renderSkills(rows) {
@@ -323,12 +355,25 @@ function renderSkills(rows) {
         const ul = el('ul', 'group');
         skills.forEach((s) => {
             const li = el('li');
-            if (s.full_name) {
-                const abbr = el('abbr', '', s.skill);
-                abbr.title = s.full_name;
-                li.appendChild(abbr);
+            const slug = skillIconSlug(s.skill) || skillIconSlug(s.full_name);
+            if (slug) {
+                // Icon only; the name stays available as alt text and as the hover tooltip
+                const label = s.full_name || s.skill;
+                const img = el('img');
+                img.src = SKILL_ICON_BASE + slug + '.svg';
+                img.alt = label;
+                img.title = label;
+                img.width = 28;
+                img.height = 28;
+                img.decoding = 'async';
+                img.addEventListener('error', () => {
+                    li.classList.remove('has-icon');
+                    img.replaceWith(skillText(s));
+                }, { once: true });
+                li.classList.add('has-icon');
+                li.appendChild(img);
             } else {
-                li.textContent = s.skill;
+                li.appendChild(skillText(s));
             }
             ul.appendChild(li);
         });
