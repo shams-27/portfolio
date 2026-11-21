@@ -398,8 +398,8 @@ async function loadSheet(name, render) {
     }
 }
 
-// Education entries, About facts and the trophy photo (the project cards are handled in renderProjects)
-revealOnScroll([...document.querySelectorAll('.entry, .fact, .trophy')]);
+// Education entries, About stats and facts, and the trophy photo (the project cards are handled in renderProjects)
+revealOnScroll([...document.querySelectorAll('.entry, .stat, .fact, .trophy')]);
 
 loadSheet('projects', renderProjects);
 loadSheet('skills', renderSkills);
