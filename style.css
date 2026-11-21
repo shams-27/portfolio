@@ -146,6 +146,10 @@ nav {
 .text-link { color: var(--ink); background: transparent; }
 .text-link:hover { background: var(--black); color: var(--on); }
 .icon-svg { width: 16px; height: 16px; }
+.icon-check { display: none; }
+.btn.copied { background-color: var(--accent); border-color: var(--accent); }
+.btn.copied .icon-copy { display: none; }
+.btn.copied .icon-check { display: block; }
 
 .group { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 
@@ -187,6 +191,15 @@ nav {
 .hero-foot { display: grid; gap: clamp(1.25rem, 3vh, 2.5rem); align-items: end; margin-top: auto; }
 .hero-lead { max-width: 30ch; font-size: clamp(1.25rem, 2.2vw, 1.75rem); font-weight: 500; line-height: 1.25; letter-spacing: -0.015em; }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: clamp(1rem, 3vh, 2rem); }
+/* Hero buttons are icon-only on every screen; the text stays in .label for screen readers and in the title tooltip */
+.hero-actions .btn, .hero-actions .text-link { position: relative; justify-content: center; padding: 0.9rem; border-radius: 50%; }
+.hero-actions .icon-svg { width: 24px; height: 24px; }
+.hero-actions .label { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (min-width: 860px) {
+    .hero-actions { gap: 1rem; }
+    .hero-actions .btn, .hero-actions .text-link { padding: 1.15rem; }
+    .hero-actions .icon-svg { width: 32px; height: 32px; }
+}
 
 .hero-photo { width: min(clamp(6rem, 24vh, 13rem), 60%); }
 .hero-photo img {
@@ -297,7 +310,11 @@ nav {
 .entry .what p { margin-top: 0.1rem; }
 .entry .what .meta { margin-top: 0.35rem; font-family: var(--mono); font-size: 0.8125rem; font-weight: 500; color: var(--muted); }
 .entry .what .desc { margin-top: 0.5rem; font-size: 1rem; line-height: 1.5; }
-.tree > li + li { margin-top: 1.25rem; padding-top: 1.25rem; border-top: var(--hair) solid var(--soft); }
+/* Experience timeline: a round red marker per role, joined by a black rail */
+.tree > li { position: relative; padding-left: 2rem; }
+.tree > li + li { margin-top: 1.5rem; }
+.tree > li::before { content: ''; position: absolute; left: 0; top: 0.3rem; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+.tree > li:not(:last-child)::after { content: ''; position: absolute; left: 5px; top: calc(0.3rem + 12px); bottom: -1.8rem; width: 2px; background: var(--black); transform-origin: 0 0; }
 
 /* Skills: full-width ruled rows, category left, chips right */
 #skills { background-color: var(--bar); padding-bottom: var(--section); }
@@ -316,6 +333,24 @@ nav {
 }
 @media (hover: hover) { .skill-row li:hover { background: var(--black); color: var(--on); } }
 abbr[title] { text-decoration: none; cursor: help; }
+.skill-row[hidden] { display: none; }
+.skill-row.first { border-top-width: var(--rule); }
+.skill-filter { max-width: 1400px; margin: clamp(2rem, 5vw, 3.5rem) auto 0; padding-inline: var(--gutter); display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.skill-filter + .skills { margin-top: 1.5rem; }
+.skill-filter button {
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.2;
+    padding: 0.45rem 0.9rem;
+    color: var(--ink);
+    background: transparent;
+    border: var(--rule) solid var(--black);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+@media (hover: hover) { .skill-filter button:hover { background: var(--black); color: var(--on); } }
+.skill-filter button[aria-pressed="true"] { background: var(--black); color: var(--on); }
 @media (min-width: 860px) {
     .skill-row { grid-template-columns: repeat(12, minmax(0, 1fr)); }
     .skill-row dt { grid-column: 1 / 5; }
@@ -326,12 +361,17 @@ abbr[title] { text-decoration: none; cursor: help; }
 #projects .section-grid > .sec-title { grid-row: auto; }
 #projects .section-grid > .list { grid-column: 1 / -1; margin-top: 2.5rem; }
 .project { display: flex; flex-direction: column; padding-top: 1rem; }
+.project-head { display: flex; align-items: baseline; gap: 0.75rem; }
+.project-index { font-family: var(--mono); font-size: 0.875rem; font-weight: 700; color: var(--accent); }
 .project h3 { font-size: clamp(1.5rem, 2vw, 2rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.035em; overflow-wrap: anywhere; }
 .project-info { display: flex; flex-direction: column; flex: 1; padding: 0.9rem 0 1.5rem; }
 .project-desc { max-width: 52ch; }
-.stack { margin-top: 0.75rem; font-family: var(--mono); font-size: 0.8125rem; font-weight: 500; color: var(--muted); }
+.stack { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; font-family: var(--mono); font-size: 0.8125rem; font-weight: 500; color: var(--muted); }
+.stack li { padding: 0.15rem 0.55rem; border: var(--hair) solid var(--black); line-height: 1.4; }
 .project-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: auto; padding-top: 1.25rem; }
 .project-links a { padding-block: 0.35rem; font-size: 1rem; font-weight: 600; transition: color 0.15s; }
+.project-links a::after { content: '\2197'; display: inline-block; margin-left: 0.3em; transition: translate 0.2s var(--ease); }
+@media (hover: hover) { .project-links a:hover::after { translate: 2px -2px; } }
 .project-links a:hover { color: var(--accent); }
 @media (hover: hover) { .project:hover h3 { color: var(--accent); } }
 .project:focus-within h3 { color: var(--accent); }
@@ -587,6 +627,8 @@ main > .strip { position: relative; }
     .skills { margin-top: 1.5rem; }
     .skill-row { padding: 0.9rem 0 1.1rem; }
     .skill-row li { font-size: 0.9375rem; padding: 0.3rem 0.65rem; }
+    .skill-filter { margin-top: 1.5rem; }
+    .skill-filter button { font-size: 0.9375rem; padding: 0.35rem 0.7rem; }
 
     .project h3 { font-size: clamp(1.35rem, 6vw, 1.6rem); }
     .project-links { padding-top: 1rem; }
@@ -630,6 +672,8 @@ main > .strip { position: relative; }
     .skill-row dt, .skill-row dt.wrap { font-size: 1.1875rem; }
     .skill-row li { font-size: 1.1875rem; }
     .stack { font-size: 1rem; }
+    .project-index { font-size: 1rem; }
+    .skill-filter button { font-size: 1.1875rem; }
     .project-links a { font-size: 1.125rem; }
     footer { font-size: 1.0625rem; }
 }
@@ -640,20 +684,88 @@ main > .strip { position: relative; }
 /* Motion: smooth scrolling, one page-load entrance for the hero, scroll-in for cards; all gated */
 @media (prefers-reduced-motion: no-preference) {
     html { scroll-behavior: smooth; }
-    #greeting, .hero h1 .line, .hero-lead, .hero-actions, .hero-photo { animation: hero-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
-    .hero h1 .line:nth-child(1) { animation-delay: 0.15s; }
-    .hero h1 .line:nth-child(2) { animation-delay: 0.3s; }
-    .hero-photo { animation-delay: 0.45s; }
+    #greeting, .hero-lead, .hero-actions { animation: hero-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    #greeting::before { animation: pop 0.5s var(--ease) 0.1s both; transform-origin: 0 50%; }
+    /* Hero name: each line rises out of a mask; the red full stop pops in last */
+    .hero h1 .line { overflow: hidden; }
+    .hero h1 .line > span { display: inline-block; animation: line-up 0.95s var(--ease) both; }
+    .hero h1 .line:nth-child(1) > span { animation-delay: 0.15s; }
+    .hero h1 .line:nth-child(2) > span { animation-delay: 0.3s; }
+    .hero h1 .line:nth-child(2)::after { display: inline-block; transform-origin: 0 100%; animation: pop 0.5s var(--ease) 1s both; }
+    .hero-photo { animation: wipe-up 1s var(--ease) 0.45s both; }
     .hero-lead { animation-delay: 0.55s; }
     .hero-actions { animation-delay: 0.65s; }
+    .strip { animation: wipe-x 0.9s var(--ease) 0.7s both; }
+    /* Signature underline draws itself once on load */
+    .logo::after { animation: wipe-x 0.9s var(--ease) 0.6s both; }
+    /* Sweep fills on hover instead of an instant colour swap */
+    @media (hover: hover) {
+        .btn, .text-link, .skill-row li {
+            background-repeat: no-repeat;
+            background-position: 0 0;
+            background-size: 0% 100%;
+            transition: background-size 0.35s var(--ease), color 0.35s, border-color 0.35s;
+        }
+        .btn { background-color: var(--black); background-image: linear-gradient(var(--accent), var(--accent)); }
+        .text-link, .skill-row li { background-color: transparent; background-image: linear-gradient(var(--black), var(--black)); }
+        /* The base :hover rules use the `background` shorthand, which resets the image, so the image is repeated here */
+        .btn:hover { background-color: var(--black); background-image: linear-gradient(var(--accent), var(--accent)); background-size: 100% 100%; }
+        .text-link:hover, .skill-row li:hover { background-color: transparent; background-image: linear-gradient(var(--black), var(--black)); background-size: 100% 100%; }
+    }
 
     /* script.js adds .will-reveal / .revealed only when motion is allowed and removes them once the card has landed */
     .will-reveal { opacity: 0; translate: 0 1.5rem; }
     .revealed { animation: card-in 0.6s var(--ease) var(--reveal-delay, 0ms) both; }
 }
 @keyframes hero-in { from { opacity: 0; translate: 0 2rem; } to { opacity: 1; translate: 0 0; } }
+@keyframes line-up { from { translate: 0 105%; } to { translate: 0 0; } }
+@keyframes pop { from { scale: 0; } to { scale: 1; } }
+@keyframes wipe-up { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes wipe-x { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes title-wipe { from { clip-path: inset(-0.3em 100% -0.3em -0.1em); } to { clip-path: inset(-0.3em -0.1em -0.3em -0.1em); } }
+@keyframes rule-draw { from { scale: 0 1; } to { scale: 1 1; } }
+@keyframes progress { from { scale: 0 1; } to { scale: 1 1; } }
+@keyframes rail-draw { from { scale: 1 0; } to { scale: 1 1; } }
+
+/* Scroll-driven motion: pure CSS, only where the browser supports it (otherwise everything stays static) */
+@media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+        /* Red progress line along the bottom edge of the header */
+        header::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -2px;
+            height: 2px;
+            background: var(--accent);
+            transform-origin: 0 50%;
+            animation: progress linear both;
+            animation-timeline: scroll(root);
+        }
+        /* Timeline rail grows down to the next role */
+        .tree > li:not(:last-child)::after { animation: rail-draw linear both; animation-timeline: view(); animation-range: entry 0% entry 80%; }
+        /* Section titles wipe in from the left */
+        .sec-title { animation: title-wipe linear both; animation-timeline: view(); animation-range: entry 0% entry 55%; }
+        /* Ruled lines draw across as their entry scrolls in; the real border goes transparent so the pseudo-element is the visible rule */
+        .entry, .fact, .project { position: relative; border-top-color: transparent; }
+        .entry::before, .fact::before, .project::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: calc(var(--rule) * -1);
+            height: var(--rule);
+            background: var(--black);
+            transform-origin: 0 50%;
+            animation: rule-draw linear both;
+            animation-timeline: view();
+            animation-range: entry 0% entry 45%;
+        }
+    }
+}
 @keyframes card-in { from { opacity: 0; translate: 0 1.5rem; } to { opacity: 1; translate: 0 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-    .btn, .text-link, .nav-links a, .back-to-top, .nav-overlay, .skill-row li { transition: none; }
+    .btn, .text-link, .nav-links a, .back-to-top, .nav-overlay, .skill-row li, .skill-filter button, .project-links a::after { transition: none; }
 }

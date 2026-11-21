@@ -89,18 +89,20 @@ if (copyBtn) {
         if (!ok) throw new Error('copy failed');
     }
 
-    function flash(message) {
+    function flash(message, ok) {
+        copyBtn.classList.toggle('copied', Boolean(ok));
         copyLabel.textContent = message;
         if (copyStatus) copyStatus.textContent = message;
         clearTimeout(copyTimer);
         copyTimer = setTimeout(() => {
             copyLabel.textContent = 'Copy address';
+            copyBtn.classList.remove('copied');
             if (copyStatus) copyStatus.textContent = '';
         }, 2000);
     }
 
     copyBtn.addEventListener('click', () => {
-        copyText(copyBtn.dataset.email).then(() => flash('Copied'), () => flash('Copy failed'));
+        copyText(copyBtn.dataset.email).then(() => flash('Copied', true), () => flash('Copy failed'));
     });
 }
 
@@ -256,16 +258,23 @@ function renderProjects(rows) {
         return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
     });
 
-    const cards = items.map((p) => {
+    const cards = items.map((p, i) => {
         const card = el('article', 'project');
 
         const head = el('div', 'project-head');
+        head.appendChild(el('span', 'project-index', String(i + 1).padStart(2, '0')));
         head.appendChild(el('h3', '', p.name));
         card.appendChild(head);
 
         const info = el('div', 'project-info');
         if (p.description) info.appendChild(el('p', 'project-desc', p.description));
-        if (p.stack) info.appendChild(el('p', 'stack', p.stack));
+        if (p.stack) {
+            // "HTML, CSS, JS" becomes one chip per technology
+            const chips = el('ul', 'stack');
+            p.stack.split(/[,;|\u00B7\u2022]+/).map((s) => s.trim()).filter(Boolean)
+                .forEach((s) => chips.appendChild(el('li', '', s)));
+            info.appendChild(chips);
+        }
 
         const links = el('div', 'project-links');
         [['Live demo', p.live_url], ['View on GitHub', p.github_url]].forEach(([label, href]) => {
@@ -292,6 +301,8 @@ function renderProjects(rows) {
     }
 }
 
+let skillFilter = 'All';
+
 function renderSkills(rows) {
     const dl = document.querySelector('#skills .skills');
     if (!dl) return;
@@ -306,6 +317,7 @@ function renderSkills(rows) {
 
     const rowsEls = [...groups].map(([category, skills]) => {
         const row = el('div', 'skill-row');
+        row.dataset.category = category;
         row.appendChild(el('dt', 'wrap', category));
 
         const ul = el('ul', 'group');
@@ -330,6 +342,35 @@ function renderSkills(rows) {
     });
 
     dl.replaceChildren(...rowsEls);
+
+    // Category filter above the list; it is rebuilt on every render, and the choice survives the cached-then-fresh double render
+    document.querySelector('#skills .skill-filter')?.remove();
+    const names = ['All', ...groups.keys()];
+    if (!names.includes(skillFilter)) skillFilter = 'All';
+    const bar = el('div', 'skill-filter');
+    bar.setAttribute('role', 'group');
+    bar.setAttribute('aria-label', 'Filter skills by category');
+
+    const applyFilter = () => {
+        let first = true;
+        rowsEls.forEach((row) => {
+            const show = skillFilter === 'All' || row.dataset.category === skillFilter;
+            row.hidden = !show;
+            row.classList.toggle('first', show && first);   // the first visible row gets the heavy top rule
+            if (show) first = false;
+        });
+        bar.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.category === skillFilter)));
+    };
+
+    names.forEach((name) => {
+        const b = el('button', '', name);
+        b.type = 'button';
+        b.dataset.category = name;
+        b.addEventListener('click', () => { skillFilter = name; applyFilter(); });
+        bar.appendChild(b);
+    });
+    dl.before(bar);
+    applyFilter();
 }
 
 // Show the last good copy instantly, then refresh from the sheet.
