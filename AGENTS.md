@@ -11,8 +11,8 @@ Static single-page personal portfolio for Shams Kabir (`https://shams.swe.bd/`),
 ├── index.html       # Semantic single-page markup, SEO/OG tags, inline SVGs, and section shells
 ├── style.css        # Swiss Style tokens, 12-column grid, sticky stacking, and animations
 ├── script.js        # Google Sheets CSV parser/cache, sticky height observer, anchor scroll, UI controls
-├── Shams.jpg        # Hero portrait (800x1000, 4:5 crop) in .hero-photo
-├── achievement.jpg  # DIU CodeTrap Spring 2025 4th-place trophy photo (800x1091) in #detailed-about
+├── Shams.jpg        # Hero portrait (800x1000, 4:5 crop) in .hero-photo; Shams-400.jpg is the 400px srcset variant
+├── achievement.jpg  # DIU CodeTrap Spring 2025 4th-place trophy photo (960x1310, cropped to the trophy) in #detailed-about; achievement-480.jpg is the 480px srcset variant
 ├── og-image.png     # 1200x630 Open Graph / Twitter social preview card (still the old dark neo-brutalist design; regenerate in Swiss Style)
 └── Shams.jpeg       # Unused portrait asset in root; do not delete unless asked
 ```
@@ -46,6 +46,7 @@ python3 -m http.server 8000
 * **Async layout stability**: Keep `min-height` on `#projects .list` (`22rem`) and `#skills .skills` (`18rem`) so sticky sections do not jump when CSV rows load.
 * **Hero**: The animated background grid and the `.hero.is-covered` scroll toggle were removed with the neo-brutalist theme; the hero is static apart from the entrance animation. `.hero-photo img` is a 4:5 crop with `object-fit: cover`; keep the 4:5 ratio when swapping the image. On desktop it sits in columns 9–12 and is capped at `56vh` wide so it fits the first screen.
 * **Hero on phones (≤639px)**: the lead text and the portrait sit side by side in a two-column grid; the lead is vertically centred (`align-self: center`) against the portrait. Keep that alignment when editing.
+* **Image sizing**: Photos are pre-resized (Lanczos, light sharpening, quality 82) and served with `srcset`/`sizes`. Never let the browser shrink a large original to a small slot: a glittery or detailed photo (the trophy) turns noisy. When swapping a photo, export it at about 2x its largest display width, plus a half-size variant, and update `width`/`height` and the CSS `aspect-ratio` to match.
 * **Traits strip**: On desktop the items are spaced evenly with absolutely positioned square separators; below 860px `script.js` duplicates the list and CSS loops it as a marquee (swipeable under reduced motion). The strip is outside the sticky stack (`position: relative`) and scrolls over the hero.
 * **About on small screens**: Below 860px the trophy photo floats right and text wraps around it; from 860px it is the second column of `.about-top`. Keep the `figure` before the text in the markup.
 * **Contact fills the screen**: `#contact` has `min-height` of one viewport minus the header so Projects never shows above it; keep it when editing.
