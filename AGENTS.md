@@ -8,12 +8,12 @@ Static single-page personal portfolio for Shams Kabir (`https://shams.swe.bd/`),
 
 ```text
 .
-├── index.html       # Semantic single-page markup, SEO/OG tags, inline SVGs, and section shells
+├── index.html       # Semantic single-page markup, SEO/OG tags, JSON-LD Person data, inline SVGs, and section shells
 ├── style.css        # Swiss Style tokens, 12-column grid, sticky stacking, and animations
 ├── script.js        # Google Sheets CSV parser/cache, sticky height observer, anchor scroll, UI controls
 ├── Shams.jpg        # Hero portrait (800x1000, 4:5 crop) in .hero-photo; Shams-400.jpg is the 400px srcset variant
 ├── achievement.jpg  # DIU CodeTrap Spring 2025 4th-place trophy photo (960x1310, cropped to the trophy) in #detailed-about; achievement-480.jpg is the 480px srcset variant
-├── og-image.png     # 1200x630 Open Graph / Twitter social preview card (still the old dark neo-brutalist design; regenerate in Swiss Style)
+├── og-image.png     # 1200x630 Open Graph / Twitter social preview card in Swiss Style: SK logo (left) and domain (right) on one baseline, giant Inter 800 name with red full stop, ruled lead text under it, the portrait (Shams.jpg, 4:5, 2px black border) on the right, red traits strip at the bottom. Everything sits on 60px margins: the portrait's top matches the name's cap line, its bottom the last lead baseline, its right edge the domain and strip text. Keep it to few, large elements so it stays legible when shown small; regenerate it if the name, lead, traits or portrait change
 └── Shams.jpeg       # Unused portrait asset in root; do not delete unless asked
 ```
 
@@ -38,12 +38,14 @@ python3 -m http.server 8000
 ## Quirks
 
 * **Sticky-section stacking**: Every `main > section` uses `position: sticky` driven by `--h` and `--hdr` custom properties updated via `ResizeObserver` in `script.js`. Any new section in `<main>` **must** declare an opaque `background-color` so lower sections do not bleed through (`main > section` sets `--bg`; `#skills` and `#contact` use `--bar`).
+* **Active nav link**: `script.js` marks the nav link of the current section with `aria-current="true"` (styled in `style.css` as red text plus a red underline; no animation). Because sections are sticky, it uses each section's natural top (`sectionTops`, the sum of the heights above it, recomputed in `measureStack()`), not `getBoundingClientRect`. A section becomes current when its natural top passes a reading line 30% of the way down the space below the header; at the very bottom of the page the last section wins. Only sections with a nav link are tracked (the hero and the strip are not). Keep section ids and nav `href`s in sync, and keep the `[aria-current]` rule above the mobile menu hover rules in `style.css`.
 * **Custom `#anchor` scrolling**: Native browser hash jumps fail on sticky sections; preserve the `a[href^="#"]` offset calculator in `script.js` that sums preceding `stackItems` heights.
 * **Google Sheets CSV schemas**: Expected lowercase headers:
   * `projects`: `name`, `description`, `stack`, `live_url`, `github_url`, `order` (optional numeric), `visible` (`false`/`no`/`0`/`hidden` hides row).
   * `skills`: `category`, `skill`, `full_name` (optional `<abbr title>`), `visible`.
 * **Skills markup**: `script.js` renders each category `<dt>` with class `wrap`; `style.css` neutralises its max-width and padding (`.skill-row dt.wrap`) so it sits on the grid. Keep that override if the class is touched.
 * **Async layout stability**: Keep `min-height` on `#projects .list` (`22rem`) and `#skills .skills` (`18rem`) so sticky sections do not jump when CSV rows load.
+* **Structured data**: `index.html` has a `<script type="application/ld+json">` `Person` block in `<head>` (name, url, image, jobTitle, description, alumniOf, knowsAbout, sameAs). Keep it in sync with the page: update `jobTitle`/`description` when the role or bio changes, and `sameAs` when the GitHub or LinkedIn links change. It must stay valid JSON; no trailing commas.
 * **Hero fills the first screen on every device**: `.hero` has `min-height: calc(100svh - var(--hdr) - var(--strip-h))` so hero + traits strip equal one viewport. `--strip-h` (strip height) is defined per breakpoint: ≥860px in the desktop block, ≤859px in the "one tidy column" block, and overridden at ≤639px (the strip's padding is smaller there). If the strip's padding, font-size or border changes, update all three `--strip-h` values. On ≤859px `.hero` is `display: flex` and `.hero-grid` uses `justify-content: center`, so the content sits centred in the spare height; on tall phones the extra space is split above and below. The base `.hero-foot` has `margin-top: auto` (pins it to the bottom on tablet-width desktop-less layouts); the ≤639px `.hero-foot` resets it to `0`, otherwise it opens a large gap between the name and the lead text. Keep that reset.
 * **Hero**: The animated background grid and the `.hero.is-covered` scroll toggle were removed with the neo-brutalist theme; the hero is static apart from the entrance animation. `.hero-photo img` is a 4:5 crop with `object-fit: cover`; keep the 4:5 ratio when swapping the image. On desktop it sits in columns 9–12 and is capped at `56vh` wide so it fits the first screen.
 * **Hero on phones (≤639px)**: the lead text and the portrait sit side by side in a two-column grid; the lead is vertically centred (`align-self: center`) against the portrait. Keep that alignment when editing.

@@ -90,6 +90,8 @@ nav {
     transition: color 0.15s, border-color 0.15s;
 }
 .nav-links a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+/* Current section (set from script.js). Declared before the mobile menu rules so the menu's hover fill still wins */
+.nav-links a[aria-current="true"] { color: var(--accent); border-bottom-color: var(--accent); }
 
 .nav-toggle {
     display: none;

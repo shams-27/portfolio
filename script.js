@@ -374,9 +374,61 @@ const stackItems = mainEl ? [...mainEl.children].filter((el) => el.matches('sect
 
 stackItems.forEach((el, i) => { el.style.zIndex = i + 1; });
 
+// Active nav link. Sections are sticky, so their on-screen position is not their natural one; the
+// natural top of each section is the sum of the heights above it (the same maths the anchor links use).
+// A section counts as current once its natural top has risen into the upper part of the screen,
+// which is about when it has slid over the previous one. Only sections that have a nav link are tracked.
+const navAnchors = navLinks ? [...navLinks.querySelectorAll('a[href^="#"]')] : [];
+const navById = new Map(navAnchors.map((a) => [a.getAttribute('href').slice(1), a]));
+let sectionTops = [];   // [{ id, top }] in document order, only for sections with a nav link
+let activeNavId = null;
+
+function computeSectionTops() {
+    sectionTops = [];
+    if (!mainEl) return;
+    let y = mainEl.offsetTop;
+    stackItems.forEach((item) => {
+        if (item.id && navById.has(item.id)) sectionTops.push({ id: item.id, top: y });
+        y += item.offsetHeight;
+    });
+}
+
+function updateActiveNav() {
+    if (!sectionTops.length) return;
+    const hdr = headerEl ? headerEl.offsetHeight : 0;
+    const vh = window.innerHeight;
+    const line = window.scrollY + hdr + (vh - hdr) * 0.3;   // the reading line, in document coordinates
+    let current = null;
+    for (const s of sectionTops) {
+        if (s.top <= line) current = s.id;
+    }
+    // At the very bottom the last section is current, even if it is shorter than the reading line allows
+    if (window.scrollY + vh >= document.documentElement.scrollHeight - 2) {
+        current = sectionTops[sectionTops.length - 1].id;
+    }
+    if (current === activeNavId) return;
+    activeNavId = current;
+    navAnchors.forEach((a) => {
+        if (a === navById.get(current)) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+    });
+}
+
+let navQueued = false;
+window.addEventListener('scroll', () => {
+    if (navQueued) return;
+    navQueued = true;
+    requestAnimationFrame(() => {
+        navQueued = false;
+        updateActiveNav();
+    });
+}, { passive: true });
+
 function measureStack() {
     if (headerEl) document.documentElement.style.setProperty('--hdr', headerEl.offsetHeight + 'px');
     stackItems.forEach((el) => el.style.setProperty('--h', el.offsetHeight + 'px'));
+    computeSectionTops();
+    updateActiveNav();
 }
 
 measureStack();
