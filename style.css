@@ -344,6 +344,7 @@ abbr[title] { text-decoration: none; cursor: help; }
     overflow-wrap: anywhere;
     text-decoration-thickness: 3px;
     text-decoration-color: var(--accent);
+    text-underline-offset: 0.3em;   /* clears the descenders of "@" and "g" */
     transition: color 0.15s;
 }
 .contact-email:hover { color: var(--accent); }
