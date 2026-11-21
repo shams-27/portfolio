@@ -106,7 +106,6 @@ if (copyBtn) {
 
 // Back-to-top button
 const backToTopBtn = document.getElementById('backToTop');
-const heroEl = document.querySelector('.hero');
 let scrollQueued = false;
 
 function onScroll() {
@@ -115,7 +114,6 @@ function onScroll() {
     requestAnimationFrame(() => {
         scrollQueued = false;
         if (backToTopBtn) backToTopBtn.classList.toggle('visible', window.scrollY > 400);
-        if (heroEl) heroEl.classList.toggle('is-covered', window.scrollY > heroEl.offsetHeight);
     });
 }
 
