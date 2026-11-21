@@ -17,6 +17,7 @@
     --sans: 'Inter', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
     --display: var(--sans);
     --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;   /* small labels only: section numbers, years, meta, stack */
+    --logo: 'Mr Dafoe', 'Brush Script MT', cursive;   /* the "Shams" signature nav logo only */
     --gutter: max(clamp(1.25rem, 4vw, 3rem), env(safe-area-inset-left, 0px));
     --section: clamp(4rem, 8vw, 7rem);
     --col-gap: 2rem;
@@ -71,13 +72,25 @@ nav {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-size: 1.6rem;
-    font-weight: 800;
-    letter-spacing: -0.05em;
-    line-height: 1;
+    position: relative;
+    padding-bottom: 0.2em;
+    font-family: var(--logo);   /* the only place that uses this signature script */
+    font-size: 2.4rem;
+    font-weight: 400;           /* Mr Dafoe has a single, already bold weight */
+    letter-spacing: 0;
+    line-height: 1.1;
     text-decoration: none;
 }
-.logo::after { content: ''; width: 0.42em; height: 0.42em; background: var(--accent); }
+/* Hand-drawn brush-swoosh underline under the signature: a tapered filled shape in an inline SVG background so it stretches to the text width */
+.logo::after {
+    content: '';
+    position: absolute;
+    left: 0.05em;
+    right: 0;
+    bottom: 0;
+    height: 0.3em;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14' preserveAspectRatio='none'%3E%3Cpath d='M1 10 C30 6 85 2 119 4 C88 7 40 11 1 10 Z' fill='%23E4002B'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+}
 .nav-end { display: flex; align-items: center; }
 .nav-links { display: flex; gap: 1.75rem; }
 .nav-links a {
@@ -528,7 +541,7 @@ main > .strip { position: relative; }
     html { scroll-padding-top: 4.5rem; }
     body { font-size: 1rem; line-height: 1.5; }
     nav { padding: 0.5rem var(--gutter); }
-    .logo { font-size: 1.4rem; }
+    .logo { font-size: 2rem; }
     .nav-toggle { width: 44px; height: 44px; padding: 0 10px; }
 
     .hero-grid { padding-top: 1.25rem; padding-bottom: 1.75rem; }
@@ -599,6 +612,29 @@ main > .strip { position: relative; }
 @media (max-height: 480px) and (orientation: landscape) {
     nav { padding-block: 0.4rem; }
     .nav-toggle { width: 38px; height: 38px; }
+}
+
+/* Desktop: larger small text (>= 860px). Phones keep their compact sizes above.
+   Kept after the phone blocks so it wins at equal specificity; it never applies below 860px. */
+@media (min-width: 860px) {
+    #greeting { font-size: 1.25rem; }
+    .btn, .text-link { font-size: 1.125rem; }
+    .icon-svg { width: 18px; height: 18px; }
+    .sec-title::before { font-size: 1.1875rem; }
+    .trophy figcaption { font-size: 1rem; }
+    .trophy figcaption strong { font-size: 1.125rem; }
+    .fact dt { font-size: 1.1875rem; }
+    .when small { font-size: 1rem; }
+    .entry .what .meta { font-size: 1rem; }
+    .entry .what .desc { font-size: 1.125rem; }
+    .skill-row dt, .skill-row dt.wrap { font-size: 1.1875rem; }
+    .skill-row li { font-size: 1.1875rem; }
+    .stack { font-size: 1rem; }
+    .project-links a { font-size: 1.125rem; }
+    footer { font-size: 1.0625rem; }
+}
+@media (min-width: 1024px) {
+    .nav-links a { font-size: 1.125rem; }
 }
 
 /* Motion: smooth scrolling, one page-load entrance for the hero, scroll-in for cards; all gated */
