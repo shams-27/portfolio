@@ -443,8 +443,10 @@ main > .strip { position: relative; }
 
 /* Phones and small tablets: one tidy column */
 @media (max-width: 859px) {
-    .hero { min-height: 0; display: block; }
-    .hero-grid { padding-top: 1.75rem; padding-bottom: 2.5rem; }
+    /* The hero plus the strip fill one screen, as on desktop; the content is centred in the space */
+    :root { --strip-h: calc(2rem + 4px + 1.2 * clamp(1rem, 4.3vw, 1.375rem)); }
+    .hero { min-height: calc(100svh - var(--hdr, 4.75rem) - var(--strip-h)); display: flex; }
+    .hero-grid { padding-top: 1.75rem; padding-bottom: 2.5rem; justify-content: center; }
     .hero-foot { display: contents; }
     #greeting { order: 1; }
     .hero h1 { order: 2; font-size: clamp(3.5rem, 21vw, 8rem); margin-bottom: 1.75rem; }
@@ -517,7 +519,7 @@ main > .strip { position: relative; }
 
 /* Phones: compact */
 @media (max-width: 639px) {
-    :root { --gutter: max(1rem, env(safe-area-inset-left, 0px)); --section: 3rem; }
+    :root { --gutter: max(1rem, env(safe-area-inset-left, 0px)); --section: 3rem; --strip-h: calc(1.2rem + 4px + 1.2 * clamp(1rem, 4.3vw, 1.375rem)); }
     html { scroll-padding-top: 4.5rem; }
     body { font-size: 1rem; line-height: 1.5; }
     nav { padding: 0.5rem var(--gutter); }
