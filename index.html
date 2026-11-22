@@ -7,8 +7,11 @@
     <title>Shams Kabir — Portfolio</title>
     <meta name="description"
         content="Portfolio of Shams Kabir, a Software Engineering undergraduate at Daffodil International University building developer tools, automation scripts, and web projects.">
+    <meta name="keywords" content="Shams Kabir, Software Engineer, Portfolio, Developer, Automation, Linux, Arch Linux, Python, C, Bangladesh, Daffodil International University">
     <meta name="theme-color" content="#FFFFFF">
     <link rel="canonical" href="https://shams.swe.bd/">
+    <link rel="alternate" hreflang="x-default" href="https://shams.swe.bd/">
+    <link rel="alternate" hreflang="en" href="https://shams.swe.bd/">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="author" content="Shams Kabir">
     <meta name="color-scheme" content="only light">
@@ -19,6 +22,8 @@
         content="Software Engineering undergraduate at DIU building developer tools, automation scripts, and web projects.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://shams.swe.bd/">
+    <meta property="og:site_name" content="Shams Kabir">
+    <meta property="og:locale" content="en_US">
     <meta property="og:image" content="https://shams.swe.bd/og-image.png?v=3">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -28,6 +33,7 @@
     <meta name="twitter:description"
         content="Software Engineering undergraduate at DIU building developer tools, automation scripts, and web projects.">
     <meta name="twitter:image" content="https://shams.swe.bd/og-image.png?v=3">
+    <meta name="twitter:image:alt" content="Shams Kabir — Portfolio hero section">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,38 +45,54 @@
     {
         "@context": "https://schema.org",
         "@type": "ProfilePage",
-        "dateModified": "2026-11-21T00:00:00+06:00",
+        "dateModified": "2026-11-22T00:00:00+06:00",
+        "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://shams.swe.bd/#website",
+            "name": "Shams Kabir — Portfolio",
+            "url": "https://shams.swe.bd/"
+        },
         "mainEntity": {
-        "@type": "Person",
-        "@id": "https://shams.swe.bd/#person",
-        "name": "Shams Kabir",
-        "url": "https://shams.swe.bd/",
-        "image": {
-            "@type": "ImageObject",
-            "url": "https://shams.swe.bd/Shams.jpg",
-            "contentUrl": "https://shams.swe.bd/Shams.jpg",
-            "width": 800,
-            "height": 1000
-        },
-        "jobTitle": "Software Engineering Student",
-        "description": "Software Engineering undergraduate at Daffodil International University building developer tools, automation scripts, and web projects.",
-        "alumniOf": {
-            "@type": "CollegeOrUniversity",
-            "name": "Daffodil International University"
-        },
-        "knowsAbout": [
-            "Automation",
-            "Developer tools",
-            "Linux",
-            "Shell scripting",
-            "Data structures and algorithms",
-            "Object-oriented programming",
-            "Operating systems"
-        ],
-        "sameAs": [
-            "https://github.com/shams-27",
-            "https://www.linkedin.com/in/shams-kbr/"
-        ]
+            "@type": "Person",
+            "@id": "https://shams.swe.bd/#person",
+            "name": "Shams Kabir",
+            "alternateName": ["Shams", "shams-27"],
+            "url": "https://shams.swe.bd/",
+            "email": "mailto:kabir.shams.2002@gmail.com",
+            "image": {
+                "@type": "ImageObject",
+                "url": "https://shams.swe.bd/Shams.jpg",
+                "contentUrl": "https://shams.swe.bd/Shams.jpg",
+                "width": 800,
+                "height": 1000
+            },
+            "jobTitle": "Software Engineering Student",
+            "description": "Software Engineering undergraduate at Daffodil International University building developer tools, automation scripts, and web projects.",
+            "nationality": {
+                "@type": "Country",
+                "name": "Bangladesh"
+            },
+            "alumniOf": {
+                "@type": "CollegeOrUniversity",
+                "name": "Daffodil International University"
+            },
+            "knowsAbout": [
+                "Automation",
+                "Developer tools",
+                "Linux",
+                "Arch Linux",
+                "Shell scripting",
+                "Python",
+                "C",
+                "JavaScript",
+                "Data structures and algorithms",
+                "Object-oriented programming",
+                "Operating systems"
+            ],
+            "sameAs": [
+                "https://github.com/shams-27",
+                "https://www.linkedin.com/in/shams-kbr/"
+            ]
         }
     }
     </script>
@@ -366,6 +388,19 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
 </body>
 
 </html>

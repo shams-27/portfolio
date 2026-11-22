@@ -18,6 +18,40 @@
     });
 })();
 
+// Modern JavaScript features and error tracking
+function initErrorTracking() {
+    // Simple error tracking that logs to console
+    window.addEventListener('error', (event) => {
+        console.error('Error:', event.message, 'at', event.filename, ':', event.lineno, 'Line:', event.lineno, 'Column:', event.colno);
+    });
+
+    window.addEventListener('unhandledrejection', (event) => {
+        console.error('Unhandled rejection:', event.reason);
+    });
+}
+
+// Performance metrics monitoring (Core Web Vitals)
+function initPerformanceMetrics() {
+    if (!('PerformanceObserver' in window)) return;
+    try {
+        const po = new PerformanceObserver((entryList) => {
+            for (const entry of entryList.getEntries()) {
+                if (entry.entryType === 'largest-contentful-paint') {
+                    console.debug('LCP:', Math.round(entry.startTime), 'ms');
+                } else if (entry.entryType === 'layout-shift' && !entry.hadRecentInput) {
+                    console.debug('CLS delta:', entry.value);
+                }
+            }
+        });
+        po.observe({ type: 'largest-contentful-paint', buffered: true });
+        po.observe({ type: 'layout-shift', buffered: true });
+    } catch { /* Browser does not support specific entry types */ }
+}
+
+// Initialize error tracking and performance metrics
+initErrorTracking();
+initPerformanceMetrics();
+
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Dark mode was removed; clear any theme choice saved by an earlier visit
@@ -244,7 +278,7 @@ function renderProjects(rows) {
     const list = document.querySelector('#projects .list');
     if (!list) return;
 
-    const items = rows.filter((r) => r.name && isVisible(r.visible));
+    const items = rows.filter(({ name, visible }) => name && isVisible(visible));
     if (!items.length) return;
 
     // Alphabetical by default; fill the optional "order" column to set your own order

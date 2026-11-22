@@ -1,71 +1,268 @@
-# AGENTS.md
+# Portfolio Project Documentation
 
 ## Overview
 
-Static single-page personal portfolio for Shams Kabir (`https://shams.swe.bd/`), built with vanilla HTML5, CSS3, and ES2020+ JavaScript. Uses zero build tools, frameworks, or npm dependencies; loads three Google Fonts (`Inter` 400–800, `JetBrains Mono` 500/700 and `Mr Dafoe` brush script for the signature logo) and fetches dynamic content from published Google Sheets CSV endpoints. Visual style: Swiss Style (International Typographic Style).
+**Project Name:** Shams Kabir Portfolio
+**URL:** https://shams.swe.bd/
+**Description:** A static single-page personal portfolio built with vanilla HTML5, CSS3, and ES2020+ JavaScript. Uses zero build tools, frameworks, or npm dependencies.
 
-## Structure
+### Key Features
+- **Visual Style:** Swiss Style (International Typographic Style)
+- **Dynamic Content:** Google Sheets as CMS for projects and skills
+- **Fonts:** Google Fonts (Inter 400-800, JetBrains Mono 500/700, Mr Dafoe brush script)
+- **Responsive Design:** Adapts to all device sizes
+- **Accessibility:** Follows WCAG guidelines and supports reduced motion
+- **Offline Capable:** Service Worker (`sw.js`) caching core assets and Google Fonts
+- **SEO & Performance:** Rich JSON-LD ProfilePage + WebSite schema, Open Graph, Core Web Vitals monitoring
+
+---
+
+## Project Structure
 
 ```text
 .
-├── index.html       # Semantic single-page markup, SEO/OG tags, JSON-LD Person data, inline SVGs, and section shells
-├── style.css        # Swiss Style tokens, 12-column grid, sticky stacking, and animations
-├── script.js        # Google Sheets CSV parser/cache, sticky height observer, anchor scroll, UI controls
-├── robots.txt       # Allows all crawlers and points to the sitemap
-├── favicon.svg      # Tab icon and the icon Google shows beside search results: muted red circle, black border, black "S" (see Logo quirk)
-├── sitemap.xml      # Single-URL sitemap with the portrait as an image entry; bump <lastmod> when the page changes
-├── icon-c.svg       # Local blue (#00599C) C logo for the Skills section (see Skill icons, `SKILL_ICON_LOCAL`)
-├── Shams.jpg        # Hero portrait (800x1000, 4:5 crop) in .hero-photo; Shams-400.jpg is the 400px srcset variant
-├── achievement.jpg  # DIU CodeTrap Spring 2025 4th-place trophy photo (960x1310, cropped to the trophy) in #detailed-about; achievement-480.jpg is the 480px srcset variant
-├── og-image.png     # 1200x630 Open Graph / Twitter social preview card in Swiss Style: the "Shams" signature logo (Mr Dafoe with the red swoosh underline, left) and domain (right) at the top, giant Inter 800 name with red full stop, ruled lead text under it, the portrait (Shams.jpg, 4:5, 2px black border) on the right, red traits strip at the bottom. Everything sits on 60px margins: the portrait's top matches the name's cap line, its bottom the last lead baseline, its right edge the domain and strip text. Keep it to few, large elements so it stays legible when shown small; regenerate it if the name, lead, traits, logo or portrait change (it was rendered from a throwaway 1200x630 HTML page in headless Chromium using the `@fontsource` Inter, JetBrains Mono and Mr Dafoe files, measured against the previous card: name font 164px / line-height 0.875 / top 92px, lead 27px on 38px lines starting at 400px, rule at y 394)
-└── Shams.jpeg       # Unused portrait asset in root; do not delete unless asked
+├── index.html          # Semantic markup, SEO/OG tags, JSON-LD ProfilePage + WebSite data, inline SVGs
+├── style.css           # Swiss Style tokens, spacing/type scales, 12-column grid, sticky stacking, animations
+├── script.js           # Google Sheets CSV parser/cache, sticky height observer, UI controls, Core Web Vitals, error tracking
+├── sw.js               # Service Worker caching core assets and Google Fonts for offline support
+├── robots.txt          # Crawler directives
+├── favicon.svg         # Tab icon and search result icon
+├── sitemap.xml         # Single-URL sitemap with portrait image entry, changefreq, priority, and caption
+├── icon-c.svg          # Local C logo for skills section
+├── Shams.jpg           # Hero portrait (800x1000, 4:5 crop)
+├── achievement.jpg     # DIU CodeTrap trophy photo
+├── og-image.png        # Open Graph social preview card
+└── Shams.jpeg          # Unused portrait asset
 ```
 
-## Commands
+---
 
-Serve locally over HTTP (required for `navigator.clipboard` secure-context testing and clean `fetch()` behavior):
+## Development Commands
+
+### Local Server
+Run a local HTTP server for testing clipboard API and fetch behavior:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-## Conventions
+---
 
-* **Swiss Style visual system**: One text typeface (`Inter`, weights 400–800, plus `JetBrains Mono` for small labels only; see Font) set flush-left, ragged-right, with tight negative tracking on large headings. Structure comes from rules and the grid, not decoration: `2px solid var(--black)` rules (`--rule`) between sections and cards, `1px` hairlines (`--hair`, `--soft`) between items inside a card, zero `border-radius` (including `rx="0"` on SVG rects), no box shadows, no rotation, no gradients or background patterns. Colour is white `--bg`, paper-grey `--bar`, black `--ink`/`--black`, grey `--muted`, and one accent, red `--accent`, used for the strip band, section numbers, the logo square, hover states and focus rings. Do not add a second accent colour (the one exception is the skill icons, which are full-colour brand icons; see Skill icons). Photos (`.hero-photo img`, `.trophy img`) are shown in full colour with no filters; every photo has a `2px solid var(--black)` border (`--rule`); give any new `<img>` the same.
-* **12-column grid**: Sections place the title in columns 1–4 and content in columns 5–12 (`.section-grid` at ≥860px). Projects is the exception: its title and card list span all 12 columns. The hero uses the same 12 columns (text 1–8, portrait 8–12; the name's box ends at column 8 but the words are narrower, so the one shared column does not collide). Align new content to these columns.
-* **Light mode only**: The site is a single light theme (`color-scheme: only light`, `darkreader-lock`, `localStorage.removeItem('theme')`). Never add theme toggles or `@media (prefers-color-scheme: ...)` rules. The only inverted surface is the `.strip` band (red, white text), which resets `--ink` to white locally. Style new sections with `--bg`, `--bar`, `--black` and `--accent`.
-* **Section numbers**: `.sec-title::before` shows a CSS counter (`01`–`06`) in red. It follows DOM order of `.sec-title` elements, so reordering or adding sections renumbers them automatically; keep nav order and section order the same.
-* **Google Sheets as CMS**: `#projects` and `#skills` render dynamically from CSV URLs in `SHEETS` (`script.js`) using stale-while-revalidate `localStorage` caching (`sheet:projects`, `sheet:skills`). Edit the source spreadsheet instead of hardcoding items in `index.html`.
-* **XSS-safe DOM rendering**: Never assign CSV values to `innerHTML`; create elements via `el()` (`textContent`) and sanitize links with `safeUrl()`.
-* **Accessible motion**: Gate all CSS animations and transitions behind `@media (prefers-reduced-motion: no-preference)` (or neutralise them in the `reduce` block at the end of `style.css`) and check `prefersReducedMotion` in `script.js` before smooth scrolling or reveal observers. Motion is the set listed under **Motion** in Quirks; keep it to geometric reveals (clip-path wipes, scale draws, translate out of a mask) and do not add hover lifts, bounces, parallax or other scattered effects.
+## Design Conventions
 
-## Quirks
+### Swiss Style Visual System
+- **Typography:** Single typeface hierarchy using Inter (400-800) with JetBrains Mono for small labels
+- **Color Palette:** White background, black text, paper-grey bars, red accent (#E4002B)
+- **Grid:** 12-column layout (title in columns 1-4, content in 5-12)
+- **Structure:** Rules and grid define layout, not decoration
+- **Photos:** Full color with 2px solid black borders
 
-* **Sticky-section stacking**: Every `main > section` uses `position: sticky` driven by `--h` and `--hdr` custom properties updated via `ResizeObserver` in `script.js`. Any new section in `<main>` **must** declare an opaque `background-color` so lower sections do not bleed through (`main > section` sets `--bg`; `#skills` and `#contact` use `--bar`).
-* **Active nav link**: `script.js` marks the nav link of the current section with `aria-current="true"` (styled in `style.css` as red text plus a red underline; no animation). Because sections are sticky, it uses each section's natural top (`sectionTops`, the sum of the heights above it, recomputed in `measureStack()`), not `getBoundingClientRect`. A section becomes current when its natural top passes a reading line 30% of the way down the space below the header; at the very bottom of the page the last section wins. Only sections with a nav link are tracked (the hero and the strip are not). Keep section ids and nav `href`s in sync, and keep the `[aria-current]` rule above the mobile menu hover rules in `style.css`.
-* **Custom `#anchor` scrolling**: Native browser hash jumps fail on sticky sections; preserve the `a[href^="#"]` offset calculator in `script.js` that sums preceding `stackItems` heights.
-* **Google Sheets CSV schemas**: Expected lowercase headers:
-  * `projects`: `name`, `description`, `stack` (comma-separated; each item becomes a chip), `live_url`, `github_url`, `order` (optional numeric), `visible` (`false`/`no`/`0`/`hidden` hides row).
-  * `skills`: `category`, `skill`, `full_name` (optional `<abbr title>`), `visible`.
-* **Skills markup**: `script.js` renders each category `<dt>` with class `wrap`; `style.css` neutralises its max-width and padding (`.skill-row dt.wrap`) so it sits on the grid. Keep that override if the class is touched.
-* **Skill icons**: `renderSkills()` shows each skill as an icon, not text, when the name is in the `SKILL_ICONS` map in `script.js` (name lowercased with everything except letters, digits, `+` and `#` removed, then looked up; the `skill` column is tried first, then `full_name`). Icons are full-colour Devicon SVGs loaded from jsDelivr (`SKILL_ICON_BASE`, `devicon@2.18.0`, file `icons/<slug>/<slug>-original.svg`; `SKILL_ICON_VARIANT` overrides the variant for slugs with no `-original`, currently `django` → `plain`); they are the only place the site uses colours besides the red accent, and the only third-party image host, so they need a network connection. Map values are Devicon folder names, not Simple Icons slugs (Simple Icons was used before and is monochrome; it has no Antigravity icon). `SKILL_ICON_LOCAL` maps a slug to a local file that replaces the Devicon one: `c` → `icon-c.svg` in the site root (Simple Icons' C path filled `#00599C`, the C++ blue, because Devicon's C is a pale grey-blue that looked washed out; Simple Icons is CC0). To restyle another icon the same way, add the SVG to the root and a `SKILL_ICON_LOCAL` entry. Always check `<slug>/<slug>-original.svg` exists in the pinned Devicon version before adding a map entry (a 404 silently becomes a text chip). The icon `<img>` has `alt` set to `full_name` or the skill name (no `title`, so the browser tooltip doesn't double up), the chip gets `.has-icon` and `data-name` with the same label, and `.skill-row li.has-icon::after` pops it out as a black Swiss label above the chip on hover (`hover: hover` only, static, no radius or shadow). Hover on an icon chip turns its border `--accent` (no black fill and no `filter: invert`, which would hide the dark Git/GitHub glyphs); text chips keep the black sweep fill. A skill with no map entry, or an icon that fails to load (`error` event), falls back to the old text chip (`skillText()`, an `<abbr>` when `full_name` is set), so nothing disappears. To add an icon, add a map entry with the Devicon folder name. Icon sizes: 28px base, 24px at ≤639px, 32px from 860px. Icon chips are circles (`border-radius: 50%` on `.skill-row li.has-icon`, a deliberate exception to the zero-radius rule, like the hero icon buttons, the timeline markers and the favicon); the chip stays square (icon plus equal padding) so it is a true circle at every size, so keep the padding equal on both axes. Text chips and the pop-out label stay square. `SKILL_ICON_ROUND` (currently `javascript`, `typescript`) adds `.icon-round` (`border-radius: 22%` on the `<img>`) to logos that are a plain sharp-cornered square, so their corners don't poke at the circular border; Devicon has no rounder JS variant (only `original` and `plain`, both square).
-* **Async layout stability**: Keep `min-height` on `#projects .list` (`22rem`) and `#skills .skills` (`18rem`) so sticky sections do not jump when CSV rows load.
-* **Social preview cache**: LinkedIn, Facebook and others cache the Open Graph image by URL for days. When `og-image.png` is regenerated, bump the `?v=N` query on both `og:image` and `twitter:image` in `index.html` (currently `v=3`) so they fetch the new file, then refresh the cache with LinkedIn's Post Inspector.
-* **Structured data**: `index.html` has a `<script type="application/ld+json">` `ProfilePage` block in `<head>` whose `mainEntity` is the `Person` (`@id` `https://shams.swe.bd/#person`, name, url, `image` as an `ImageObject` of `Shams.jpg` 800x1000, jobTitle, description, alumniOf, knowsAbout, sameAs). It is there so search engines can pair the portrait with the site link and description when someone searches the name; Google decides whether a photo or knowledge panel appears, so it cannot be forced. Keep it in sync with the page: update `jobTitle`/`description` when the role or bio changes, `sameAs` when the GitHub or LinkedIn links change, `image` `width`/`height` if the portrait is swapped, and `dateModified` (also `<lastmod>` in `sitemap.xml`) when content changes. `<head>` also has `rel="canonical"`, `robots` with `max-image-preview:large` and `author`. It must stay valid JSON; no trailing commas.
-* **Hero fills the first screen on every device**: `.hero` has `min-height: calc(100svh - var(--hdr) - var(--strip-h))` so hero + traits strip equal one viewport. `--strip-h` (strip height) is defined per breakpoint: ≥860px in the desktop block, ≤859px in the "one tidy column" block, and overridden at ≤639px (the strip's padding is smaller there). If the strip's padding, font-size or border changes, update all three `--strip-h` values. On ≤859px `.hero` is `display: flex` and `.hero-grid` uses `justify-content: center`, so the content sits centred in the spare height; on tall phones the extra space is split above and below. The base `.hero-foot` has `margin-top: auto` (pins it to the bottom on tablet-width desktop-less layouts); the ≤639px `.hero-foot` resets it to `0`, otherwise it opens a large gap between the name and the lead text. Keep that reset.
-* **Hero**: The animated background grid and the `.hero.is-covered` scroll toggle were removed with the neo-brutalist theme; the hero is static apart from the entrance animation. `.hero-photo img` is a 4:5 crop with `object-fit: cover`; keep the 4:5 ratio when swapping the image. On desktop it sits in columns 8–12 (five columns, about 525px wide at the 1400px maximum) and is capped at `58vh` wide so it fits the first screen on short laptops; it is column-limited on tall screens and vh-limited on short ones. The 800px `Shams.jpg` is about 1.5x at that size, so on 2x displays it is slightly soft; export a ~1050x1312 version if sharper is wanted.
-* **Hero buttons are icon-only**: `.hero-actions` buttons (View my work, GitHub, Email, LinkedIn) show only their icon on every screen: 24px icons in 0.9rem padding, 32px icons in 1.15rem padding from 860px, 18px icons at ≤639px. The text stays in `.label`, visually hidden, plus a `title` tooltip, so keep both on any new hero button. They are circles (`border-radius: 50%`), the one deliberate exception to the zero-radius rule, so keep any new hero icon button round too. The round favicon (red circle, black border) is a further deliberate exception. The contact buttons keep their text and stay square.
-* **Hero on phones (≤639px)**: the lead text and the portrait sit side by side in a two-column grid; the lead is vertically centred (`align-self: center`) against the portrait. Keep that alignment when editing.
-* **Image sizing**: Photos are pre-resized (Lanczos, light sharpening, quality 82) and served with `srcset`/`sizes`. Never let the browser shrink a large original to a small slot: a glittery or detailed photo (the trophy) turns noisy. When swapping a photo, export it at about 2x its largest display width, plus a half-size variant, and update `width`/`height` and the CSS `aspect-ratio` to match.
-* **Traits strip**: On desktop the items are spaced evenly with absolutely positioned square separators; below 860px `script.js` duplicates the list and CSS loops it as a marquee (swipeable under reduced motion). The strip is outside the sticky stack (`position: relative`) and scrolls over the hero.
-* **About on small screens**: Below 860px the trophy photo floats right and text wraps around it; from 860px it is the second column of `.about-top`. Keep the `figure` before the text in the markup.
-* **About stats**: `dl.about-stats` sits between `.about-top` and `.about-facts`: three `.stat` items (3.90 CGPA, 100+ students taught the basics of C, 4th place) as ruled items. From 1100px they are three columns (number on top, one-line label under it, top-aligned with `order: -1` on the `dd`); below 1100px they are rows (number left in a fixed `flex-basis`, label right, baseline-aligned) because three columns are too narrow for the labels. Labels are `white-space: nowrap`; from 1100px the label size is `clamp(0.75rem, 1.15vw, 1.0625rem)` so "Students taught the basics of C" fits its column at every desktop width (its width was measured at about 0.48em per character; if a label gets longer, lower the `vw` factor or raise the breakpoint). Do not use `column-reverse` for the number-on-top order: it bottom-aligns the numbers when one label is taller. The label's desktop size lives here, not in the "larger small text" block. Each item is written label first (`dt`) then number (`dd`) so it reads in the right order for screen readers; `dd` is set in `--mono` 700 like the years. On very narrow phones (about 320px) the longest label can overflow the row, so keep labels short. Keep the numbers in sync with the Education entry (CGPA), the Experience entries (100+ students taught the basics of C, 4th place) and the trophy caption. `.stat` shares the `.fact` ruled-line draw, the scroll reveal in `script.js` and the phone padding. **Count-up**: `shuffleStats()` in `script.js` (name kept from the first random-shuffle version) runs the first time each number is 60% in view (not under reduced motion; without JS the HTML text just shows). The number ascends from zero to its value over 1.4s with an ease-out cubic (3.90 runs 0.00 → 3.90, 100+ runs 000 → 100, 4th runs 0th → 4th). It parses `^(\d+)(\.\d+)?(suffix)`, keeps the decimal count, and zero-pads the integer part to the final width so the mono font never shifts the suffix; the value is counted in the smallest unit the number is written in (`step`: 3.90 in hundredths, 100 and 4 in ones) and, every 60ms, leaps forward by a random number of units, never past the eased ceiling (`target * ease-out cubic`), so it always climbs, bigger numbers skip further (100+ might read 000, 037, 061, 088, 100), and it lands on the exact text when the 1.4s are up; keep the inner animation callback named `frame`, not `step`, which would shadow it; a stat that doesn't start with a number is left alone. `.stat dd` is rewritten to a visually hidden span holding the real text plus an `aria-hidden` span that animates, so screen readers never hear the intermediate values. It is JS-driven, the one exception to "all motion is CSS", because CSS cannot change the digits. If a stat's text changes, edit it in `index.html` only; the script reads it.
-* **Education is short on purpose**: the BSc and HSC entries are shown in full; the SSC entry carries the earlier JSC (2018) and PSC (2015) certificates in its `.desc` line instead of separate entries. Do not split them back out unless asked.
-* **Contact fills the screen**: `#contact` has `min-height` of one viewport minus the header so Projects never shows above it; keep it when editing.
-* **Contact actions**: The large email address (`.contact-email`) is already a `mailto:` link, so there is no separate "Send an email" button; do not add one back, it duplicates the link. `.contact-actions` holds only two different actions: the solid `Copy address` button (`#copyEmail`, handled in `script.js`) and the outlined `Open in Gmail` text link (for people without a mail app). Do not add further buttons that do the same thing as the address link. The hero's `Email` icon link is a separate, intentional shortcut.
-* **Small devices**: The viewport meta uses `viewport-fit=cover`, so `--gutter`, the footer and the back-to-top button add `env(safe-area-inset-*)`. Tap targets are at least 44px (nav toggle, back-to-top, hero icon buttons); project links have vertical padding. Hover colour changes are wrapped in `@media (hover: hover)` so they do not stick on touch screens. The open mobile menu scrolls (`max-height` minus `--hdr`) on short screens. Breakpoints: 859px (single column, marquee strip), 767px (hamburger nav), 639px (compact phone UI), 359px (very small phones), plus a short-landscape rule. Test at 320px, 375px, 768px and landscape.
-* **Desktop small-text sizes**: Small text is one step larger from 860px up, in a dedicated "Desktop: larger small text" block near the end of `style.css` (after the phone blocks, before the motion block): greeting, buttons and text links (1.125rem), section numbers, trophy caption, fact labels, `.when small`, entry meta and desc, skill labels and chips, `.stack`, project links, footer, and nav links (≥1024px only, because 768–1023px has its own smaller nav rule). Phones and small tablets keep their compact sizes. When adding new small text, give it a desktop size in that block instead of changing the base value, and keep the phone overrides intact. Use `.skill-row dt, .skill-row dt.wrap` as the selector for skill category labels so the `.wrap` override does not beat it.
-* **Motion**: All motion is CSS, inside `@media (prefers-reduced-motion: no-preference)` near the end of `style.css`, and uses only `translate`, `scale`, `clip-path` and `background-size` (never layout properties). On load: the hero name lines rise out of a mask (`.hero h1 .line > span`, the markup wraps each name in an inner span; `.line` gets `overflow: hidden` only inside the motion block), the red full stop and greeting square pop, the portrait and traits strip wipe in, the logo underline draws itself, and the lead and buttons fade up. On scroll (only under `@supports (animation-timeline: view())`, so Firefox and older browsers see the static page): a red progress line on the header (`header::after`, `scroll(root)`), `.sec-title` wipes in, and the ruled top lines of `.entry`, `.fact`, `.stat` and `.project` draw across; for those the real `border-top` is made transparent and `::before` is the visible rule, so the rule never disappears if the animation does not run. On hover (`hover: hover` only): `.btn`, `.text-link` and `.skill-row li` fill with a left-to-right sweep through a `background-size` transition. The base `:hover` rules use the `background` shorthand, which resets `background-image`, so the sweep image must be repeated in the `:hover` selectors; otherwise the fill vanishes and the text or icon turns white on white. Rules: never put an `animation` shorthand on elements that `script.js` animates (`.will-reveal` / `.revealed` cards) or it will override the reveal; use a pseudo-element or a child instead. Clip-path wipes on text need negative insets (see `title-wipe`) or they clip descenders.
-* **Project cards, timeline, copy feedback**: `renderProjects()` gives each card a mono red index (`.project-index`, 01, 02…) beside the title and turns the `stack` column into chips (`ul.stack > li`, split on `,` `;` `|` `·`, not `/` so "CI/CD" stays whole); link labels get a `↗` via `.project-links a::after`. The Experience groups (`.tree`) are a timeline: each role is a round red marker (`li::before`, `border-radius: 50%`, the second deliberate exception to the zero-radius rule after the hero icon buttons; the circular favicon is a third) joined to the next by a 2px black rail (`li:not(:last-child)::after`, drawn on scroll under `@supports (animation-timeline: view())`). `renderSkills()` renders every category as a row with no filter bar (a category filter existed and was removed on request; do not add it back unless asked); the first `.skill-row` gets the heavy top rule from `.skill-row:first-child`. The `Copy address` button gets `.copied` for 2 seconds on success (red fill, check icon replaces the copy icon, label reads "Copied"); keep both `.icon-copy` and `.icon-check` svgs inside it.
-* **Font**: `--display` and `--sans` are both `Inter` (headings, body, buttons). `--mono` (`JetBrains Mono`, weights 500/700 loaded in the Google Fonts link) is used only for small labels: the red section numbers (`.sec-title::before`), the years (`.when`), the About stat numbers (`.stat dd`), the entry meta lines (`.entry .what .meta`) and the project stack line (`.stack`). Do not use it for headings, body copy or buttons. The "Shams" signature nav logo (`.logo`) is the one deliberate exception to the single-typeface rule: it uses `--logo` (`Mr Dafoe`, a brush-script signature with a single weight) so the mark contrasts with the Inter headings. Do not use `--logo` anywhere else. Headings rely on Inter weight 800 with negative letter-spacing; do not go above weight 800. If the Google Fonts link changes, keep all three families in it.
-* **Logo**: The header mark (`a.logo` in `index.html`) is the word "Shams" as a signature: plain text set in `--logo` (`Mr Dafoe`, weight 400 because the font has only one, `2.4rem`, `2rem` at ≤639px, no letter-spacing), underlined by a red hand-drawn brush swoosh (one filled shape, tapered to a point at both ends and rising slightly to the right). The underline is `.logo::after` (absolutely positioned under the text, `height: 0.3em`) using an inline SVG data-URI background with one filled `--accent`-red (`#E4002B`) shape and `preserveAspectRatio="none"` so it stretches to the text width. If `--accent` changes, update the `%23E4002B` colour inside that data URI too. `.logo` is `position: relative` with `padding-bottom: 0.2em` to make room for it. Keep the text as real text (the link has an `aria-label`), not an image. There is no red square any more. Earlier "SK" monograms (Inter, mono, serif italics and several SVG versions) were tried and rejected. The favicon is `favicon.svg` in the site root, linked from `<head>` with `<link rel="icon" href="/favicon.svg" type="image/svg+xml">`. It must stay a real, crawlable file (not a data URI, not blocked in `robots.txt`) because Google ignores data-URI favicons and shows a grey globe instead; Google re-fetches favicons slowly, so a change can take days to weeks to show in search. It is a muted red circle (`#BC2843`, the accent at about 65% saturation, deliberately not `--accent` so the small icon is softer; `r='46'`) with an 8-unit black (`#0A0A0A`) border that together fill the 100x100 box, and a black (`#0A0A0A`) "S" drawn as a path taken from the Mr Dafoe font (SVG favicons cannot load web fonts, so the glyph outline is embedded; extract it again with fontTools `SVGPathPen` and flip it with `scale(.07 -.07)` if the logo font changes). `og-image.png` carries the same signature (see Structure).
+### Layout Rules
+- **Section Structure:** Title in columns 1-4, content in 5-12 (except Projects section)
+- **Light Mode Only:** Single light theme with no dark mode toggle
+- **Section Numbers:** Red mono numbers before each section title
+- **Google Sheets CMS:** Dynamic content for projects and skills
+
+### Accessibility
+- **XSS Protection:** Safe DOM rendering using `textContent` and `safeUrl()`
+- **Motion:** All animations gated behind `prefers-reduced-motion`
+- **Keyboard Navigation:** Full support
+
+---
+
+## Implementation Details
+
+### Sticky Section Stacking
+- Every `main > section` uses `position: sticky`
+- Custom properties `--h` and `--hdr` updated via `ResizeObserver`
+- New sections must declare opaque `background-color`
+
+### Navigation
+- Active nav link marked with `aria-current="true"`
+- Custom anchor scrolling for sticky sections
+- Section becomes current when natural top passes 30% of viewport
+
+### Google Sheets Integration
+
+#### CSV Schema
+
+**Projects Table:**
+- `name` (required)
+- `description`
+- `stack` (comma-separated for chips)
+- `live_url`
+- `github_url`
+- `order` (optional numeric)
+- `visible` (false/no/0/hidden hides row)
+
+**Skills Table:**
+- `category` (required)
+- `skill` (required)
+- `full_name` (optional `<abbr title>`)
+- `visible`
+
+### Skill Icons
+- Devicon SVGs from jsDelivr
+- Local overrides for specific icons (e.g., `c` → `icon-c.svg`)
+- Fallback to text chips if icon fails to load
+- Icon sizes: 28px base, 24px at ≤639px, 32px from 860px
+
+### Animation System
+- CSS-based animations only
+- Respects `prefers-reduced-motion`
+- Uses `translate`, `scale`, `clip-path`, and `background-size`
+- Entrance animations, scroll-triggered reveals, and hover effects
+
+---
+
+## Technical Components
+
+### Hero Section
+- Name animation with portrait on right (4:5 aspect ratio)
+- Icon-only buttons with text in visually hidden labels
+- Responsive layout: portrait moves to right on desktop, below name on mobile
+
+### Traits Strip
+- Red band with scrolling text items
+- Horizontal scroll on mobile, static on desktop
+- Smooth marquee effect with reduced motion fallback
+
+### About Section
+- Trophy photo with caption
+- Biography text
+- Count-up stats (CGPA, students taught, contest placement)
+- Facts about daily driver, current focus, future goals
+
+### Experience Section
+- Timeline with red markers and connecting rails
+- Scroll-triggered rail drawing animation
+
+### Skills Section
+- Categorized skills with icon chips
+- Devicon icons with hover labels
+- Fallback to text chips if icon fails to load
+
+### Projects Section
+- Dynamic project cards from Google Sheets
+- Indexed cards (01, 02...)
+- Stack technology chips
+- Live demo and GitHub links
+- Scroll reveal animation
+
+### Contact Section
+- Email address with copy button
+- Full-screen layout to prevent projects from showing above
+
+---
+
+## Critical Implementation Notes
+
+### Layout Stability
+- `min-height` on `#projects .list` (`22rem`) and `#skills .skills` (`18rem`)
+- Prevents sticky sections from jumping when CSV rows load
+
+### Social Media Optimization
+- Open Graph image caching considerations
+- Version query parameter (`?v=N`) for cache busting
+- LinkedIn Post Inspector for cache refresh
+
+### Structured Data & SEO
+- JSON-LD `ProfilePage` in `<head>` linked to `WebSite` schema (`#website`) via `isPartOf`
+- `mainEntity` is `Person` (`#person`) with `name`, `alternateName` (`["Shams", "shams-27"]`), `email`, `nationality`, `alumniOf`, `knowsAbout`, and `sameAs`
+- Must stay valid JSON; no trailing commas
+- Keep in sync with page content: update `dateModified` (and `<lastmod>` in `sitemap.xml`) when content changes
+- Meta tags include `keywords`, `author`, `canonical`, `hreflang` (`x-default`, `en`), Open Graph (`og:site_name`, `og:locale`), and Twitter Card with `twitter:image:alt`
+- `sitemap.xml` provides `<changefreq>monthly</changefreq>`, `<priority>1.0</priority>`, and `<image:caption>` for the portrait entry
+
+### Hero Section
+- Fills first screen on every device
+- Portrait capped at `58vh` on desktop
+- Icon-only buttons with text in visually hidden labels
+
+### Image Handling
+- Pre-resized images with `srcset` and `sizes`
+- Never let browser shrink large originals
+- Maintain proper aspect ratios
+
+### Font Usage
+- `--display` and `--sans`: Inter (headings, body, buttons)
+- `--mono`: JetBrains Mono (small labels only)
+- `--logo`: Mr Dafoe (signature logo only)
+
+### Logo Implementation
+- Signature logo with red swoosh underline
+- SVG data-URI background for underline
+- Favicon with muted red circle and black "S"
+
+---
+
+## Customization Guidelines
+
+### Adding New Skills
+1. Add to Google Sheets under "Skills" tab
+2. Map to Devicon icon in `SKILL_ICONS` object
+3. Add to `SKILL_ICON_LOCAL` if using custom SVG
+
+### Adding New Projects
+1. Add to Google Sheets under "Projects" tab
+2. Set `visible` to "true" (default)
+3. Optionally set `order` for custom sorting
+
+### Modifying Layout
+- Edit CSS variables in `:root` selector
+- Adjust grid columns in `.section-grid` media queries
+- Modify breakpoints in media queries
+
+### Changing Colors
+- Update `--accent` variable (currently `#E4002B`)
+- Update SVG color references (like in favicon.svg)
+- Update Open Graph image colors
+
+---
+
+## Performance Considerations
+
+### Offline Support & Service Worker
+- `sw.js` caches critical assets (`/`, `index.html`, `style.css`, `script.js`, portraits, achievement photo, SVG icons, and Google Fonts)
+- Cache-first strategy for static assets, network fallback with dynamic cache population
+- Clean activation handler to evict outdated cache versions
+
+### Core Web Vitals & Error Monitoring
+- Non-blocking `PerformanceObserver` in `script.js` monitoring Largest Contentful Paint (LCP) and Cumulative Layout Shift (CLS)
+- Window listeners for `error` and `unhandledrejection` events for diagnostics
+
+### Image Optimization
+- Pre-resized images with `srcset` and `sizes`
+- Lazy loading for non-critical images
+- Proper aspect ratios maintained
+
+### Resource Loading
+- Google Fonts loaded with `display=swap`
+- Non-critical JS deferred
+
+### Caching
+- LocalStorage caching for Google Sheets data
+- Stale-while-revalidate strategy
+
+---
+
+## Maintenance Instructions
+
+### Content Updates
+1. Edit content in Google Sheets
+2. Update images when needed
+3. Regenerate `og-image.png` when visual elements change
+4. Bump version in Open Graph tags when image changes
+
+### Version Control
+- All changes should be committed with clear messages
+- Follow semantic versioning for major visual changes
+
+---
+
+## Contact Information
+
+For questions or contributions:
+- Email: kabir.shams.2002@gmail.com
+- GitHub: [shams-27](https://github.com/shams-27)
+- LinkedIn: [shams-kbr](https://www.linkedin.com/in/shams-kbr/)
