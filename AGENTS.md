@@ -36,7 +36,10 @@
 ├── Shams.jpg           # Hero portrait (800x1000, 4:5 crop)
 ├── achievement.jpg     # DIU CodeTrap trophy photo
 ├── og-image.png        # Open Graph social preview card
-└── Shams.jpeg          # Unused portrait asset
+├── Shams.jpeg          # Unused portrait asset
+└── posts/              # Standalone articles and case studies
+    ├── template.html   # Reusable article boilerplate
+    └── diu-codetrap-2025.html # CodeTrap 4th-place retrospective with trophy photo
 ```
 
 ---
@@ -105,6 +108,15 @@ python3 -m http.server 8000
 - `full_name` (optional `<abbr title>`)
 - `visible`
 
+**Writing Table** (gid=2094789442):
+- `title` (required)
+- `description`
+- `url` (relative like `/posts/diu-codetrap-2025.html` or external link)
+- `date` (e.g. `2025.05` or `May 2025`)
+- `read_time` (e.g. `6 min read`)
+- `tag` (e.g. `[Contest] [Algorithms]`)
+- `visible` (false/no/0/hidden hides row)
+
 ### Skill Icons
 - Devicon SVGs from jsDelivr
 - Local overrides for specific icons (e.g., `c` → `icon-c.svg`)
@@ -135,14 +147,13 @@ python3 -m http.server 8000
 - Trophy photo with caption
 - Biography text
 - Count-up stats (CGPA, students taught, contest placement)
-- Facts about daily driver, current focus, future goals
 
 ### Experience Section
 - Timeline with red markers and connecting rails
 - Scroll-triggered rail drawing animation
 
-### Skills Section
-- Categorized skills with icon chips
+### Tech Stack Section
+- Categorized skills and technologies with icon chips
 - Devicon icons with hover labels
 - Fallback to text chips if icon fails to load
 
@@ -152,6 +163,11 @@ python3 -m http.server 8000
 - Stack technology chips
 - Live demo and GitHub links
 - Scroll reveal animation
+
+### Writing Section
+- Curated technical essays, contest retrospectives, and engineering notes
+- Dynamic rows from Google Sheets (`writing` tab) with initial fallback
+- Ruled entries matching Swiss Style hierarchy with year markers and `↗` link animations
 
 ### Contact Section
 - Email address with copy button

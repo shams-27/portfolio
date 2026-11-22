@@ -11,4 +11,15 @@
             <image:caption>Portrait of Shams Kabir, Software Engineering undergraduate</image:caption>
         </image:image>
     </url>
+    <url>
+        <loc>https://shams.swe.bd/posts/diu-codetrap-2025.html</loc>
+        <lastmod>2026-11-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://shams.swe.bd/achievement.jpg</image:loc>
+            <image:title>DIU CodeTrap Spring 2025 Trophy</image:title>
+            <image:caption>4th place trophy from DIU CodeTrap Programming Contest</image:caption>
+        </image:image>
+    </url>
 </urlset>

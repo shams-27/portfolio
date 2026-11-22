@@ -32,7 +32,10 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 ├── icon-c.svg          # Local C logo for skills section
 ├── Shams.jpg           # Hero portrait (800x1000)
 ├── achievement.jpg     # DIU CodeTrap trophy photo
-└── og-image.png        # Open Graph social preview card
+├── og-image.png        # Open Graph social preview card
+└── posts/              # Articles and case studies
+    ├── template.html   # Reusable article boilerplate
+    └── diu-codetrap-2025.html # CodeTrap 4th-place retrospective with trophy photo
 ```
 
 ---
@@ -97,7 +100,6 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
   - Trophy photo with caption
   - Biography text
   - Stats (CGPA, students taught, contest placement)
-  - Facts (daily driver, current focus, future goals)
 - **Animation**: Count-up numbers, scroll reveal
 
 ### 4. Experience Section
@@ -108,8 +110,8 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 - **Content**: Academic history with degrees and institutions
 - **Features**: Clean ruled entries with year markers
 
-### 6. Skills Section
-- **Content**: Categorized skills with icon chips
+### 6. Tech Stack Section
+- **Content**: Categorized technologies and tools with icon chips
 - **Features**:
   - Devicon icons with hover labels
   - Fallback to text chips if icon fails to load
@@ -123,9 +125,16 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
   - Live demo and GitHub links
   - Scroll reveal animation
 
-### 8. Contact Section
+### 8. Writing Section
+- **Content**: Technical essays, contest retrospectives, and engineering breakdowns
+- **Features**:
+  - Ruled Swiss layout with mono dates and tag chips
+  - Google Sheets CMS integration with initial fallback
+  - Standalone article support with images, captions, and code blocks
+
+### 9. Contact Section
 - **Content**: Email address, copy button, Gmail link
-- **Features**: Full-screen layout to prevent projects from showing above
+- **Features**: Full-screen layout to prevent prior sections from showing above
 
 ---
 
@@ -135,12 +144,14 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 ```javascript
 const SHEETS = {
   projects: 'https://docs.google.com/spreadsheets/.../output=csv',
-  skills: 'https://docs.google.com/spreadsheets/.../output=csv'
+  skills: 'https://docs.google.com/spreadsheets/.../output=csv',
+  writing: 'https://docs.google.com/spreadsheets/.../output=csv'
 };
 
 // CSV Schema:
 // Projects: name, description, stack, live_url, github_url, order, visible
 // Skills: category, skill, full_name, visible
+// Writing: title, description, url, date, read_time, tag, order, visible
 ```
 
 ### Animation System
