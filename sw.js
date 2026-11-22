@@ -10,6 +10,10 @@ const ASSETS_TO_CACHE = [
     '/achievement.jpg',
     '/achievement-480.jpg',
     '/favicon.svg',
+    '/favicon.ico',
+    '/favicon-48x48.png',
+    '/favicon-96x96.png',
+    '/apple-touch-icon.png',
     '/icon-c.svg',
     '/og-image.png',
     'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&family=JetBrains+Mono:wght@500;700&display=swap'

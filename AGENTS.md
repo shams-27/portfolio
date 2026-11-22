@@ -26,7 +26,11 @@
 ├── script.js           # Google Sheets CSV parser/cache, sticky height observer, UI controls, Core Web Vitals, error tracking
 ├── sw.js               # Service Worker caching core assets and Google Fonts for offline support
 ├── robots.txt          # Crawler directives
-├── favicon.svg         # Tab icon and search result icon
+├── favicon.svg         # SVG vector tab icon
+├── favicon.ico         # Root multi-res favicon (16x16, 32x32, 48x48) for Googlebot and older browsers
+├── favicon-48x48.png   # 48px square PNG favicon (Google Search standard)
+├── favicon-96x96.png   # 96px square PNG favicon (high-DPI Google Search standard)
+├── apple-touch-icon.png# 180px PNG icon for Apple iOS homescreen / bookmarks
 ├── sitemap.xml         # Single-URL sitemap with portrait image entry, changefreq, priority, and caption
 ├── icon-c.svg          # Local C logo for skills section
 ├── Shams.jpg           # Hero portrait (800x1000, 4:5 crop)
@@ -189,10 +193,14 @@ python3 -m http.server 8000
 - `--mono`: JetBrains Mono (small labels only)
 - `--logo`: Mr Dafoe (signature logo only)
 
-### Logo Implementation
+### Logo Implementation & Favicons
 - Signature logo with red swoosh underline
 - SVG data-URI background for underline
-- Favicon with muted red circle and black "S"
+- Favicon with muted red circle and black "S":
+  - `favicon.svg`: Vector icon for modern browser tabs
+  - `favicon.ico`: Multi-resolution (16, 32, 48) at domain root; required by Googlebot which automatically probes `/favicon.ico`
+  - `favicon-48x48.png` & `favicon-96x96.png`: Multiples of 48px square PNGs explicitly required by Google Search guidelines to display custom favicons in search results instead of the default globe
+  - `apple-touch-icon.png`: 180x180 PNG for Apple devices
 
 ---
 

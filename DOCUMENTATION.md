@@ -23,7 +23,11 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 ├── script.js           # Google Sheets CSV parser, UI controls, Core Web Vitals, error tracking
 ├── sw.js               # Service Worker caching core assets and Google Fonts for offline support
 ├── robots.txt          # Crawler directives
-├── favicon.svg         # Tab icon and search result icon
+├── favicon.svg         # Tab icon and SVG vector icon
+├── favicon.ico         # Root multi-res ICO favicon (16/32/48) for Googlebot and search crawlers
+├── favicon-48x48.png   # 48px square PNG favicon (Google Search standard)
+├── favicon-96x96.png   # 96px square PNG favicon (high-DPI Google Search standard)
+├── apple-touch-icon.png# 180px PNG icon for Apple devices
 ├── sitemap.xml         # Single-URL sitemap with portrait image entry, changefreq, priority, and caption
 ├── icon-c.svg          # Local C logo for skills section
 ├── Shams.jpg           # Hero portrait (800x1000)
