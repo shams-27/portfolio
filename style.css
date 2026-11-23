@@ -424,6 +424,9 @@ abbr[title] { text-decoration: none; cursor: help; }
     display: grid;
     gap: 0;
 }
+/* Writing entries carry a text label under the year ("Retrospective"), so the year column must be wider than for Experience/Education */
+.writing-entry { grid-template-columns: clamp(8rem, 20%, 10rem) 1fr; }
+.writing-entry .when small { overflow-wrap: anywhere; }   /* safety net for longer labels */
 .writing-title-link {
     text-decoration: none;
     color: inherit;
@@ -818,6 +821,10 @@ main > .strip { position: relative; }
     .fact dd { font-size: 1.0625rem; }
 
     .entry { grid-template-columns: 4.5rem 1fr; column-gap: 1rem; padding: 0.9rem 0 1.2rem; }
+    /* Writing: stack year + label above the title so the title gets the full width */
+    .writing-entry { grid-template-columns: 1fr; row-gap: 0.5rem; }
+    .writing-entry .when { display: flex; align-items: baseline; gap: 0.75rem; }
+    .writing-entry .when small { margin-top: 0; }
     .when { font-size: 1.5rem; }
     .entry h3 { font-size: 1.15rem; }
     .entry .what .meta { font-size: 0.75rem; }

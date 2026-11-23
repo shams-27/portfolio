@@ -172,6 +172,7 @@ python3 -m http.server 8000
 - Curated technical essays, contest retrospectives, and engineering notes
 - Dynamic rows from Google Sheets (`writing` tab) with initial fallback. Sheet rows replace the fallback in `index.html`, so keep the sheet's description and read time in sync with the post (post: 2 min read)
 - Ruled entries matching Swiss Style hierarchy with year markers and `↗` link animations
+- Writing entries override the year column (`.writing-entry`, `clamp(8rem, 20%, 10rem)`) because the `<small>` label under the year (e.g. "Retrospective") is wider than the default `.entry` year column. At ≤639px they stack: year and label sit in one row above the title. Keep labels to one short word; `overflow-wrap: anywhere` is only a fallback.
 
 ### Contact Section
 - Email address with copy button
@@ -254,7 +255,7 @@ python3 -m http.server 8000
 - `sw.js` caches critical assets (`/`, `index.html`, `style.css`, `script.js`, portraits, achievement photo, SVG icons, and Google Fonts)
 - Cache-first strategy for static assets, network fallback with dynamic cache population
 - Clean activation handler to evict outdated cache versions
-- Bump `CACHE_NAME` (currently `portfolio-cache-v8`) whenever `style.css`, `script.js`, or other cached assets change, otherwise returning visitors keep the stale cached copy
+- Bump `CACHE_NAME` (currently `portfolio-cache-v9`) whenever `style.css`, `script.js`, or other cached assets change, otherwise returning visitors keep the stale cached copy
 
 ### Core Web Vitals & Error Monitoring
 - Non-blocking `PerformanceObserver` in `script.js` monitoring Largest Contentful Paint (LCP) and Cumulative Layout Shift (CLS)
