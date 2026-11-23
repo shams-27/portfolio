@@ -35,11 +35,12 @@
 ├── icon-c.svg          # Local C logo for skills section
 ├── Shams.jpg           # Hero portrait (800x1000, 4:5 crop)
 ├── achievement.jpg     # DIU CodeTrap trophy photo
+├── codeTrapStanding.jpg # Toph standings screenshot used in the CodeTrap post (about 1880x999). Must be added manually; not in the service worker precache list, so a missing file cannot break SW install. Post also links to https://toph.co/c/diu-codetrap-spring-2025/standings
 ├── og-image.png        # Open Graph social preview card
 ├── Shams.jpeg          # Unused portrait asset
 └── posts/              # Standalone articles and case studies
     ├── template.html   # Reusable article boilerplate
-    └── diu-codetrap-2025.html # CodeTrap 4th-place retrospective with trophy photo
+    └── diu-codetrap-2025.html # CodeTrap 4th-place post: result, standings breakdown (A-I; header figure X/Y = X of Y solved that problem correctly), trophy photo. Content comes only from the LinkedIn post and the Toph standings screenshot; do not add unverified details
 ```
 
 ---
@@ -81,6 +82,7 @@ python3 -m http.server 8000
 
 ### Sticky Section Stacking
 - Every `main > section` uses `position: sticky`
+- The sticky header rule is scoped to `body > header` (and its progress-line `::after`). Article pages contain a nested `<header class="article-header">`; a bare `header` selector made it sticky and it overlapped the article body while scrolling. Never restore the bare `header` selector.
 - Custom properties `--h` and `--hdr` updated via `ResizeObserver`
 - New sections must declare opaque `background-color`
 
@@ -165,8 +167,10 @@ python3 -m http.server 8000
 - Scroll reveal animation
 
 ### Writing Section
+- Article pages (`posts/*.html`): text and trophy photo sit in `.article-layout` (grid). The trophy `<aside class="article-trophy">` is the right-hand column from 960px up and sits above the text below that.
+- Currently visible for testing: the `hidden` attribute was removed from both the `#writing` section and its nav `<li>` in `index.html`. Re-add `hidden` to both to hide it again.
 - Curated technical essays, contest retrospectives, and engineering notes
-- Dynamic rows from Google Sheets (`writing` tab) with initial fallback
+- Dynamic rows from Google Sheets (`writing` tab) with initial fallback. Sheet rows replace the fallback in `index.html`, so keep the sheet's description and read time in sync with the post (post: 2 min read)
 - Ruled entries matching Swiss Style hierarchy with year markers and `↗` link animations
 
 ### Contact Section
@@ -250,6 +254,7 @@ python3 -m http.server 8000
 - `sw.js` caches critical assets (`/`, `index.html`, `style.css`, `script.js`, portraits, achievement photo, SVG icons, and Google Fonts)
 - Cache-first strategy for static assets, network fallback with dynamic cache population
 - Clean activation handler to evict outdated cache versions
+- Bump `CACHE_NAME` (currently `portfolio-cache-v8`) whenever `style.css`, `script.js`, or other cached assets change, otherwise returning visitors keep the stale cached copy
 
 ### Core Web Vitals & Error Monitoring
 - Non-blocking `PerformanceObserver` in `script.js` monitoring Largest Contentful Paint (LCP) and Cumulative Layout Shift (CLS)

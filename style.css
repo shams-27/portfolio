@@ -70,8 +70,8 @@ a { color: inherit; text-decoration-thickness: 2px; text-underline-offset: 0.2em
 
 .wrap { max-width: 1400px; margin-inline: auto; padding-inline: var(--gutter); }
 
-/* Header */
-header {
+/* Header (site header only: article pages also have a <header class="article-header"> inside <article>, which must scroll normally) */
+body > header {
     position: sticky;
     top: 0;
     z-index: 100;
@@ -503,6 +503,18 @@ abbr[title] { text-decoration: none; cursor: help; }
     max-width: 68ch;
     padding-block: 2.5rem 5rem;
 }
+/* Trophy photo: above the text on small screens, in the empty right-hand column on desktop */
+.article-layout { display: grid; grid-template-columns: minmax(0, 1fr); }
+.article-trophy { order: -1; width: min(100%, 18rem); padding-top: 2rem; }
+.article-trophy .article-figure { margin: 0; }
+@media (min-width: 960px) {
+    .article-layout {
+        grid-template-columns: minmax(0, 68ch) clamp(14rem, 24vw, 22rem);
+        column-gap: clamp(2rem, 5vw, 5rem);
+        align-items: start;
+    }
+    .article-trophy { order: 0; width: 100%; padding-top: 2.5rem; }
+}
 .article-body h2 {
     font-size: clamp(1.5rem, 2.5vw, 2rem);
     font-weight: 800;
@@ -918,7 +930,7 @@ main > .strip { position: relative; }
 @media (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: view()) {
         /* Red progress line along the bottom edge of the header */
-        header::after {
+        body > header::after {
             content: '';
             position: absolute;
             left: 0;

@@ -1,5 +1,5 @@
 // sw.js
-const CACHE_NAME = 'portfolio-cache-v1';
+const CACHE_NAME = 'portfolio-cache-v8';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
