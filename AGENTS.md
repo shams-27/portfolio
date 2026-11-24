@@ -40,7 +40,7 @@
 ├── Shams.jpeg          # Unused portrait asset
 └── posts/              # Standalone articles and case studies
     ├── template.html   # Reusable article boilerplate
-    └── diu-codetrap-2025.html # CodeTrap 4th-place post: result, standings breakdown (A-I; header figure X/Y = X of Y solved that problem correctly), trophy photo. Content comes only from the LinkedIn post and the Toph standings screenshot; do not add unverified details
+    └── diu-codetrap-2025.html # CodeTrap 4th-place post: result, standings breakdown (A-I; problem-list figure X/Y = accepted submissions out of all submissions from every contestant, shown next to the same paper-plane icon as the Submissions link, not a count of people; problem titles: A The Maze of Twisting Scrolls, B Tic-Toc Tic-Toc: Run For Your Life, C Duplify Tree, D Jaundice, E Because Brains Run on Biryani!, F Countdown to Freedom, G Clash of Permutations, H Circle of Secrets, I Flags Outage; each scoreboard cell `T (+N)` = minute T of the first accepted run, after N rejected runs at 20 penalty minutes each, so the total penalty = sum of T + 20 x N, e.g. 642 = 382 + 13 x 20), trophy photo. Content comes only from the LinkedIn post and the Toph standings screenshot; do not add unverified details
 ```
 
 ---
@@ -110,14 +110,7 @@ python3 -m http.server 8000
 - `full_name` (optional `<abbr title>`)
 - `visible`
 
-**Writing Table** (gid=2094789442):
-- `title` (required)
-- `description`
-- `url` (relative like `/posts/diu-codetrap-2025.html` or external link)
-- `date` (e.g. `2025.05` or `May 2025`)
-- `read_time` (e.g. `6 min read`)
-- `tag` (e.g. `[Contest] [Algorithms]`)
-- `visible` (false/no/0/hidden hides row)
+**Writing:** not in the sheet. Writing entries are plain HTML in `index.html` (see Writing Section).
 
 ### Skill Icons
 - Devicon SVGs from jsDelivr
@@ -146,8 +139,7 @@ python3 -m http.server 8000
 - Smooth marquee effect with reduced motion fallback
 
 ### About Section
-- Trophy photo with caption
-- Biography text
+- Biography text spans the full content column (columns 5-12), with the count-up stats below. The tagline (first paragraph) is set in Inter 800 with tight tracking, balanced over about three lines (`max-width: 28ch`), and its last word "stuck." is wrapped in `<span class="accent">` to make it red, echoing the red full stop in the hero name. Keep the red to that one word. There is no side column: the trophy photo now lives only on the article page, and the old `.trophy` / two-column `.about-top` CSS was removed because the empty second column left unused space on the right
 - Count-up stats (CGPA, students taught, contest placement)
 
 ### Experience Section
@@ -170,9 +162,10 @@ python3 -m http.server 8000
 - Article pages (`posts/*.html`): text and trophy photo sit in `.article-layout` (grid). The trophy `<aside class="article-trophy">` is the right-hand column from 960px up and sits above the text below that.
 - Currently visible for testing: the `hidden` attribute was removed from both the `#writing` section and its nav `<li>` in `index.html`. Re-add `hidden` to both to hide it again.
 - Curated technical essays, contest retrospectives, and engineering notes
-- Dynamic rows from Google Sheets (`writing` tab) with initial fallback. Sheet rows replace the fallback in `index.html`, so keep the sheet's description and read time in sync with the post (post: 2 min read)
+- Static HTML only, no Google Sheets: each post is one `<article class="entry writing-entry">` inside `#writing .writing-list` in `index.html`. To add a post: create `posts/<slug>.html` from `posts/template.html`, copy the existing entry in `index.html` and update its title, year/label, date, read time, tags, description and link, then add the post to the `sw.js` precache list and `sitemap.xml`. Keep each entry's description, read time and tags in sync with its post (current post: 2 min read, `[Contest] [Competitive Programming]`). `script.js` no longer has a `renderWriting` function or a `writing` entry in `SHEETS`; it only clears the old `sheet:writing` localStorage key.
 - Ruled entries matching Swiss Style hierarchy with year markers and `↗` link animations
 - Writing entries override the year column (`.writing-entry`, `clamp(8rem, 20%, 10rem)`) because the `<small>` label under the year (e.g. "Retrospective") is wider than the default `.entry` year column. At ≤639px they stack: year and label sit in one row above the title. Keep labels to one short word; `overflow-wrap: anywhere` is only a fallback.
+- Writing text is justified (`text-align: justify; hyphens: auto`) on the homepage entry descriptions (`.writing-entry .desc`) and on article body paragraphs and list items (`.article-body p`, `.article-body ul li`). This is a deliberate exception to the flush-left Swiss default; article titles, leads, captions and meta lines stay left-aligned. `hyphens: auto` depends on `lang="en"` on `<html>`, so keep it on every article page.
 
 ### Contact Section
 - Email address with copy button
@@ -255,7 +248,7 @@ python3 -m http.server 8000
 - `sw.js` caches critical assets (`/`, `index.html`, `style.css`, `script.js`, portraits, achievement photo, SVG icons, and Google Fonts)
 - Cache-first strategy for static assets, network fallback with dynamic cache population
 - Clean activation handler to evict outdated cache versions
-- Bump `CACHE_NAME` (currently `portfolio-cache-v9`) whenever `style.css`, `script.js`, or other cached assets change, otherwise returning visitors keep the stale cached copy
+- Bump `CACHE_NAME` (currently `portfolio-cache-v16`) whenever `style.css`, `script.js`, or other cached assets change, otherwise returning visitors keep the stale cached copy
 
 ### Core Web Vitals & Error Monitoring
 - Non-blocking `PerformanceObserver` in `script.js` monitoring Largest Contentful Paint (LCP) and Cumulative Layout Shift (CLS)

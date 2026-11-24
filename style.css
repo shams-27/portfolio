@@ -282,7 +282,15 @@ nav {
 /* About */
 .about-body p { font-size: clamp(1.125rem, 1.6vw, 1.375rem); line-height: 1.6; max-width: 66ch; }
 .about-body p + p { margin-top: 1.25rem; }
-.about-body p:first-child { font-size: clamp(1.6rem, 2.8vw, 2.5rem); font-weight: 600; line-height: 1.2; letter-spacing: -0.025em; margin-bottom: 1.75rem; }
+.about-body { container-type: inline-size; }   /* lets the tagline size itself to the column width (cqw) */
+.about-body p:first-child { max-width: none; font-size: clamp(1.6rem, 3vw, 2.75rem); font-weight: 800; line-height: 1.08; letter-spacing: -0.04em; text-wrap: balance; margin-bottom: 1.75rem; }
+.about-body .tag-line { display: block; }   /* the tagline is two lines: "...as a toddler," then "so it was only..." */
+/* Wide enough column: each tagline line stays on one line, and the size follows the column so the longer second line always fits */
+@container (min-width: 640px) {
+    .about-body p:first-child { font-size: min(2.75rem, 3.8cqw); }
+    .about-body .tag-line { white-space: nowrap; }
+}
+.about-body .accent { color: var(--accent); }   /* the one red word in the tagline, echoing the red full stop in the hero name */
 .about-body strong { font-weight: 700; }
 
 .about-top { display: block; }
@@ -311,18 +319,6 @@ nav {
 }
 
 @media (min-width: 640px) { .about-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 860px) {
-    .about-top { display: grid; grid-template-columns: minmax(0, 1fr) clamp(10rem, 17vw, 14rem); gap: 2.5rem var(--col-gap); align-items: start; }
-    .about-top .about-body { grid-column: 1; grid-row: 1; max-width: none; }
-    .trophy { grid-column: 2; grid-row: 1; width: 100%; }
-}
-/* Phones and small tablets: the photo floats right and the text wraps around it */
-@media (max-width: 859px) {
-    .about-top { display: flow-root; }
-    .trophy { float: right; width: clamp(7rem, 30vw, 10rem); margin: 0.4rem 0 0.9rem 1.1rem; }
-    .trophy figcaption { font-size: 0.6875rem; line-height: 1.25; margin-top: 0.4rem; }
-    .trophy figcaption strong { font-size: 0.8125rem; }
-}
 
 /* Lists of ruled entries (experience, education) and project cards */
 .list { display: grid; gap: 0; }
@@ -427,6 +423,7 @@ abbr[title] { text-decoration: none; cursor: help; }
 /* Writing entries carry a text label under the year ("Retrospective"), so the year column must be wider than for Experience/Education */
 .writing-entry { grid-template-columns: clamp(8rem, 20%, 10rem) 1fr; }
 .writing-entry .when small { overflow-wrap: anywhere; }   /* safety net for longer labels */
+.writing-entry .desc { text-align: justify; hyphens: auto; }   /* Writing text is justified; hyphens keep word gaps even (lang="en" is set on <html>) */
 .writing-title-link {
     text-decoration: none;
     color: inherit;
@@ -535,6 +532,8 @@ abbr[title] { text-decoration: none; cursor: help; }
     font-size: 1.125rem;
     line-height: 1.65;
     margin-bottom: 1.25rem;
+    text-align: justify;
+    hyphens: auto;
 }
 .article-body strong {
     font-weight: 700;
@@ -569,6 +568,8 @@ abbr[title] { text-decoration: none; cursor: help; }
     font-size: 1.0625rem;
     line-height: 1.6;
     margin-bottom: 0.5rem;
+    text-align: justify;
+    hyphens: auto;
 }
 .article-body pre code {
     display: block;
@@ -868,8 +869,6 @@ main > .strip { position: relative; }
     .btn, .text-link { font-size: 1.125rem; }
     .icon-svg { width: 18px; height: 18px; }
     .sec-title::before { font-size: 1.1875rem; }
-    .trophy figcaption { font-size: 1rem; }
-    .trophy figcaption strong { font-size: 1.125rem; }
     .fact dt { font-size: 1.1875rem; }
     .when small { font-size: 1rem; }
     .entry .what .meta { font-size: 1rem; }

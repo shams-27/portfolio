@@ -55,7 +55,7 @@ initPerformanceMetrics();
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Dark mode was removed; clear any theme choice saved by an earlier visit
-try { localStorage.removeItem('theme'); } catch { /* storage unavailable */ }
+try { localStorage.removeItem('theme'); localStorage.removeItem('sheet:writing'); } catch { /* storage unavailable */ }
 
 // Time-based hero greeting
 const greetingElement = document.getElementById('greeting');
@@ -180,7 +180,6 @@ if (stripTrack && stripTrack.firstElementChild) {
 const SHEETS = {
     projects: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRXXuVB514-q76YWrnec50cXnoXEU24bUA6PvUFhc7UltmmnEWVFdWD3_GiwPnYXTp8EiRnTktvKeGb/pub?gid=0&single=true&output=csv',
     skills: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRXXuVB514-q76YWrnec50cXnoXEU24bUA6PvUFhc7UltmmnEWVFdWD3_GiwPnYXTp8EiRnTktvKeGb/pub?gid=1426459479&single=true&output=csv',
-    writing: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRXXuVB514-q76YWrnec50cXnoXEU24bUA6PvUFhc7UltmmnEWVFdWD3_GiwPnYXTp8EiRnTktvKeGb/pub?gid=2094789442&single=true&output=csv',
 };
 
 // Minimal CSV parser (quoted fields, escaped quotes, line breaks inside quotes)
@@ -435,74 +434,6 @@ function renderSkills(rows) {
     dl.replaceChildren(...rowsEls);
 }
 
-function renderWriting(rows) {
-    const list = document.querySelector('#writing .writing-list');
-    if (!list) return;
-
-    const items = rows.filter(({ title, visible }) => title && isVisible(visible));
-    if (!items.length) return;
-
-    const hasOrder = items.some((r) => r.order !== '' && !isNaN(Number(r.order)));
-    const rank = (r) => (r.order !== '' && !isNaN(Number(r.order)) ? Number(r.order) : Infinity);
-    items.sort((a, b) => {
-        if (hasOrder) {
-            const diff = rank(a) - rank(b);
-            if (diff) return diff;
-        }
-        return (b.date || '').localeCompare(a.date || '');
-    });
-
-    const entries = items.map((w) => {
-        const entry = el('article', 'entry writing-entry');
-
-        const when = el('div', 'when', w.date ? String(w.date).slice(0, 4) : '');
-        if (w.tag) when.appendChild(el('small', '', w.tag.split(/[,|]/)[0].trim()));
-        entry.appendChild(when);
-
-        const what = el('div', 'what');
-        const h3 = el('h3');
-        const href = safeUrl(w.url) || w.url;
-        if (href) {
-            const a = el('a', 'writing-title-link', w.title);
-            a.href = href;
-            if (!href.startsWith('#') && !href.startsWith('/')) {
-                a.target = '_blank';
-                a.rel = 'noopener';
-            }
-            h3.appendChild(a);
-        } else {
-            h3.textContent = w.title;
-        }
-        what.appendChild(h3);
-
-        const metaParts = [];
-        if (w.date) metaParts.push(w.date);
-        if (w.read_time) metaParts.push(w.read_time);
-        if (w.tag) metaParts.push(w.tag);
-        if (metaParts.length) what.appendChild(el('p', 'meta', metaParts.join(' · ')));
-
-        if (w.description) what.appendChild(el('p', 'desc', w.description));
-
-        if (href) {
-            const links = el('div', 'writing-links');
-            const linkA = el('a', 'text-link-inline', 'Read article');
-            linkA.href = href;
-            if (!href.startsWith('#') && !href.startsWith('/')) {
-                linkA.target = '_blank';
-                linkA.rel = 'noopener';
-            }
-            links.appendChild(linkA);
-            what.appendChild(links);
-        }
-
-        entry.appendChild(what);
-        return entry;
-    });
-
-    list.replaceChildren(...entries);
-    revealOnScroll(entries);
-}
-
 // Show the last good copy instantly, then refresh from the sheet.
 // If the sheet can't be reached, the content already on the page stays.
 async function loadSheet(name, render) {
@@ -528,12 +459,11 @@ async function loadSheet(name, render) {
     }
 }
 
-// Education entries, About stats, and the project cards are handled in renderProjects
+// Education entries, About stats and the Writing entries are plain HTML; only .entry/.stat reveal-on-scroll is applied here. Projects and skills come from Google Sheets.
 revealOnScroll([...document.querySelectorAll('.entry, .stat')]);
 
 loadSheet('projects', renderProjects);
 loadSheet('skills', renderSkills);
-loadSheet('writing', renderWriting);
 
 // About stats: count-up on first reveal. The number ascends from zero to its value (3.90 runs 0.00 → 3.90, 100+ runs 000 → 100, 4th runs 0th → 4th) with an ease-out,
 // zero-padded to the final width so the mono font never shifts the suffix. The real text stays in a visually hidden span for screen readers.

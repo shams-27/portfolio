@@ -129,7 +129,7 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 - **Content**: Technical essays, contest retrospectives, and engineering breakdowns
 - **Features**:
   - Ruled Swiss layout with mono dates and tag chips
-  - Google Sheets CMS integration with initial fallback
+  - Plain HTML entries in `index.html` (no Google Sheets)
   - Standalone article support with images, captions, and code blocks
 
 ### 9. Contact Section
@@ -144,14 +144,13 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 ```javascript
 const SHEETS = {
   projects: 'https://docs.google.com/spreadsheets/.../output=csv',
-  skills: 'https://docs.google.com/spreadsheets/.../output=csv',
-  writing: 'https://docs.google.com/spreadsheets/.../output=csv'
+  skills: 'https://docs.google.com/spreadsheets/.../output=csv'
 };
 
 // CSV Schema:
 // Projects: name, description, stack, live_url, github_url, order, visible
 // Skills: category, skill, full_name, visible
-// Writing: title, description, url, date, read_time, tag, order, visible
+// Writing is not in the sheet: its entries are plain HTML in index.html
 ```
 
 ### Animation System
