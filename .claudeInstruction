@@ -1,0 +1,6 @@
+## Context & Token Discipline
+- **AGENTS.md**: Read ONCE at the start of a new session only. Never re-read it if it is already in context.
+- **Updating AGENTS.md**: Update ONLY on structural changes (new files, moved modules, changed APIs/entry points). Keep it under 50 lines—use terse bullet points, never logs or prose.
+- **Code Lookup**: Use `graphify` MCP for targeted queries (specific symbols, dependencies, or file outlines). Do not dump full files or full graphs unless directly editing that exact file.
+- **GitHub**: Use ONLY for remote state (PRs, issues, branches, commits)—never for reading local code.
+- **Output**: After edits, list only modified filenames (e.g., `index.html`). Do not paste code blocks unless explicitly asked.
