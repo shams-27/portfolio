@@ -291,6 +291,12 @@ nav {
     .about-body .tag-line { white-space: nowrap; }
 }
 .about-body .accent { color: var(--accent); }   /* the one red word in the tagline, echoing the red full stop in the hero name */
+/* Tagline, Swiss editorial style: line A is a small uppercase JetBrains Mono label led by a red square (like the hero greeting), line B is the big Inter 800 statement with "matter of time" ruled in black and "stuck." in red. */
+.about-body .tag-a { font-family: var(--mono); font-size: clamp(0.8125rem, 0.4em, 1.25rem); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.4; color: var(--muted); margin-bottom: 0.9em; }
+.about-body .tag-a::before { content: ''; display: inline-block; width: 0.6em; height: 0.6em; margin-right: 0.7em; background: var(--accent); }
+.about-body .tag-a strong { font-weight: 700; color: var(--ink); }
+.about-body .tag-b { font-weight: 800; letter-spacing: -0.04em; color: var(--ink); }
+.about-body .tag-rule { text-decoration: underline; text-decoration-color: var(--ink); text-decoration-thickness: 0.07em; text-underline-offset: 0.14em; }
 .about-body strong { font-weight: 700; }
 
 .about-top { display: block; }

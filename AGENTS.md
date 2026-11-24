@@ -139,7 +139,7 @@ python3 -m http.server 8000
 - Smooth marquee effect with reduced motion fallback
 
 ### About Section
-- Biography text spans the full content column (columns 5-12), with the count-up stats below. The tagline (first paragraph) is set in Inter 800 with tight tracking, balanced over about three lines (`max-width: 28ch`), and its last word "stuck." is wrapped in `<span class="accent">` to make it red, echoing the red full stop in the hero name. Keep the red to that one word. There is no side column: the trophy photo now lives only on the article page, and the old `.trophy` / two-column `.about-top` CSS was removed because the empty second column left unused space on the right
+- Biography text spans the full content column (columns 5-12), with the count-up stats below. The tagline (first paragraph) is a two-voice Swiss editorial combo split into two `<span class="tag-line">` lines. Line A (`.tag-a`, "I've been around tech since I was a toddler,") is a small uppercase JetBrains Mono 500 label in `--muted` (`clamp(0.8125rem, 0.4em, 1.25rem)`, tracking 0.04em) led by a red square (`::before`, like the hero greeting), with "tech" and "toddler," in bold ink (`<strong>`). Line B (`.tag-b`, "so it was only a matter of time before it stuck.") is the big Inter 800 statement in ink, with "matter of time" underlined in black (`.tag-rule`) and "stuck." in red. From a 640px column up, each line is `white-space: nowrap` and the font size follows the column width (`min(2.75rem, 3.8cqw)`) so the longer second line always fits; below that the lines wrap naturally but still start on their own line. The red goes on `<span class="accent">` (plus the small square in line A), echoing the red full stop in the hero name. Keep the red to that one word. There is no side column: the trophy photo now lives only on the article page, and the old `.trophy` / two-column `.about-top` CSS was removed because the empty second column left unused space on the right
 - Count-up stats (CGPA, students taught, contest placement)
 
 ### Experience Section
@@ -204,7 +204,7 @@ python3 -m http.server 8000
 
 ### Font Usage
 - `--display` and `--sans`: Inter (headings, body, buttons)
-- `--mono`: JetBrains Mono (small labels only)
+- `--mono`: JetBrains Mono (small labels only, including the About tagline's first line)
 - `--logo`: Mr Dafoe (signature logo only)
 
 ### Logo Implementation & Favicons
@@ -248,7 +248,7 @@ python3 -m http.server 8000
 - `sw.js` caches critical assets (`/`, `index.html`, `style.css`, `script.js`, portraits, achievement photo, SVG icons, and Google Fonts)
 - Cache-first strategy for static assets, network fallback with dynamic cache population
 - Clean activation handler to evict outdated cache versions
-- Bump `CACHE_NAME` (currently `portfolio-cache-v16`) whenever `style.css`, `script.js`, or other cached assets change, otherwise returning visitors keep the stale cached copy
+- Bump `CACHE_NAME` (currently `portfolio-cache-v20`) whenever `style.css`, `script.js`, or other cached assets change, otherwise returning visitors keep the stale cached copy
 
 ### Core Web Vitals & Error Monitoring
 - Non-blocking `PerformanceObserver` in `script.js` monitoring Largest Contentful Paint (LCP) and Cumulative Layout Shift (CLS)
