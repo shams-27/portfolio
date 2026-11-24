@@ -295,10 +295,10 @@ nav {
 /* Tagline, editorial style: both lines share one pattern. Inter 600 for the plain words, Instrument Serif italic (larger, optically matched) for the emphasis words; "stuck." is the one red word. */
 .about-body .tag-a, .about-body .tag-b { font-weight: 600; letter-spacing: -0.035em; line-height: 1.12; color: var(--ink); }
 .about-body .tag-a { margin-bottom: 0.1em; }
-.about-body .tag-a strong, .about-body .tag-rule, .about-body .tag-b .accent { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.22em; letter-spacing: -0.01em; line-height: 1; }
+.about-body .tag-a strong, .about-body .tag-rule, .about-body .tag-b .accent { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.22em; letter-spacing: -0.01em; line-height: 1; -webkit-text-stroke: 0.015em currentColor; }
 .about-body .tag-rule { text-decoration: none; }
 /* Same serif-italic emphasis for the two lead sentences (hero and contact) only; kept slightly smaller than the tagline's so it sits calmly in running text */
-.em-serif { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.18em; letter-spacing: -0.005em; line-height: 1; }
+.em-serif { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.18em; letter-spacing: -0.005em; line-height: 1; -webkit-text-stroke: 0.015em currentColor; }   /* Instrument Serif has one weight; the stroke thickens it */
 /* Red accents, used sparingly: the closing emphasis of each lead sentence (echoing "stuck." and the red full stop in the hero name), the "Present" of the current role, article links and bullets, and a red square before the footer line (echoing the hero greeting) */
 .em-red { color: var(--accent); }
 .entry .what .meta .now { color: var(--accent); font-weight: 700; }
