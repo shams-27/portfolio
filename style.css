@@ -18,6 +18,7 @@
     --display: var(--sans);
     --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;   /* small labels only: section numbers, years, meta, stack */
     --logo: 'Mr Dafoe', 'Brush Script MT', cursive;   /* the "Shams" signature nav logo only */
+    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, 'Times New Roman', serif;   /* italic emphasis words in the About tagline only */
     --gutter: max(clamp(1.25rem, 4vw, 3rem), env(safe-area-inset-left, 0px));
     --section: clamp(4rem, 8vw, 7rem);
     --col-gap: 2rem;
@@ -287,16 +288,24 @@ nav {
 .about-body .tag-line { display: block; }   /* the tagline is two lines: "...as a toddler," then "so it was only..." */
 /* Wide enough column: each tagline line stays on one line, and the size follows the column so the longer second line always fits */
 @container (min-width: 640px) {
-    .about-body p:first-child { font-size: min(2.75rem, 3.8cqw); }
+    .about-body p:first-child { font-size: min(2.75rem, 3.7cqw); }
     .about-body .tag-line { white-space: nowrap; }
 }
 .about-body .accent { color: var(--accent); }   /* the one red word in the tagline, echoing the red full stop in the hero name */
-/* Tagline, Swiss editorial style: line A is a small uppercase JetBrains Mono label led by a red square (like the hero greeting), line B is the big Inter 800 statement with "matter of time" ruled in black and "stuck." in red. */
-.about-body .tag-a { font-family: var(--mono); font-size: clamp(0.8125rem, 0.4em, 1.25rem); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.4; color: var(--muted); margin-bottom: 0.9em; }
-.about-body .tag-a::before { content: ''; display: inline-block; width: 0.6em; height: 0.6em; margin-right: 0.7em; background: var(--accent); }
-.about-body .tag-a strong { font-weight: 700; color: var(--ink); }
-.about-body .tag-b { font-weight: 800; letter-spacing: -0.04em; color: var(--ink); }
-.about-body .tag-rule { text-decoration: underline; text-decoration-color: var(--ink); text-decoration-thickness: 0.07em; text-underline-offset: 0.14em; }
+/* Tagline, editorial style: both lines share one pattern. Inter 600 for the plain words, Instrument Serif italic (larger, optically matched) for the emphasis words; "stuck." is the one red word. */
+.about-body .tag-a, .about-body .tag-b { font-weight: 600; letter-spacing: -0.035em; line-height: 1.12; color: var(--ink); }
+.about-body .tag-a { margin-bottom: 0.1em; }
+.about-body .tag-a strong, .about-body .tag-rule, .about-body .tag-b .accent { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.22em; letter-spacing: -0.01em; line-height: 1; }
+.about-body .tag-rule { text-decoration: none; }
+/* Same serif-italic emphasis for the two lead sentences (hero and contact) only; kept slightly smaller than the tagline's so it sits calmly in running text */
+.em-serif { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.18em; letter-spacing: -0.005em; line-height: 1; }
+/* Red accents, used sparingly: the closing emphasis of each lead sentence (echoing "stuck." and the red full stop in the hero name), the "Present" of the current role, article links and bullets, and a red square before the footer line (echoing the hero greeting) */
+.em-red { color: var(--accent); }
+.entry .what .meta .now { color: var(--accent); font-weight: 700; }
+.article-body a { text-decoration-color: var(--accent); transition: color 0.15s; }
+.article-body a:hover { color: var(--accent); }
+.article-body li::marker { color: var(--accent); }
+footer p::before { content: ''; display: inline-block; width: 0.55em; height: 0.55em; margin-right: 0.7em; background: var(--accent); vertical-align: 0.04em; }
 .about-body strong { font-weight: 700; }
 
 .about-top { display: block; }
@@ -430,6 +439,11 @@ abbr[title] { text-decoration: none; cursor: help; }
 .writing-entry { grid-template-columns: clamp(8rem, 20%, 10rem) 1fr; }
 .writing-entry .when small { overflow-wrap: anywhere; }   /* safety net for longer labels */
 .writing-entry .desc { text-align: justify; hyphens: auto; }   /* Writing text is justified; hyphens keep word gaps even (lang="en" is set on <html>) */
+/* Writing entry: a larger title (the serif-italic emphasis comes from .em-serif in the markup), the entry type in red, tags as the same outlined chips used for project stacks, and a red arrow on "Read article" */
+.writing-list .writing-entry h3 { font-size: clamp(1.3rem, 2.4vw, 2rem); line-height: 1.1; letter-spacing: -0.035em; }
+.writing-entry .when small { color: var(--accent); font-weight: 600; }
+.writing-tags { margin-top: 0.75rem; }
+.text-link-inline::after { color: var(--accent); }
 .writing-title-link {
     text-decoration: none;
     color: inherit;

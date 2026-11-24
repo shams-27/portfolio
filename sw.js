@@ -1,5 +1,5 @@
 // sw.js
-const CACHE_NAME = 'portfolio-cache-v20';
+const CACHE_NAME = 'portfolio-cache-v25';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
@@ -17,7 +17,7 @@ const ASSETS_TO_CACHE = [
     '/icon-c.svg',
     '/og-image.png',
     '/posts/diu-codetrap-2025.html',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&family=JetBrains+Mono:wght@500;700&display=swap'
+    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@1&family=Mr+Dafoe&family=JetBrains+Mono:wght@500;700&display=swap'
 ];
 
 self.addEventListener('install', (event) => {
