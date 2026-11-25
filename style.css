@@ -99,6 +99,7 @@ h1, h2, h3 { text-wrap: balance; }
 p { text-wrap: pretty; }
 a { color: inherit; text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.strip :focus-visible { outline-color: var(--black); }   /* red on red would be invisible */
 .skip-link {
     position: fixed;
     top: 0;
@@ -157,17 +158,29 @@ nav {
 .nav-end { display: flex; align-items: center; }
 .nav-links { display: flex; gap: 1.75rem; }
 .nav-links a {
+    position: relative;
     display: block;
-    padding: 0.25rem 0;
+    padding: 0.25rem 0 0.25rem 0.6rem;
     font-size: 1rem;
     font-weight: 500;
     text-decoration: none;
     border-bottom: var(--rule) solid transparent;
     transition: color 0.15s, border-color 0.15s;
 }
+.nav-num { display: none; }
 .nav-links a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 /* Current section (set from script.js). Declared before the mobile menu rules so the menu's hover fill still wins */
-.nav-links a[aria-current] { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-links a[aria-current] { color: var(--accent); border-bottom-color: transparent; }
+.nav-links a[aria-current]::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    transform: translateY(-50%);
+}
 
 .nav-toggle {
     display: none;
@@ -232,14 +245,25 @@ nav {
 }
 #greeting {
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.35rem 0.6rem;
     align-self: flex-start;
     font-size: 1.0625rem;
     font-weight: 600;
     margin-bottom: clamp(0.75rem, 2.5vh, 1.5rem);
 }
 #greeting::before { content: ''; width: 0.7rem; height: 0.7rem; background: var(--accent); }
+#greeting .availability {
+    flex-basis: 100%;
+    padding-left: calc(0.7rem + 0.6rem);   /* lines up under the greeting text, past the red square */
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
 
 .hero h1 {
     font-size: clamp(3.5rem, min(20vw, 17vh), 14rem);
@@ -255,7 +279,7 @@ nav {
 .hero-lead { max-width: 30ch; font-size: clamp(1.25rem, 2.2vw, 1.75rem); font-weight: 500; line-height: 1.25; letter-spacing: -0.015em; }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: clamp(1rem, 3vh, 2rem); }
 /* Hero buttons are icon-only on every screen; the text stays in .label for screen readers and in the title tooltip */
-.hero-actions .btn, .hero-actions .text-link { position: relative; justify-content: center; padding: 0.9rem; border-radius: 50%; }
+.hero-actions .btn, .hero-actions .text-link { position: relative; justify-content: center; padding: 0.9rem; }
 .hero-actions .icon-svg { width: 24px; height: 24px; }
 .hero-actions .label { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (min-width: 860px) {
@@ -314,6 +338,14 @@ nav {
     letter-spacing: 0;
     color: var(--accent);
 }
+.sec-title::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: var(--hair);
+    margin-top: 1.25rem;
+    background: var(--black);
+}   /* rule under each title, tying it to the content grid */
 
 @media (min-width: 860px) {
     .section-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); row-gap: 0; }
@@ -477,6 +509,21 @@ abbr[title] { text-decoration: none; cursor: help; }
 .project-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: auto; padding-top: 1.25rem; }
 .project-links a { padding-block: 0.35rem; font-size: 1rem; font-weight: 600; transition: color 0.15s; }
 .project-links a::after { content: '\2197'; display: inline-block; margin-left: 0.3em; transition: translate 0.2s var(--ease); }
+/* Card-level affordance, pinned to the right of the link row and nudged on hover/focus */
+.project-links::after {
+    content: 'VIEW \2192';
+    margin-left: auto;
+    align-self: center;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    white-space: nowrap;
+    transition: translate 0.2s var(--ease);
+}
+.project:hover .project-links::after, .project:focus-within .project-links::after { translate: 4px 0; }
+@media (max-width: 639px) { .project-links::after { display: none; } }
 @media (hover: hover) { .project-links a:hover::after { translate: 2px -2px; } }
 .project-links a:hover { color: var(--accent); }
 @media (hover: hover) { .project:hover h3 { color: var(--accent); } }
@@ -688,6 +735,15 @@ abbr[title] { text-decoration: none; cursor: help; }
 }
 .contact-email:hover { color: var(--accent); }
 .contact-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: 2rem; }
+.contact-social { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 1.25rem; }
+.contact-social a {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 0.2em;
+    transition: color 0.15s;
+}
+.contact-social a:hover { color: var(--accent); }
 .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Footer and back-to-top */
@@ -736,8 +792,8 @@ main > .strip { position: relative; }
     .hero-photo { width: clamp(6rem, 24vh, 13rem); }
 }
 @media (min-width: 768px) and (max-width: 1023px) {
-    .nav-links { gap: 1rem; }
-    .nav-links a { font-size: 0.9375rem; }
+    .nav-links { gap: 0.6rem; }
+    .nav-links a { font-size: 0.875rem; padding-left: 0.5rem; }
 }
 
 /* Desktop: hero on the same 12 columns as every section */
@@ -787,6 +843,7 @@ main > .strip { position: relative; }
 }
 @media (max-width: 859px) and (prefers-reduced-motion: no-preference) {
     .strip .track { display: flex; width: max-content; overflow: visible; animation: strip-scroll 24s linear infinite; }
+    .strip:hover .track, .strip:focus-within .track { animation-play-state: paused; }
     .strip .group, .strip .group[aria-hidden="true"] { display: flex; padding: 0 0.625rem; }
     .strip li:last-child::after { content: ''; width: 0.35em; height: 0.35em; background: var(--ink); }
 }
@@ -814,17 +871,29 @@ main > .strip { position: relative; }
     .nav-links.open { display: flex; }
     .nav-links a {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: center;
-        padding: 0.9rem var(--gutter);
+        gap: 0.85rem;
+        padding: 0.9rem var(--gutter) 0.9rem calc(var(--gutter) + 1.1rem);
         font-size: 1.5rem;
         font-weight: 700;
         letter-spacing: -0.03em;
         border-bottom: 0;
         border-top: var(--hair) solid var(--black);
     }
-    .nav-links a::after { content: '\2192'; font-weight: 500; }
+    .nav-links a[aria-current]::before { left: var(--gutter); }
+    .nav-num {
+        display: inline;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        color: var(--accent);
+    }
+    .nav-links a::after { content: '\2192'; font-weight: 500; margin-left: auto; }
     .nav-links a:hover, .nav-links a:active { background: var(--accent); color: var(--on); }
+    .nav-links a:hover .nav-num, .nav-links a:active .nav-num { color: var(--on); }
+    .nav-links a:hover::before, .nav-links a:active::before { background: var(--on); }
     .nav-overlay {
         display: block;
         position: fixed;
@@ -845,7 +914,7 @@ main > .strip { position: relative; }
 @media (max-width: 639px) {
     :root { --gutter: max(1rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px)); --section: 3rem; --strip-h: calc(1.2rem + 4px + 1.2 * clamp(1rem, 4.3vw, 1.375rem)); }
     html { scroll-padding-top: 4.5rem; }
-    body { font-size: 1rem; line-height: 1.5; }
+    body { font-size: 1rem; line-height: 1.6; }
     nav { padding: 0.5rem var(--gutter); }
     .logo { font-size: 2rem; }
     .nav-toggle { width: 44px; height: 44px; padding: 0 10px; }
@@ -925,9 +994,9 @@ main > .strip { position: relative; }
 
 /* Touch usability: every tappable control gets a ~44px target on phones and small tablets */
 @media (max-width: 767px) {
-    .btn, .text-link, .back-link, .project-links a, .text-link-inline { min-height: 44px; }
+    .btn, .text-link, .back-link, .project-links a, .text-link-inline, .contact-social a { min-height: 44px; }
     .btn, .text-link { padding-block: 0.7rem; }
-    .back-link, .project-links a, .text-link-inline { display: inline-flex; align-items: center; }
+    .back-link, .project-links a, .text-link-inline, .contact-social a { display: inline-flex; align-items: center; }
     .hero-actions .btn, .hero-actions .text-link { width: 44px; height: 44px; min-height: 44px; padding: 0; }
     .skill-row li { min-height: 44px; }
 }
@@ -1045,8 +1114,40 @@ main > .strip { position: relative; }
         }
     }
 }
+/* No scroll timelines: script.js writes --scroll-progress so the header line still tracks reading position. */
+@supports not (animation-timeline: scroll()) {
+    body > header::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -2px;
+        height: 2px;
+        background: var(--accent);
+        transform: scaleX(var(--scroll-progress, 0));
+        transform-origin: 0 50%;
+    }
+}
+/* Article pages get their own bottom-edge reading progress line. */
+@media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: scroll()) {
+        body:has(.article-body)::after {
+            content: '';
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 95;
+            height: var(--rule);
+            background: var(--accent);
+            transform-origin: 0 50%;
+            animation: progress linear both;
+            animation-timeline: scroll(root);
+        }
+    }
+}
 @keyframes card-in { from { opacity: 0; translate: 0 1.5rem; } to { opacity: 1; translate: 0 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-    .btn, .text-link, .nav-links a, .nav-toggle span, .back-to-top, .nav-overlay, .skill-row li, .project-links a::after { transition: none; }
+    .btn, .text-link, .nav-links a, .nav-toggle span, .back-to-top, .nav-overlay, .skill-row li, .project-links a::after, .project-links::after, .contact-social a { transition: none; }
 }

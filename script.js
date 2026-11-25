@@ -4,10 +4,10 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 try { localStorage.removeItem('theme'); localStorage.removeItem('sheet:writing'); } catch { /* storage unavailable */ }
 
 // Time-based hero greeting
-const greetingElement = document.getElementById('greeting');
+const greetingText = document.getElementById('greetingText');
 const hour = new Date().getHours();
 const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-greetingElement.textContent = `${greeting}, I'm`;
+if (greetingText) greetingText.textContent = `${greeting}, I'm`;
 
 // Mobile nav toggle
 const navToggle = document.getElementById('navToggle');
@@ -123,6 +123,11 @@ function onScroll() {
     requestAnimationFrame(() => {
         scrollQueued = false;
         if (backToTopBtn) backToTopBtn.classList.toggle('visible', window.scrollY > 400);
+        // Fallback value for the header progress line in browsers without scroll timelines.
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        document.documentElement.style.setProperty(
+            '--scroll-progress', maxScroll > 0 ? Math.min(1, window.scrollY / maxScroll) : 0
+        );
         updateActiveNav();
     });
 }
