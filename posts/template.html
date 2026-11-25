@@ -16,23 +16,46 @@
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://shams.swe.bd/posts/post-slug.html">
     <meta property="og:image" content="https://shams.swe.bd/og-image.png?v=3">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Describe the article image here">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Post Title — Shams Kabir">
     <meta name="twitter:description" content="One-line summary of the article for social cards.">
     <meta name="twitter:image" content="https://shams.swe.bd/og-image.png?v=3">
+    <meta name="twitter:image:alt" content="Describe the article image here">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "@id": "https://shams.swe.bd/posts/post-slug.html#article",
+        "headline": "Post Title",
+        "description": "One-line summary of the article for search engines and social cards.",
+        "datePublished": "YYYY-MM-DDTHH:MM:SS+06:00",
+        "dateModified": "YYYY-MM-DDTHH:MM:SS+06:00",
+        "author": { "@type": "Person", "@id": "https://shams.swe.bd/#person", "name": "Shams Kabir" },
+        "publisher": { "@type": "Person", "@id": "https://shams.swe.bd/#person", "name": "Shams Kabir" },
+        "mainEntityOfPage": "https://shams.swe.bd/posts/post-slug.html",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://shams.swe.bd/og-image.png?v=3",
+            "width": 1200,
+            "height": 630
+        },
+        "keywords": ["Topic Tag"],
+        "inLanguage": "en"
+    }
+    </script>
     <link rel="icon" href="/favicon.ico" sizes="48x48">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="icon" href="/favicon-48x48.png" type="image/png" sizes="96x96">
+    <link rel="icon" href="/favicon-48x48.png" type="image/png" sizes="48x48">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@1&family=Mr+Dafoe&family=JetBrains+Mono:wght@500;700&display=swap"
-        rel="stylesheet">
+    <link rel="preload" href="/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
+    <a class="skip-link" href="#main">Skip to content</a>
     <header>
         <nav>
             <a href="/" class="logo" aria-label="Shams Kabir, back to home">
@@ -44,7 +67,7 @@
         </nav>
     </header>
 
-    <main class="wrap">
+    <main id="main" class="wrap" tabindex="-1">
         <article>
             <header class="article-header">
                 <div class="article-meta">Date · Read time · [Topic Tag]</div>
@@ -66,7 +89,7 @@
 
                 <!-- Optional Image with caption -->
                 <figure class="article-figure">
-                    <img src="../achievement.jpg" alt="Description of the image" loading="lazy">
+                    <img src="../achievement.jpg" alt="Description of the image" width="960" height="1310" loading="lazy" decoding="async">
                     <figcaption>
                         <strong>Caption Header:</strong> Additional explanation or credit.
                     </figcaption>

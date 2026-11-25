@@ -1,57 +1,3 @@
-// Xiaomi/Redmi browser: offer to open the page in Chrome (Android intent) instead of forcing it.
-// If Chrome isn't installed the intent falls back to this same page, so nobody is stranded.
-(function offerChrome() {
-    const prompt = document.getElementById('chromePrompt');
-    const open = document.getElementById('chromeOpen');
-    const close = document.getElementById('chromeClose');
-    if (!prompt || !open || !close) return;
-    if (!/Android/i.test(navigator.userAgent) || !/MiuiBrowser|XiaoMi/i.test(navigator.userAgent)) return;
-    try { if (sessionStorage.getItem('chromePromptDismissed')) return; } catch { /* storage unavailable */ }
-
-    const { host, pathname, search, href } = window.location;
-    open.href = 'intent://' + host + pathname + search + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent(href) + ';end';
-    prompt.hidden = false;
-
-    close.addEventListener('click', () => {
-        prompt.hidden = true;
-        try { sessionStorage.setItem('chromePromptDismissed', '1'); } catch { /* storage unavailable */ }
-    });
-})();
-
-// Modern JavaScript features and error tracking
-function initErrorTracking() {
-    // Simple error tracking that logs to console
-    window.addEventListener('error', (event) => {
-        console.error('Error:', event.message, 'at', event.filename, ':', event.lineno, 'Line:', event.lineno, 'Column:', event.colno);
-    });
-
-    window.addEventListener('unhandledrejection', (event) => {
-        console.error('Unhandled rejection:', event.reason);
-    });
-}
-
-// Performance metrics monitoring (Core Web Vitals)
-function initPerformanceMetrics() {
-    if (!('PerformanceObserver' in window)) return;
-    try {
-        const po = new PerformanceObserver((entryList) => {
-            for (const entry of entryList.getEntries()) {
-                if (entry.entryType === 'largest-contentful-paint') {
-                    console.debug('LCP:', Math.round(entry.startTime), 'ms');
-                } else if (entry.entryType === 'layout-shift' && !entry.hadRecentInput) {
-                    console.debug('CLS delta:', entry.value);
-                }
-            }
-        });
-        po.observe({ type: 'largest-contentful-paint', buffered: true });
-        po.observe({ type: 'layout-shift', buffered: true });
-    } catch { /* Browser does not support specific entry types */ }
-}
-
-// Initialize error tracking and performance metrics
-initErrorTracking();
-initPerformanceMetrics();
-
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Dark mode was removed; clear any theme choice saved by an earlier visit
@@ -71,7 +17,18 @@ const navOverlay = document.getElementById('navOverlay');
 function setMenu(open) {
     navLinks.classList.toggle('open', open);
     navToggle.setAttribute('aria-expanded', String(open));
-    if (navOverlay) navOverlay.classList.toggle('show', open);
+    if (navOverlay) {
+        navOverlay.classList.toggle('show', open);
+        navOverlay.setAttribute('aria-hidden', String(!open));
+    }
+    // Keep the page behind the menu out of the tab order and the accessibility tree.
+    for (const background of [document.querySelector('main'), document.querySelector('footer')]) {
+        if (background) background.inert = open;
+    }
+    if (open && document.activeElement === navToggle) {
+        const firstLink = navLinks.querySelector('a');
+        if (firstLink) firstLink.focus();
+    }
 }
 
 if (navToggle && navLinks) {
@@ -87,9 +44,22 @@ if (navToggle && navLinks) {
     // Close when tapping the dimmed area or pressing Escape
     if (navOverlay) navOverlay.addEventListener('click', () => setMenu(false));
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && navLinks.classList.contains('open')) {
+        if (!navLinks.classList.contains('open')) return;
+        if (e.key === 'Escape') {
             setMenu(false);
             navToggle.focus();
+        } else if (e.key === 'Tab') {
+            // Cycle focus between the toggle and the links while the menu is open.
+            const focusables = [navToggle, ...navLinks.querySelectorAll('a[href]')];
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
         }
     });
 
@@ -150,6 +120,7 @@ function onScroll() {
     requestAnimationFrame(() => {
         scrollQueued = false;
         if (backToTopBtn) backToTopBtn.classList.toggle('visible', window.scrollY > 400);
+        updateActiveNav();
     });
 }
 
@@ -335,18 +306,23 @@ function renderProjects(rows) {
     }
 }
 
-// Skill name -> Devicon folder name. The icons are full-colour SVGs from the Devicon package on jsDelivr (the one place the site shows colours other than the red accent).
-// Names are matched lowercase with everything except letters, digits, + and # removed ("Node.js" -> "nodejs"). A skill with no match, or an icon that fails to load, keeps its text chip.
-const SKILL_ICON_BASE = 'https://cdn.jsdelivr.net/npm/devicon@2.18.0/icons/';
+// Skill name -> Devicon folder name. Icons are self-hosted copies of Devicon 2.18 (the one place the site shows colours other than the red accent);
+// the CDN is only a fallback for skills added to the sheet after the local set was generated. A skill with no match, or a failed icon, keeps its text chip.
+// Names are matched lowercase with everything except letters, digits, + and # removed ("Node.js" -> "nodejs").
+const SKILL_ICON_BASE = '/icons/';
+const SKILL_ICON_CDN = 'https://cdn.jsdelivr.net/npm/devicon@2.18.0/icons/';
 // Devicon ships most icons as <slug>/<slug>-original.svg (full colour); these have no -original, so they use another variant
 const SKILL_ICON_VARIANT = { django: 'plain' };
 // Local override: Devicon's C is a washed-out grey-blue, so C uses icon-c.svg in the site root (Simple Icons' C path filled #00599C, the same blue as the C++ icon)
 const SKILL_ICON_LOCAL = { c: 'icon-c.svg' };
 // Logos that are a plain square (sharp corners) get .icon-round so their corners clear the circular chip
 const SKILL_ICON_ROUND = new Set(['javascript', 'typescript']);
+function skillIconFile(slug) {
+    return slug + '/' + slug + '-' + (SKILL_ICON_VARIANT[slug] || 'original') + '.svg';
+}
 function skillIconUrl(slug) {
     if (SKILL_ICON_LOCAL[slug]) return SKILL_ICON_LOCAL[slug];
-    return SKILL_ICON_BASE + slug + '/' + slug + '-' + (SKILL_ICON_VARIANT[slug] || 'original') + '.svg';
+    return SKILL_ICON_BASE + skillIconFile(slug);
 }
 const SKILL_ICONS = {
     python: 'python', javascript: 'javascript', js: 'javascript', typescript: 'typescript', ts: 'typescript',
@@ -411,10 +387,16 @@ function renderSkills(rows) {
                 img.height = 28;
                 img.decoding = 'async';
                 img.addEventListener('error', () => {
+                    // A newly added skill may not have a local copy yet: try the CDN once, then fall back to text.
+                    if (!img.dataset.cdnTried && !SKILL_ICON_LOCAL[slug]) {
+                        img.dataset.cdnTried = '1';
+                        img.src = SKILL_ICON_CDN + skillIconFile(slug);
+                        return;
+                    }
                     li.classList.remove('has-icon');
                     delete li.dataset.name;
                     img.replaceWith(skillText(s));
-                }, { once: true });
+                });
                 li.classList.add('has-icon');
                 li.appendChild(img);
             } else {
@@ -567,34 +549,38 @@ function updateActiveNav() {
     if (current === activeNavId) return;
     activeNavId = current;
     navAnchors.forEach((a) => {
-        if (a === navById.get(current)) a.setAttribute('aria-current', 'true');
+        if (a === navById.get(current)) a.setAttribute('aria-current', 'location');
         else a.removeAttribute('aria-current');
     });
 }
 
-let navQueued = false;
-window.addEventListener('scroll', () => {
-    if (navQueued) return;
-    navQueued = true;
-    requestAnimationFrame(() => {
-        navQueued = false;
-        updateActiveNav();
-    });
-}, { passive: true });
-
 function measureStack() {
-    if (headerEl) document.documentElement.style.setProperty('--hdr', headerEl.offsetHeight + 'px');
-    stackItems.forEach((el) => el.style.setProperty('--h', el.offsetHeight + 'px'));
+    // Read all geometry first, then write, to avoid interleaved layout work.
+    const headerHeight = headerEl ? headerEl.offsetHeight : 0;
+    const heights = stackItems.map((el) => el.offsetHeight);
+    document.documentElement.style.setProperty('--hdr', headerHeight + 'px');
+    stackItems.forEach((el, i) => el.style.setProperty('--h', heights[i] + 'px'));
     computeSectionTops();
     updateActiveNav();
 }
 
+let measureQueued = false;
+function scheduleMeasure() {
+    if (measureQueued) return;
+    measureQueued = true;
+    requestAnimationFrame(() => {
+        measureQueued = false;
+        measureStack();
+    });
+}
+
 measureStack();
-window.addEventListener('resize', measureStack);
-window.addEventListener('load', measureStack);
+window.addEventListener('resize', scheduleMeasure);
+window.addEventListener('load', scheduleMeasure);
 if ('ResizeObserver' in window) {
-    // Sections change height when the Google Sheets content loads or the layout changes
-    const ro = new ResizeObserver(measureStack);
+    // Sections change height when the Google Sheets content loads or the layout changes.
+    // Debouncing to one frame keeps the observer from reacting to its own writes.
+    const ro = new ResizeObserver(scheduleMeasure);
     stackItems.forEach((el) => ro.observe(el));
     if (headerEl) ro.observe(headerEl);
 }
@@ -624,5 +610,8 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
         e.preventDefault();
         window.scrollTo({ top: Math.max(0, y), behavior: prefersReducedMotion ? 'auto' : 'smooth' });
         history.replaceState(null, '', '#' + id);
+        // Move focus with the jump so keyboard and screen-reader users land on the section.
+        target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: true });
     });
 });

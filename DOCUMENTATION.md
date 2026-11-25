@@ -1,16 +1,18 @@
 # Shams Kabir Portfolio - Documentation
 
 ## Overview
-A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.bd/`), built with vanilla HTML5, CSS3, and ES2020+ JavaScript. Zero build tools, frameworks, or npm dependencies.
+A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.bd/`), built with vanilla HTML5, CSS3, and ES2020+ JavaScript. No frameworks or npm dependencies; the only helper scripts use the Python standard library.
 
 **Key Features:**
 - Swiss Style typography and layout
-- Google Sheets as CMS for dynamic content
+- Google Sheets as CMS for dynamic content, with generated static HTML fallbacks
 - Sticky section stacking with smooth scrolling
 - Responsive design across all devices
-- Accessible motion and animations
-- Google Fonts integration (Inter, JetBrains Mono, Mr Dafoe)
-- Open Graph and social media optimization
+- Accessible motion, skip link, focus-managed mobile menu, visible skill labels on touch
+- Self-hosted fonts (Inter, JetBrains Mono, Instrument Serif, Mr Dafoe) and Devicon icons
+- Network-first service worker with an offline fallback page
+- Open Graph, sitemap, and JSON-LD for both the profile and articles
+- Dependency-free checks (`checks.py`) and automated cache-version bumps
 
 ---
 
@@ -18,17 +20,23 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 
 ```text
 .
-├── index.html          # Semantic markup, SEO tags, JSON-LD ProfilePage + WebSite data
-├── style.css           # Swiss Style tokens, spacing/type scales, 12-column grid, animations
-├── script.js           # Google Sheets CSV parser, UI controls, Core Web Vitals, error tracking
-├── sw.js               # Service Worker caching core assets and Google Fonts for offline support
+├── index.html          # Semantic markup, SEO tags, JSON-LD, generated section fallbacks
+├── style.css           # Swiss Style tokens, 12-column grid, self-hosted @font-face, animations
+├── script.js           # Google Sheets CSV parser, UI controls, local-first skill icons
+├── sw.js               # Network-first pages, stale-while-revalidate assets, offline fallback
+├── build_content.py    # Regenerates static Projects/Tech stack fallbacks from the sheets
+├── checks.py           # Local/online validation; --bump increments the SW cache version
+├── offline.html        # Page served when a navigation fails while offline
+├── fonts/              # Self-hosted woff2 files and Open Font License texts
+├── icons/              # Self-hosted Devicon 2.18 SVGs (CDN only as a fallback)
+├── content_cache/      # CSV snapshots and the service-worker asset fingerprint
 ├── robots.txt          # Crawler directives
 ├── favicon.svg         # Tab icon and SVG vector icon
 ├── favicon.ico         # Root multi-res ICO favicon (16/32/48) for Googlebot and search crawlers
 ├── favicon-48x48.png   # 48px square PNG favicon (Google Search standard)
 ├── favicon-96x96.png   # 96px square PNG favicon (high-DPI Google Search standard)
 ├── apple-touch-icon.png# 180px PNG icon for Apple devices
-├── sitemap.xml         # Single-URL sitemap with portrait image entry, changefreq, priority, and caption
+├── sitemap.xml         # Homepage + article URLs with image entries and lastmod dates
 ├── icon-c.svg          # Local C logo for skills section
 ├── Shams.jpg           # Hero portrait (800x1000)
 ├── achievement.jpg     # DIU CodeTrap trophy photo
@@ -54,7 +62,7 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 2. **Hero Section**: Name animation with portrait on the right (4:5 aspect ratio)
 3. **Traits Strip**: Red band with scrolling text items
 4. **Section Numbers**: Red mono numbers before each section title
-5. **Skill Icons**: Full-color Devicon SVGs with hover labels
+5. **Skill Icons**: Full-color self-hosted Devicon SVGs; hover labels on pointer devices, visible labels on touch
 6. **Project Cards**: Indexed cards with stack chips and links
 
 ---
@@ -62,17 +70,18 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 ## Technical Implementation
 
 ### Dynamic Content
-- **Google Sheets Integration**: Projects and skills loaded from CSV endpoints
-- **Caching**: Stale-while-revalidate with localStorage
-- **CSV Parsing**: Custom parser handling quoted fields and escaped quotes
+- **Google Sheets Integration**: Projects and skills loaded from CSV endpoints; `build_content.py` writes equivalent static HTML into `index.html` between generated markers, so sections render without JS or network
+- **Caching**: Stale-while-revalidate with localStorage; CSV snapshot in `content_cache/` makes rebuilds reproducible
+- **CSV Parsing**: Custom parser handling quoted fields and escaped quotes (JS) and `csv.DictReader` (Python)
+- **Validation**: `python3 checks.py` verifies JSON-LD, sitemap, links, generated content, precache assets, design invariants, and cache-version consistency
 
 ### JavaScript Features
-- **Sticky Sections**: Custom stacking with `ResizeObserver`
-- **Active Navigation**: Tracks current section based on natural position
-- **Scroll Animations**: `IntersectionObserver` for reveal effects
+- **Sticky Sections**: Custom stacking with `ResizeObserver`, batched reads/writes and one rAF-debounced measure loop
+- **Active Navigation**: Tracks current section based on natural position with `aria-current="location"`
+- **Scroll Animations**: `IntersectionObserver` for reveal effects, all gated behind reduced motion
 - **Count-up Stats**: Smooth number animations with random jumps
 - **Clipboard API**: Email copy with fallback for non-secure contexts
-- **Mobile Navigation**: Hamburger menu with overlay
+- **Mobile Navigation**: Hamburger menu with overlay, focus trap, `inert` background, and Escape handling; skip link on every page
 
 ### Responsive Design
 - **Breakpoints**: 359px, 639px, 767px, 859px, 1024px, 1100px, 1200px
@@ -182,10 +191,11 @@ python3 -m http.server 8000
 - Google Sheets as headless CMS
 
 ### Maintenance
-1. Edit content in Google Sheets
+1. Edit content in Google Sheets, then run `python3 build_content.py`
 2. Update images when needed
-3. Regenerate `og-image.png` when visual elements change
-4. Bump version in Open Graph tags when image changes
+3. `og:image`, `twitter:image`, `link rel=image_src`, `primaryImageOfPage`, `Person.image`, and the sitemap homepage `image:loc` all use the portrait `Shams.jpg`; `checks.py` enforces this so Google shows the profile photo rather than the portfolio card
+4. Article pages keep their own article image; `og-image.png` remains the default in `posts/template.html`
+5. After any cached asset edit, run `python3 checks.py --bump`
 
 ---
 

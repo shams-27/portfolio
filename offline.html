@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Offline — Shams Kabir</title>
+    <meta name="robots" content="noindex">
+    <meta name="theme-color" content="#FFFFFF">
+    <meta name="color-scheme" content="only light">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        body { display: grid; min-height: 100dvh; place-content: center; }
+        .offline { max-width: 38rem; padding: 2rem var(--gutter); }
+        .offline h1 { font-size: clamp(2.5rem, 8vw, 5rem); letter-spacing: -0.05em; line-height: 0.95; margin-block: 1rem; }
+        .offline p { margin-block: 0.75rem; }
+        .meta { font-family: var(--mono); font-size: 0.875rem; color: var(--muted); }
+        .accent { color: var(--accent); }
+    </style>
+</head>
+
+<body>
+    <main class="offline">
+        <p class="meta">No connection</p>
+        <h1>You're offline<span class="accent">.</span></h1>
+        <p>This page hasn't been saved yet. Reconnect and try again — anything you've visited before is available offline.</p>
+        <p><a href="/" class="text-link"><span class="label">Back to the homepage</span></a></p>
+    </main>
+</body>
+
+</html>

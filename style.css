@@ -1,3 +1,34 @@
+/* Self-hosted fonts (woff2, latin subset). Licences are in fonts/LICENSE-*.txt.
+   Inter and JetBrains Mono are variable files, so one request covers every weight used. */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('/fonts/inter-latin-variable.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 100 800;
+    font-display: swap;
+    src: url('/fonts/jetbrains-mono-latin-variable.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Instrument Serif';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/instrument-serif-italic-latin.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Mr Dafoe';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/mr-dafoe-latin.woff2') format('woff2');
+}
+
 /* Swiss Style (International Typographic Style): one grotesque typeface, a 12-column grid,
    flush-left ragged-right text, ruled structure, black on white with a single red accent.
    No shadows, no radius, no rotation, no decoration. */
@@ -68,6 +99,19 @@ h1, h2, h3 { text-wrap: balance; }
 p { text-wrap: pretty; }
 a { color: inherit; text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.skip-link {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 120;
+    translate: 0 -120%;
+    padding: 0.75rem var(--gutter);
+    background: var(--black);
+    color: var(--on);
+    font-weight: 700;
+}
+.skip-link:focus-visible { translate: 0 0; }
+main:focus { outline: none; }
 
 .wrap { max-width: 1400px; margin-inline: auto; padding-inline: var(--gutter); }
 
@@ -123,7 +167,7 @@ nav {
 }
 .nav-links a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 /* Current section (set from script.js). Declared before the mobile menu rules so the menu's hover fill still wins */
-.nav-links a[aria-current="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-links a[aria-current] { color: var(--accent); border-bottom-color: var(--accent); }
 
 .nav-toggle {
     display: none;
@@ -392,6 +436,23 @@ abbr[title] { text-decoration: none; cursor: help; }
     }
     .skill-row li.has-icon:hover::after { visibility: visible; }
 }
+/* Touch devices have no hover, so show the name under the icon instead of hiding it in a tooltip. */
+@media (hover: none) {
+    .skill-row li.has-icon {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        border-radius: 0;
+    }
+    .skill-row li.has-icon::after {
+        content: attr(data-name);
+        font-size: var(--font-size-xs);
+        font-weight: 600;
+        line-height: 1.1;
+        text-align: center;
+        white-space: normal;
+    }
+}
 .skill-row li img { display: block; width: 28px; height: 28px; }
 .skill-row li img.icon-round { border-radius: 22%; }   /* square logos (JS, TS): rounded corners to sit inside the circular chip */
 /* Colour icons: no black fill or invert on hover (it would hide the dark glyphs); the chip border turns the accent red instead. Specificity beats the generic chip hover and the motion-block sweep. */
@@ -653,24 +714,6 @@ footer p { max-width: 1400px; margin-inline: auto; }
 .back-to-top:hover { background: var(--accent); }
 .back-to-top svg { width: 18px; height: 18px; }
 
-/* "Open in Chrome" prompt (Xiaomi / Redmi browser only; see script.js) */
-.chrome-prompt {
-    position: relative;
-    z-index: 110;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.6rem var(--gutter);
-    background: var(--black);
-    color: var(--on);
-    font-size: 0.9375rem;
-    font-weight: 500;
-}
-.chrome-prompt[hidden] { display: none; }
-.chrome-prompt p { flex: 1; }
-.chrome-open { padding: 0.35rem 0.8rem; font-weight: 700; text-decoration: none; background: var(--accent); color: var(--on); }
-.chrome-close { width: 2rem; height: 2rem; font-size: 1.4rem; line-height: 1; background: transparent; color: var(--on); border: 2px solid var(--on); cursor: pointer; }
-
 /* Stacked sections: each section pins in place and the next one slides over it.
    A section taller than the screen pins when its bottom edge reaches the bottom of the screen.
    --h (section height) and --hdr (header height) are set from script.js. */
@@ -683,7 +726,7 @@ main > section {
 main > .strip { position: relative; }
 #tech-stack, #skills, #contact { background-color: var(--bar); }
 
-/* Layout stability: Skills and Projects are filled from Google Sheets after load */
+/* Layout stability: static fallbacks are in the HTML, then Sheets refresh them on load */
 #projects .list { min-height: 22rem; }
 #tech-stack .skills, #skills .skills { min-height: 18rem; }
 
