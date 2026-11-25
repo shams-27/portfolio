@@ -1,7 +1,7 @@
 // Service worker: network-first for pages, stale-while-revalidate for same-origin assets.
 // Bump CACHE_NAME whenever a cached asset changes (see AGENTS.md). Cross-origin requests
-// (Google Sheets, the Devicon CDN fallback) are left to the browser, never cached here.
-const CACHE_NAME = 'portfolio-cache-v38';
+// are left to the browser, never cached here.
+const CACHE_NAME = 'portfolio-cache-v44';
 const OFFLINE_URL = '/offline.html';
 const ASSETS_TO_CACHE = [
     '/',
@@ -27,7 +27,7 @@ const ASSETS_TO_CACHE = [
     '/fonts/jetbrains-mono-latin-variable.woff2',
     '/fonts/instrument-serif-italic-latin.woff2',
     '/fonts/mr-dafoe-latin.woff2',
-    // Icons for the skills currently in the sheet; new skills are cached on first use.
+    // Icons for the skills and project stacks listed in index.html; new icons are cached on first use.
     '/icons/git/git-original.svg',
     '/icons/github/github-original.svg',
     '/icons/vscode/vscode-original.svg',
@@ -42,7 +42,8 @@ const ASSETS_TO_CACHE = [
     '/icons/javascript/javascript-original.svg',
     '/icons/mysql/mysql-original.svg',
     '/icons/mariadb/mariadb-original.svg',
-    '/icons/antigravity/antigravity-original.svg'
+    '/icons/antigravity/antigravity-original.svg',
+    '/icons/powershell/powershell-original.svg'
 ];
 
 self.addEventListener('install', (event) => {

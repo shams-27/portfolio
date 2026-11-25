@@ -99,7 +99,13 @@ h1, h2, h3 { text-wrap: balance; }
 p { text-wrap: pretty; }
 a { color: inherit; text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-.strip :focus-visible { outline-color: var(--black); }   /* red on red would be invisible */
+/* A red outline disappears on a red fill, so switch to black on those interactive surfaces. */
+.btn:hover:focus-visible,
+.btn.copied:focus-visible,
+.nav-links a:hover:focus-visible,
+.nav-links a:active:focus-visible,
+.back-to-top:hover:focus-visible,
+.strip :focus-visible { outline-color: var(--black); }
 .skip-link {
     position: fixed;
     top: 0;
@@ -446,10 +452,10 @@ footer p::before { content: ''; display: inline-block; width: 0.55em; height: 0.
 @media (hover: hover) { .skill-row li:hover { background: var(--black); color: var(--on); } }
 abbr[title] { text-decoration: none; cursor: help; }
 /* Icon chips: the skill is a full-colour icon; the name is its alt text and a pop-out label. */
-.skill-row li.has-icon { display: flex; padding: 0.5rem; position: relative; border-radius: 50%; }   /* round chip: the icon plus equal padding is square, so 50% gives a circle (text chips stay square) */
+.skill-row li.has-icon, .stack li.has-icon { display: flex; padding: 0.5rem; position: relative; border-radius: 50%; }   /* round chip: the icon plus equal padding is square, so 50% gives a circle (text chips stay square) */
 /* Pop-out name: a black Swiss label above the chip on hover (hover devices only; touch keeps the alt text). Static, no motion, no shadow or radius. */
 @media (hover: hover) {
-    .skill-row li.has-icon::after {
+    .skill-row li.has-icon::after, .stack li.has-icon::after {
         content: attr(data-name);
         position: absolute;
         left: 50%;
@@ -466,17 +472,17 @@ abbr[title] { text-decoration: none; cursor: help; }
         pointer-events: none;
         visibility: hidden;
     }
-    .skill-row li.has-icon:hover::after { visibility: visible; }
+    .skill-row li.has-icon:hover::after, .stack li.has-icon:hover::after { visibility: visible; }
 }
 /* Touch devices have no hover, so show the name under the icon instead of hiding it in a tooltip. */
 @media (hover: none) {
-    .skill-row li.has-icon {
+    .skill-row li.has-icon, .stack li.has-icon {
         flex-direction: column;
         align-items: center;
         gap: 0.4rem;
         border-radius: 0;
     }
-    .skill-row li.has-icon::after {
+    .skill-row li.has-icon::after, .stack li.has-icon::after {
         content: attr(data-name);
         font-size: var(--font-size-xs);
         font-weight: 600;
@@ -488,28 +494,59 @@ abbr[title] { text-decoration: none; cursor: help; }
 .skill-row li img { display: block; width: 28px; height: 28px; }
 .skill-row li img.icon-round { border-radius: 22%; }   /* square logos (JS, TS): rounded corners to sit inside the circular chip */
 /* Colour icons: no black fill or invert on hover (it would hide the dark glyphs); the chip border turns the accent red instead. Specificity beats the generic chip hover and the motion-block sweep. */
-@media (hover: hover) { .skill-row li.has-icon:hover { background-color: transparent; background-image: none; border-color: var(--accent); } }
+@media (hover: hover) { .skill-row li.has-icon:hover, .stack li.has-icon:hover { background-color: transparent; background-image: none; border-color: var(--accent); } }
+/* Project stack icons are smaller, square chips; the name stays available as a tooltip or touch label. */
+.stack li.has-icon { padding: 0.25rem; border-radius: 0; }
+.stack li.has-icon img { display: block; width: 20px; height: 20px; }
+.stack li.has-icon img.icon-round { border-radius: 22%; }
+.stack li.has-icon::after { font-size: 0.75rem; }
 @media (min-width: 860px) {
     .skill-row { grid-template-columns: repeat(12, minmax(0, 1fr)); }
     .skill-row dt { grid-column: 1 / 5; }
     .skill-row dd { grid-column: 5 / -1; }
 }
 
-/* Projects: title on its own row, cards in ruled columns below */
+/* Projects: a ruled index table, not a card grid. On phones the index and title share the
+   first line and the details sit below. From 860px the two wrappers become display:contents
+   so index / title / description / stack / links align as columns on the 12-column grid. */
 #projects .section-grid > .sec-title { grid-row: auto; }
 #projects .section-grid > .list { grid-column: 1 / -1; margin-top: 2.5rem; }
-.project { display: flex; flex-direction: column; padding-top: 1rem; }
-.project-head { display: flex; align-items: baseline; gap: 0.75rem; }
-.project-index { font-family: var(--mono); font-size: 0.875rem; font-weight: 700; color: var(--accent); }
-.project h3 { font-size: clamp(1.5rem, 2vw, 2rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.035em; overflow-wrap: anywhere; }
-.project-info { display: flex; flex-direction: column; flex: 1; padding: 0.9rem 0 1.5rem; }
+#projects .list { display: grid; grid-template-columns: minmax(0, 1fr); }
+.project {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.75rem;
+    align-items: baseline;
+    padding: 1.1rem 0 1.4rem;
+}
+.project:last-child { border-bottom: var(--rule) solid var(--black); }   /* close the ruled table */
+.project-head { display: contents; }
+.project-index {
+    grid-column: 1;
+    grid-row: 1;
+    font-family: var(--mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--accent);
+}
+.project h3 {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: clamp(1.5rem, 2vw, 2rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    overflow-wrap: anywhere;
+}
+.project-info { grid-column: 1 / -1; display: flex; flex-direction: column; padding-top: 0.7rem; }
 .project-desc { max-width: 52ch; }
 .stack { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; font-family: var(--mono); font-size: 0.8125rem; font-weight: 500; color: var(--muted); }
 .stack li { padding: 0.15rem 0.55rem; border: var(--hair) solid var(--black); line-height: 1.4; overflow-wrap: anywhere; }
 .project-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: auto; padding-top: 1.25rem; }
 .project-links a { padding-block: 0.35rem; font-size: 1rem; font-weight: 600; transition: color 0.15s; }
 .project-links a::after { content: '\2197'; display: inline-block; margin-left: 0.3em; transition: translate 0.2s var(--ease); }
-/* Card-level affordance, pinned to the right of the link row and nudged on hover/focus */
+/* Card-level affordance on narrow screens, pinned to the right of the link row and nudged on hover/focus */
 .project-links::after {
     content: 'VIEW \2192';
     margin-left: auto;
@@ -529,10 +566,29 @@ abbr[title] { text-decoration: none; cursor: help; }
 @media (hover: hover) { .project:hover h3 { color: var(--accent); } }
 .project:focus-within h3 { color: var(--accent); }
 @media (min-width: 860px) {
-    #projects .list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.5rem var(--col-gap); }
-}
-@media (min-width: 1200px) {
-    #projects .list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #projects .list { display: block; }   /* one ruled row per project */
+    .project {
+        /* Five steady columns across the full wrap: index, title, description, stack, links.
+           The gap scales down on smaller desktops so the link column never gets squeezed. */
+        grid-template-columns: 4rem minmax(0, 3fr) minmax(0, 5fr) minmax(0, 2fr) minmax(0, 3fr);
+        column-gap: clamp(1rem, 2.4vw, var(--col-gap));
+        align-items: start;
+        padding: 1.15rem 0 1.4rem;
+    }
+    .project-info { display: contents; }   /* children join the row grid */
+    .project-index { font-size: 1.375rem; line-height: 1.15; }
+    .project h3 { font-size: clamp(1.35rem, 1.8vw, 1.75rem); line-height: 1.15; }
+    .project-desc { grid-column: 3; grid-row: 1; max-width: none; padding-right: 0.5rem; }
+    .stack { grid-column: 4; grid-row: 1; margin-top: 0; gap: 0.3rem; }
+    .project-links {
+        grid-column: 5;
+        grid-row: 1;
+        margin-top: 0;
+        padding-top: 0.1rem;
+        justify-content: flex-end;
+        gap: 0.35rem 0.75rem;
+    }
+    .project-links::after { display: none; }   /* links occupy their own column */
 }
 
 /* Writing */
@@ -782,7 +838,7 @@ main > section {
 main > .strip { position: relative; }
 #tech-stack, #skills, #contact { background-color: var(--bar); }
 
-/* Layout stability: static fallbacks are in the HTML, then Sheets refresh them on load */
+/* Layout stability: reserve height while the static content paints */
 #projects .list { min-height: 22rem; }
 #tech-stack .skills, #skills .skills { min-height: 18rem; }
 
@@ -969,6 +1025,7 @@ main > .strip { position: relative; }
 
     .skills { margin-top: 1.5rem; }
     .skill-row { padding: 0.9rem 0 1.1rem; }
+    .skill-row dt, .skill-row dt.wrap { font-size: 1.1875rem; }   /* bold 19px clears large-text contrast on the grey panel */
     .skill-row li { font-size: 0.9375rem; padding: 0.3rem 0.65rem; }
     .skill-row li img { width: 24px; height: 24px; }
 
@@ -976,6 +1033,7 @@ main > .strip { position: relative; }
     .project-links { padding-top: 1rem; }
 
     .contact-lead { font-size: 1.125rem; }
+    .contact-lead .em-red { font-size: 1.35em; }   /* keeps red text at large-text size on the grey panel */
     .contact-email { margin-top: 1.25rem; }
     .contact-actions { margin-top: 1.5rem; }
 
@@ -999,12 +1057,14 @@ main > .strip { position: relative; }
     .back-link, .project-links a, .text-link-inline, .contact-social a { display: inline-flex; align-items: center; }
     .hero-actions .btn, .hero-actions .text-link { width: 44px; height: 44px; min-height: 44px; padding: 0; }
     .skill-row li { min-height: 44px; }
+    .logo, .contact-email { min-height: 44px; }
+    .contact-email { display: inline-flex; align-items: center; }
 }
 
 /* Landscape phones: keep the nav bar slim */
 @media (max-height: 480px) and (orientation: landscape) {
     nav { padding-block: 0.4rem; }
-    .nav-toggle { width: 38px; height: 38px; }
+    .nav-toggle { width: 44px; height: 44px; }
 }
 
 /* Desktop: larger small text (>= 860px). Phones keep their compact sizes above.
@@ -1021,9 +1081,8 @@ main > .strip { position: relative; }
     .skill-row dt, .skill-row dt.wrap { font-size: 1.1875rem; }
     .skill-row li { font-size: 1.1875rem; }
     .skill-row li img { width: 32px; height: 32px; }
-    .stack { font-size: 1rem; }
-    .project-index { font-size: 1rem; }
-    .project-links a { font-size: 1.125rem; }
+    .stack { font-size: 0.875rem; }
+    .project-links a { font-size: 1rem; }
     footer { font-size: 1.0625rem; }
 }
 @media (min-width: 1024px) {
@@ -1080,19 +1139,6 @@ main > .strip { position: relative; }
 /* Scroll-driven motion: pure CSS, only where the browser supports it (otherwise everything stays static) */
 @media (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: view()) {
-        /* Red progress line along the bottom edge of the header */
-        body > header::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: -2px;
-            height: 2px;
-            background: var(--accent);
-            transform-origin: 0 50%;
-            animation: progress linear both;
-            animation-timeline: scroll(root);
-        }
         /* Timeline rail grows down to the next role */
         .tree > li:not(:last-child)::after { animation: rail-draw linear both; animation-timeline: view(); animation-range: entry 0% entry 80%; }
         /* Section titles wipe in from the left */
@@ -1113,24 +1159,20 @@ main > .strip { position: relative; }
             animation-range: entry 0% entry 45%;
         }
     }
-}
-/* No scroll timelines: script.js writes --scroll-progress so the header line still tracks reading position. */
-@supports not (animation-timeline: scroll()) {
-    body > header::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: -2px;
-        height: 2px;
-        background: var(--accent);
-        transform: scaleX(var(--scroll-progress, 0));
-        transform-origin: 0 50%;
-    }
-}
-/* Article pages get their own bottom-edge reading progress line. */
-@media (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: scroll()) {
+        /* One progress line only: under the header on the homepage, at the bottom on articles. */
+        body:not(:has(.article-body)) > header::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -2px;
+            height: 2px;
+            background: var(--accent);
+            transform-origin: 0 50%;
+            animation: progress linear both;
+            animation-timeline: scroll(root);
+        }
         body:has(.article-body)::after {
             content: '';
             position: fixed;
@@ -1144,6 +1186,33 @@ main > .strip { position: relative; }
             animation: progress linear both;
             animation-timeline: scroll(root);
         }
+    }
+}
+/* No scroll timelines: the page scripts write --scroll-progress, so the same line still tracks reading position. */
+@supports not (animation-timeline: scroll()) {
+    body > header::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -2px;
+        height: 2px;
+        background: var(--accent);
+        transform: scaleX(var(--scroll-progress, 0));
+        transform-origin: 0 50%;
+    }
+    body:has(.article-body) > header::after { display: none; }
+    body:has(.article-body)::after {
+        content: '';
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 95;
+        height: var(--rule);
+        background: var(--accent);
+        transform: scaleX(var(--scroll-progress, 0));
+        transform-origin: 0 50%;
     }
 }
 @keyframes card-in { from { opacity: 0; translate: 0 1.5rem; } to { opacity: 1; translate: 0 0; } }

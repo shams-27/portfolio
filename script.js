@@ -1,7 +1,10 @@
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Dark mode was removed; clear any theme choice saved by an earlier visit
-try { localStorage.removeItem('theme'); localStorage.removeItem('sheet:writing'); } catch { /* storage unavailable */ }
+// Dark mode and the old sheet cache were removed; clear values saved by earlier visits
+try {
+    localStorage.removeItem('theme');
+    ['writing', 'projects', 'skills'].forEach((name) => localStorage.removeItem('sheet:' + name));
+} catch { /* storage unavailable */ }
 
 // Time-based hero greeting
 const greetingText = document.getElementById('greetingText');
@@ -150,86 +153,6 @@ if (stripTrack && stripTrack.firstElementChild) {
     stripTrack.appendChild(copy);
 }
 
-// ---------------------------------------------------------------
-// Google Sheets content: Projects and Skills
-// ---------------------------------------------------------------
-// In Google Sheets: File > Share > Publish to web > pick the tab > "Comma-separated
-// values (.csv)" > Publish, then paste each tab's link below. Leave a value as ''
-// to keep whatever is already written in index.html for that section.
-const SHEETS = {
-    projects: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRXXuVB514-q76YWrnec50cXnoXEU24bUA6PvUFhc7UltmmnEWVFdWD3_GiwPnYXTp8EiRnTktvKeGb/pub?gid=0&single=true&output=csv',
-    skills: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRXXuVB514-q76YWrnec50cXnoXEU24bUA6PvUFhc7UltmmnEWVFdWD3_GiwPnYXTp8EiRnTktvKeGb/pub?gid=1426459479&single=true&output=csv',
-};
-
-// Minimal CSV parser (quoted fields, escaped quotes, line breaks inside quotes)
-function parseCSV(text) {
-    const rows = [];
-    let row = [];
-    let field = '';
-    let inQuotes = false;
-    text = text.replace(/^\uFEFF/, '');
-    for (let i = 0; i < text.length; i++) {
-        const ch = text[i];
-        if (inQuotes) {
-            if (ch === '"') {
-                if (text[i + 1] === '"') { field += '"'; i++; }
-                else inQuotes = false;
-            } else {
-                field += ch;
-            }
-        } else if (ch === '"') {
-            inQuotes = true;
-        } else if (ch === ',') {
-            row.push(field);
-            field = '';
-        } else if (ch === '\n' || ch === '\r') {
-            if (ch === '\r' && text[i + 1] === '\n') i++;
-            row.push(field);
-            rows.push(row);
-            row = [];
-            field = '';
-        } else {
-            field += ch;
-        }
-    }
-    if (field !== '' || row.length) { row.push(field); rows.push(row); }
-    return rows;
-}
-
-// First row = headers (case/space-insensitive), every other row becomes an object
-function csvToObjects(text) {
-    const rows = parseCSV(text).filter((r) => r.some((c) => c.trim() !== ''));
-    if (rows.length < 2) return [];
-    const keys = rows[0].map((h) => h.trim().toLowerCase().replace(/[\s-]+/g, '_'));
-    return rows.slice(1).map((r) => {
-        const obj = {};
-        keys.forEach((k, i) => { if (k) obj[k] = (r[i] || '').trim(); });
-        return obj;
-    });
-}
-
-function el(tag, className, text) {
-    const node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text) node.textContent = text;
-    return node;
-}
-
-function isVisible(value) {
-    return !['false', 'no', '0', 'hidden'].includes((value || '').toLowerCase());
-}
-
-// Only http(s) links are allowed; a missing scheme is treated as https
-function safeUrl(value) {
-    if (!value) return '';
-    try {
-        const url = new URL(/^https?:\/\//i.test(value) ? value : 'https://' + value);
-        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
-    } catch {
-        return '';
-    }
-}
-
 // Cards fade and rise into view as they scroll on screen (skipped for reduced motion).
 function revealOnScroll(cards) {
     if (prefersReducedMotion || !('IntersectionObserver' in window)) return;
@@ -251,209 +174,15 @@ function revealOnScroll(cards) {
     cards.forEach((card) => io.observe(card));
 }
 
-let projectCardsAnimated = false;
+// All section content is static HTML in index.html. Reveal the ruled entries, stats and project rows on scroll.
+revealOnScroll([...document.querySelectorAll('.entry, .stat, .project')]);
 
-function renderProjects(rows) {
-    const list = document.querySelector('#projects .list');
-    if (!list) return;
-
-    const items = rows.filter(({ name, visible }) => name && isVisible(visible));
-    if (!items.length) return;
-
-    // Alphabetical by default; fill the optional "order" column to set your own order
-    const hasOrder = items.some((r) => r.order !== '' && !isNaN(Number(r.order)));
-    const rank = (r) => (r.order !== '' && !isNaN(Number(r.order)) ? Number(r.order) : Infinity);
-    items.sort((a, b) => {
-        if (hasOrder) {
-            const diff = rank(a) - rank(b);
-            if (diff) return diff;
-        }
-        return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
-    });
-
-    const cards = items.map((p, i) => {
-        const card = el('article', 'project');
-
-        const head = el('div', 'project-head');
-        head.appendChild(el('span', 'project-index', String(i + 1).padStart(2, '0')));
-        head.appendChild(el('h3', '', p.name));
-        card.appendChild(head);
-
-        const info = el('div', 'project-info');
-        if (p.description) info.appendChild(el('p', 'project-desc', p.description));
-        if (p.stack) {
-            // "HTML, CSS, JS" becomes one chip per technology
-            const chips = el('ul', 'stack');
-            p.stack.split(/[,;|\u00B7\u2022]+/).map((s) => s.trim()).filter(Boolean)
-                .forEach((s) => chips.appendChild(el('li', '', s)));
-            info.appendChild(chips);
-        }
-
-        const links = el('div', 'project-links');
-        [['Live demo', p.live_url], ['View on GitHub', p.github_url]].forEach(([label, href]) => {
-            const safe = safeUrl(href);
-            if (!safe) return;
-            const a = el('a', '', label);
-            a.href = safe;
-            a.target = '_blank';
-            a.rel = 'noopener';
-            links.appendChild(a);
-        });
-        if (links.children.length) info.appendChild(links);
-
-        card.appendChild(info);
-        return card;
-    });
-
-    list.replaceChildren(...cards);
-
-    // Only the first render animates, so the sheet refresh after the cached copy doesn't replay it
-    if (!projectCardsAnimated) {
-        projectCardsAnimated = true;
-        revealOnScroll(cards);
-    }
+function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text) node.textContent = text;
+    return node;
 }
-
-// Skill name -> Devicon folder name. Icons are self-hosted copies of Devicon 2.18 (the one place the site shows colours other than the red accent);
-// the CDN is only a fallback for skills added to the sheet after the local set was generated. A skill with no match, or a failed icon, keeps its text chip.
-// Names are matched lowercase with everything except letters, digits, + and # removed ("Node.js" -> "nodejs").
-const SKILL_ICON_BASE = '/icons/';
-const SKILL_ICON_CDN = 'https://cdn.jsdelivr.net/npm/devicon@2.18.0/icons/';
-// Devicon ships most icons as <slug>/<slug>-original.svg (full colour); these have no -original, so they use another variant
-const SKILL_ICON_VARIANT = { django: 'plain' };
-// Local override: Devicon's C is a washed-out grey-blue, so C uses icon-c.svg in the site root (Simple Icons' C path filled #00599C, the same blue as the C++ icon)
-const SKILL_ICON_LOCAL = { c: 'icon-c.svg' };
-// Logos that are a plain square (sharp corners) get .icon-round so their corners clear the circular chip
-const SKILL_ICON_ROUND = new Set(['javascript', 'typescript']);
-function skillIconFile(slug) {
-    return slug + '/' + slug + '-' + (SKILL_ICON_VARIANT[slug] || 'original') + '.svg';
-}
-function skillIconUrl(slug) {
-    if (SKILL_ICON_LOCAL[slug]) return SKILL_ICON_LOCAL[slug];
-    return SKILL_ICON_BASE + skillIconFile(slug);
-}
-const SKILL_ICONS = {
-    python: 'python', javascript: 'javascript', js: 'javascript', typescript: 'typescript', ts: 'typescript',
-    html: 'html5', html5: 'html5', css: 'css3', css3: 'css3',
-    c: 'c', 'c++': 'cplusplus', cpp: 'cplusplus', 'c#': 'csharp', java: 'java', kotlin: 'kotlin', dart: 'dart',
-    go: 'go', golang: 'go', rust: 'rust', php: 'php',
-    mysql: 'mysql', postgresql: 'postgresql', postgres: 'postgresql', sqlite: 'sqlite', mongodb: 'mongodb', firebase: 'firebase',
-    bash: 'bash', shell: 'bash', shellscripting: 'bash', zsh: 'zsh',
-    linux: 'linux', archlinux: 'archlinux', arch: 'archlinux', ubuntu: 'ubuntu', debian: 'debian', fedora: 'fedora', kali: 'kalilinux', kalilinux: 'kalilinux',
-    git: 'git', github: 'github', gitlab: 'gitlab', docker: 'docker',
-    nodejs: 'nodejs', node: 'nodejs', react: 'react', nextjs: 'nextjs', vue: 'vuejs', vuejs: 'vuejs', angular: 'angular', svelte: 'svelte',
-    tailwind: 'tailwindcss', tailwindcss: 'tailwindcss', bootstrap: 'bootstrap', express: 'express', django: 'django', flask: 'flask', fastapi: 'fastapi',
-    flutter: 'flutter', npm: 'npm', vite: 'vite', vim: 'vim', neovim: 'neovim', nvim: 'neovim',
-    vscode: 'vscode', visualstudiocode: 'vscode', figma: 'figma', postman: 'postman',
-    jupyter: 'jupyter', numpy: 'numpy', pandas: 'pandas', latex: 'latex', markdown: 'markdown', cmake: 'cmake', gcc: 'gcc', nginx: 'nginx',
-    wordpress: 'wordpress', selenium: 'selenium',
-    intellij: 'intellij', intellijidea: 'intellij', idea: 'intellij', canva: 'canva', mariadb: 'mariadb',
-    antigravity: 'antigravity', googleantigravity: 'antigravity',
-};
-
-function skillIconSlug(name) {
-    return SKILL_ICONS[(name || '').toLowerCase().replace(/[^a-z0-9+#]/g, '')] || '';
-}
-
-// The text version of a skill: an <abbr> with the full name as tooltip when the sheet has one
-function skillText(s) {
-    if (!s.full_name) return document.createTextNode(s.skill);
-    const abbr = el('abbr', '', s.skill);
-    abbr.title = s.full_name;
-    return abbr;
-}
-
-function renderSkills(rows) {
-    const dl = document.querySelector('#tech-stack .skills, #skills .skills');
-    if (!dl) return;
-
-    // One sheet row per skill; categories appear in the order they first show up
-    const groups = new Map();
-    rows.filter((r) => r.category && r.skill && isVisible(r.visible)).forEach((r) => {
-        if (!groups.has(r.category)) groups.set(r.category, []);
-        groups.get(r.category).push(r);
-    });
-    if (!groups.size) return;
-
-    const rowsEls = [...groups].map(([category, skills]) => {
-        const row = el('div', 'skill-row');
-        row.appendChild(el('dt', 'wrap', category));
-
-        const ul = el('ul', 'group');
-        skills.forEach((s) => {
-            const li = el('li');
-            const slug = skillIconSlug(s.skill) || skillIconSlug(s.full_name);
-            if (slug) {
-                // Icon only; the name stays available as alt text and as the hover tooltip
-                const label = s.full_name || s.skill;
-                const img = el('img');
-                img.src = skillIconUrl(slug);
-                if (SKILL_ICON_ROUND.has(slug)) img.classList.add('icon-round');
-                img.alt = label;
-                li.dataset.name = label;   // shown as a pop-out label on hover (CSS .has-icon::after)
-                img.width = 28;
-                img.height = 28;
-                img.decoding = 'async';
-                img.addEventListener('error', () => {
-                    // A newly added skill may not have a local copy yet: try the CDN once, then fall back to text.
-                    if (!img.dataset.cdnTried && !SKILL_ICON_LOCAL[slug]) {
-                        img.dataset.cdnTried = '1';
-                        img.src = SKILL_ICON_CDN + skillIconFile(slug);
-                        return;
-                    }
-                    li.classList.remove('has-icon');
-                    delete li.dataset.name;
-                    img.replaceWith(skillText(s));
-                });
-                li.classList.add('has-icon');
-                li.appendChild(img);
-            } else {
-                li.appendChild(skillText(s));
-            }
-            ul.appendChild(li);
-        });
-
-        const track = el('div', 'track');
-        track.appendChild(ul);
-        const dd = el('dd');
-        dd.appendChild(track);
-        row.appendChild(dd);
-        return row;
-    });
-
-    dl.replaceChildren(...rowsEls);
-}
-
-// Show the last good copy instantly, then refresh from the sheet.
-// If the sheet can't be reached, the content already on the page stays.
-async function loadSheet(name, render) {
-    const url = SHEETS[name];
-    if (!url) return;
-
-    const key = 'sheet:' + name;
-    let cached = null;
-    try { cached = localStorage.getItem(key); } catch { /* storage unavailable */ }
-    if (cached) render(csvToObjects(cached));
-
-    try {
-        const res = await fetch(url, { cache: 'no-store' });
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const text = await res.text();
-        if (/^\s*</.test(text)) throw new Error('Not a CSV; is the tab published to the web?');
-        if (text !== cached) {
-            render(csvToObjects(text));
-            try { localStorage.setItem(key, text); } catch { /* storage unavailable */ }
-        }
-    } catch (err) {
-        console.warn('Could not load "' + name + '" from Google Sheets:', err.message);
-    }
-}
-
-// Education entries, About stats and the Writing entries are plain HTML; only .entry/.stat reveal-on-scroll is applied here. Projects and skills come from Google Sheets.
-revealOnScroll([...document.querySelectorAll('.entry, .stat')]);
-
-loadSheet('projects', renderProjects);
-loadSheet('skills', renderSkills);
 
 // About stats: count-up on first reveal. The number ascends from zero to its value (3.90 runs 0.00 → 3.90, 100+ runs 000 → 100, 4th runs 0th → 4th) with an ease-out,
 // zero-padded to the final width so the mono font never shifts the suffix. The real text stays in a visually hidden span for screen readers.
@@ -586,7 +315,7 @@ measureStack();
 window.addEventListener('resize', scheduleMeasure);
 window.addEventListener('load', scheduleMeasure);
 if ('ResizeObserver' in window) {
-    // Sections change height when the Google Sheets content loads or the layout changes.
+    // Sections change height when the layout changes.
     // Debouncing to one frame keeps the observer from reacting to its own writes.
     const ro = new ResizeObserver(scheduleMeasure);
     stackItems.forEach((el) => ro.observe(el));

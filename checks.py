@@ -12,18 +12,14 @@ Everything here uses only the Python standard library.
 from __future__ import annotations
 
 import argparse
-import csv
 import hashlib
 import json
 import re
-import subprocess
 import sys
 import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from urllib.parse import urlparse
-
-import build_content
 
 ROOT = Path(__file__).resolve().parent
 FINGERPRINT = ROOT / "content_cache" / "sw-fingerprint.json"
@@ -159,37 +155,6 @@ def check_sw() -> None:
         fail("sw.js: network-first navigation or offline fallback is missing")
 
 
-def check_sheets() -> None:
-    script = read(ROOT / "script.js")
-    urls = set(re.findall(r"https://docs\.google\.com/spreadsheets/[^']+", script))
-    if urls != set(build_content.SHEETS.values()):
-        fail("Sheet URLs differ between script.js and build_content.py")
-    schemas = {
-        "projects": {"name", "description", "stack", "live_url", "github_url", "order", "visible"},
-        "skills": {"category", "skill", "full_name", "visible"},
-    }
-    for name, required in schemas.items():
-        cache = ROOT / "content_cache" / f"{name}.csv"
-        if not cache.exists():
-            fail(f"content_cache/{name}.csv missing (run build_content.py)")
-            continue
-        with cache.open(encoding="utf-8-sig", newline="") as fh:
-            rows = list(csv.DictReader(fh))
-        headers = set(rows[0].keys()) if rows else set()
-        if not required <= headers:
-            fail(f"content_cache/{name}.csv: missing columns {sorted(required - headers)}")
-        for row in rows:
-            for field in ("live_url", "github_url"):
-                if field in row and row[field] and not build_content.safe_url(row[field]):
-                    fail(f"content_cache/{name}.csv: unsafe {field}: {row[field]!r}")
-    result = subprocess.run(
-        [sys.executable, str(ROOT / "build_content.py"), "--check", "--offline"],
-        cwd=ROOT, capture_output=True, text=True,
-    )
-    if result.returncode:
-        fail(result.stderr.strip() or result.stdout.strip())
-
-
 def check_profile_image() -> None:
     """All homepage image signals must point at the portrait, not the portfolio card."""
     expected = "https://shams.swe.bd/Shams.jpg"
@@ -239,6 +204,14 @@ def check_design_invariants() -> None:
         fail("index.html: light-only color scheme missing")
     if "fonts.googleapis.com" in index or "fonts.googleapis.com" in css:
         fail("external Google Fonts request still present")
+    script = read(ROOT / "script.js")
+    for stale in ("docs.google.com/spreadsheets", "SKILL_ICON_CDN", "cdn.jsdelivr.net", "loadSheet"):
+        if stale in script:
+            fail(f"script.js: external content dependency still present ({stale})")
+    if "CONTENT:projects:start" in index or "CONTENT:skills:start" in index:
+        fail("index.html: generated-block markers must be removed now content is hand-maintained")
+    if "class=\"has-icon\"" not in index or "/icons/" not in index:
+        fail("index.html: skill icons must be static, self-hosted SVGs")
 
 
 def bump() -> None:
@@ -275,7 +248,6 @@ def main() -> int:
     check_sitemap(args.online)
     check_links()
     check_sw()
-    check_sheets()
     check_profile_image()
     check_design_invariants()
 

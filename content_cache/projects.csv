@@ -1,9 +1,0 @@
-name,description,stack,live_url,github_url,order,visible
-Auto GCC,Installs GCC / G++ (MinGW-w64) on Windows with one PowerShell command.,PowerShell,,https://github.com/shams-27/Auto-GCC,,TRUE
-AVA,"A Linux terminal assistant that sets up your dev environment, with an AI helper that asks before running commands.",Python,,https://github.com/shams-27/AVA,,TRUE
-Conduit,"A distraction-free study space for DIU students, all in one browser tab.","HTML, CSS, JavaScript",https://shams-27.github.io/conduit,https://github.com/shams-27/conduit,,TRUE
-EMS,"A file-based Employee Management System in C, built for my SE133 capstone.",C,,https://github.com/shams-27/EmployeeManagementSystem,,TRUE
-NeatFreak,"A Bash script that sorts your Downloads folder into category subfolders, with a live terminal UI.",Bash,,https://github.com/shams-27/NeatFreak,,TRUE
-Prompt-to-Prototype,Event site for a 3-hour AI web design sprint hosted by DIU SEC.,"HTML, CSS, JavaScript",https://shams-27.github.io/prompt-to-prototype/,https://github.com/shams-27/prompt-to-prototype,,TRUE
-RetroByte,"A static retro-gadget storefront with product pages, a cart and an order flow.","HTML, CSS, JavaScript",,https://github.com/shams-27/retrobyte,,TRUE
-Sublime Setup,One PowerShell command that sets up Sublime Text for C/C++ competitive programming on Windows 11.,PowerShell,,https://github.com/shams-27/sublime-setup,,TRUE

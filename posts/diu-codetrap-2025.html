@@ -147,6 +147,26 @@
             <p>&copy; 2026 Shams Kabir · <a href="/">Return to home</a></p>
         </div>
     </footer>
+
+    <script>
+        // Fallback for browsers without CSS scroll timelines: drives the article reading-progress line.
+        (() => {
+            const root = document.documentElement;
+            let queued = false;
+            const update = () => {
+                if (queued) return;
+                queued = true;
+                requestAnimationFrame(() => {
+                    queued = false;
+                    const max = root.scrollHeight - window.innerHeight;
+                    root.style.setProperty('--scroll-progress', max > 0 ? Math.min(1, window.scrollY / max) : 0);
+                });
+            };
+            addEventListener('scroll', update, { passive: true });
+            addEventListener('resize', update);
+            update();
+        })();
+    </script>
 </body>
 
 </html>

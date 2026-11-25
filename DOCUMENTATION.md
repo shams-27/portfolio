@@ -5,7 +5,7 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 
 **Key Features:**
 - Swiss Style typography and layout
-- Google Sheets as CMS for dynamic content, with generated static HTML fallbacks
+- All section content lives directly in `index.html` — no external CMS or runtime data fetch
 - Sticky section stacking with smooth scrolling
 - Responsive design across all devices
 - Accessible motion, skip link, focus-managed mobile menu, visible skill labels on touch
@@ -20,16 +20,15 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 
 ```text
 .
-├── index.html          # Semantic markup, SEO tags, JSON-LD, generated section fallbacks
+├── index.html          # Semantic markup, SEO tags, JSON-LD, all section content
 ├── style.css           # Swiss Style tokens, 12-column grid, self-hosted @font-face, animations
-├── script.js           # Google Sheets CSV parser, UI controls, local-first skill icons
+├── script.js           # UI controls, sticky sections, scroll reveals (no remote content)
 ├── sw.js               # Network-first pages, stale-while-revalidate assets, offline fallback
-├── build_content.py    # Regenerates static Projects/Tech stack fallbacks from the sheets
 ├── checks.py           # Local/online validation; --bump increments the SW cache version
 ├── offline.html        # Page served when a navigation fails while offline
 ├── fonts/              # Self-hosted woff2 files and Open Font License texts
-├── icons/              # Self-hosted Devicon 2.18 SVGs (CDN only as a fallback)
-├── content_cache/      # CSV snapshots and the service-worker asset fingerprint
+├── icons/              # Self-hosted Devicon 2.18 SVGs plus a local PowerShell mark
+├── content_cache/      # Service-worker asset fingerprint only
 ├── robots.txt          # Crawler directives
 ├── favicon.svg         # Tab icon and SVG vector icon
 ├── favicon.ico         # Root multi-res ICO favicon (16/32/48) for Googlebot and search crawlers
@@ -63,17 +62,17 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 3. **Traits Strip**: Red band with scrolling text items
 4. **Section Numbers**: Red mono numbers before each section title
 5. **Skill Icons**: Full-color self-hosted Devicon SVGs; hover labels on pointer devices, visible labels on touch
-6. **Project Cards**: Indexed cards with stack chips and links
+6. **Project Index**: Ruled full-width rows with stack icons and links
 
 ---
 
 ## Technical Implementation
 
-### Dynamic Content
-- **Google Sheets Integration**: Projects and skills loaded from CSV endpoints; `build_content.py` writes equivalent static HTML into `index.html` between generated markers, so sections render without JS or network
-- **Caching**: Stale-while-revalidate with localStorage; CSV snapshot in `content_cache/` makes rebuilds reproducible
-- **CSV Parsing**: Custom parser handling quoted fields and escaped quotes (JS) and `csv.DictReader` (Python)
-- **Validation**: `python3 checks.py` verifies JSON-LD, sitemap, links, generated content, precache assets, design invariants, and cache-version consistency
+### Static Content
+- **Single source of truth**: Projects, Tech stack and Writing are plain HTML in `index.html`; nothing is fetched at runtime and no build step regenerates them
+- **Caching**: The service worker caches `index.html`, `style.css`, `script.js` and the self-hosted assets; no localStorage content cache remains
+- **Skill / stack icons**: Local SVGs are referenced directly from `index.html`; the name stays as `alt` text and a touch/hover label
+- **Validation**: `python3 checks.py` verifies JSON-LD, sitemap, links, precache assets, design invariants, and cache-version consistency
 
 ### JavaScript Features
 - **Sticky Sections**: Custom stacking with `ResizeObserver`, batched reads/writes and one rAF-debounced measure loop
@@ -123,14 +122,14 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 - **Content**: Categorized technologies and tools with icon chips
 - **Features**:
   - Devicon icons with hover labels
-  - Fallback to text chips if icon fails to load
+  - Names kept as `alt` text and visible labels on touch
   - Rounded corners for square logos
 
 ### 7. Projects Section
-- **Content**: Dynamic project cards from Google Sheets
+- **Content**: Static project rows in `index.html`
 - **Features**:
-  - Indexed cards (01, 02...)
-  - Stack technology chips
+  - Ruled index rows (01, 02...) with aligned columns on desktop
+  - Stack technology icons
   - Live demo and GitHub links
   - Scroll reveal animation
 
@@ -138,7 +137,7 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 - **Content**: Technical essays, contest retrospectives, and engineering breakdowns
 - **Features**:
   - Ruled Swiss layout with mono dates and tag chips
-  - Plain HTML entries in `index.html` (no Google Sheets)
+  - Plain HTML entries in `index.html`
   - Standalone article support with images, captions, and code blocks
 
 ### 9. Contact Section
@@ -149,17 +148,20 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 
 ## Technical Details
 
-### Google Sheets Integration
-```javascript
-const SHEETS = {
-  projects: 'https://docs.google.com/spreadsheets/.../output=csv',
-  skills: 'https://docs.google.com/spreadsheets/.../output=csv'
-};
+### Static Content
+```html
+<!-- Projects: one article per row, renumber the project-index spans by hand -->
+<article class="project">
+  <div class="project-head"><span class="project-index">01</span><h3>Auto GCC</h3></div>
+  <div class="project-info">
+    <p class="project-desc">...</p>
+    <ul class="stack"><li>PowerShell</li></ul>
+    <div class="project-links"><a href="..." target="_blank" rel="noopener">View on GitHub</a></div>
+  </div>
+</article>
 
-// CSV Schema:
-// Projects: name, description, stack, live_url, github_url, order, visible
-// Skills: category, skill, full_name, visible
-// Writing is not in the sheet: its entries are plain HTML in index.html
+<!-- Skills: local SVG icons, with the name in alt and data-name -->
+<li class="has-icon" data-name="Git"><img src="/icons/git/git-original.svg" alt="Git" width="28" height="28" decoding="async"></li>
 ```
 
 ### Animation System
@@ -188,10 +190,10 @@ python3 -m http.server 8000
 
 ### Deployment
 - Hosted on GitHub Pages or similar static hosting
-- Google Sheets as headless CMS
+- Static files only; no CMS or runtime data fetch
 
 ### Maintenance
-1. Edit content in Google Sheets, then run `python3 build_content.py`
+1. Edit the relevant markup directly in `index.html`
 2. Update images when needed
 3. `og:image`, `twitter:image`, `link rel=image_src`, `primaryImageOfPage`, `Person.image`, and the sitemap homepage `image:loc` all use the portrait `Shams.jpg`; `checks.py` enforces this so Google shows the profile photo rather than the portfolio card
 4. Article pages keep their own article image; `og-image.png` remains the default in `posts/template.html`
@@ -202,14 +204,14 @@ python3 -m http.server 8000
 ## Customization Guide
 
 ### Adding New Skills
-1. Add to Google Sheets under "Skills" tab
-2. Map to Devicon icon in `SKILL_ICONS` object
-3. Add to `SKILL_ICON_LOCAL` if using custom SVG
+1. Add a `<li>` to the right `.skill-row` group in `index.html`
+2. Download the matching Devicon SVG into `icons/` and reference it from `<img src="...">`
+3. Set `alt` and `data-name` to the name shown on touch/hover
 
 ### Adding New Projects
-1. Add to Google Sheets under "Projects" tab
-2. Set `visible` to "true" (default)
-3. Optionally set `order` for custom sorting
+1. Add an `<article class="project">` in `index.html`
+2. Keep index numbers sequential and add stack chips / links as needed
+3. Remove the whole article to hide a project
 
 ### Modifying Layout
 - Edit CSS variables in `:root` selector
@@ -226,7 +228,7 @@ python3 -m http.server 8000
 ## Performance & SEO Optimization
 
 - **Service Worker (`sw.js`)**:
-  - Pre-caches core assets (`index.html`, `style.css`, `script.js`, portraits, achievement photo, SVG icons, Google Fonts)
+  - Pre-caches core assets (`index.html`, `style.css`, `script.js`, portraits, achievement photo, SVG icons, self-hosted fonts)
   - Enables offline support and near-instant repeat visits
 
 - **Core Web Vitals & Diagnostics**:
@@ -239,7 +241,7 @@ python3 -m http.server 8000
   - Proper aspect ratios maintained
 
 - **Resource Loading**:
-  - Google Fonts loaded with `display=swap`
+  - Fonts are self-hosted woff2 with `display=swap`
   - Non-critical JS deferred
 
 - **Structured Data & SEO**:
@@ -248,7 +250,7 @@ python3 -m http.server 8000
   - Sitemap with image caption, changefreq, and priority
 
 - **Caching**:
-  - LocalStorage caching for Google Sheets data (stale-while-revalidate)
+  - Service-worker asset cache only; no localStorage content cache remains
 
 ---
 
