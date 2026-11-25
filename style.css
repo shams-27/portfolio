@@ -386,7 +386,7 @@ footer p::before { content: ''; display: inline-block; width: 0.55em; height: 0.
 .entry { display: grid; grid-template-columns: clamp(5.5rem, 16%, 9rem) 1fr; column-gap: 1.5rem; padding: 1.1rem 0 1.6rem; }
 .when { font-family: var(--mono); font-size: clamp(1.5rem, 2.6vw, 2.25rem); font-weight: 700; line-height: 1; letter-spacing: -0.05em; font-variant-numeric: tabular-nums lining-nums; }
 .when small { display: block; margin-top: 0.4rem; font-size: 0.8125rem; font-weight: 500; letter-spacing: 0; color: var(--muted); }
-.entry h3 { font-size: 1.375rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.025em; }
+.entry h3 { font-size: 1.375rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.025em; overflow-wrap: anywhere; }
 .entry .what p { margin-top: 0.1rem; }
 .entry .what .meta { margin-top: 0.35rem; font-family: var(--mono); font-size: 0.8125rem; font-weight: 500; color: var(--muted); }
 .entry .what .desc { margin-top: 0.5rem; font-size: 1rem; line-height: 1.5; }
@@ -473,7 +473,7 @@ abbr[title] { text-decoration: none; cursor: help; }
 .project-info { display: flex; flex-direction: column; flex: 1; padding: 0.9rem 0 1.5rem; }
 .project-desc { max-width: 52ch; }
 .stack { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; font-family: var(--mono); font-size: 0.8125rem; font-weight: 500; color: var(--muted); }
-.stack li { padding: 0.15rem 0.55rem; border: var(--hair) solid var(--black); line-height: 1.4; }
+.stack li { padding: 0.15rem 0.55rem; border: var(--hair) solid var(--black); line-height: 1.4; overflow-wrap: anywhere; }
 .project-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: auto; padding-top: 1.25rem; }
 .project-links a { padding-block: 0.35rem; font-size: 1rem; font-weight: 600; transition: color 0.15s; }
 .project-links a::after { content: '\2197'; display: inline-block; margin-left: 0.3em; transition: translate 0.2s var(--ease); }
@@ -837,11 +837,13 @@ main > .strip { position: relative; }
         transition: opacity 0.2s, visibility 0.2s;
     }
     .nav-overlay.show { opacity: 1; visibility: visible; pointer-events: auto; }
+    /* Freeze the page behind the open menu so a swipe can't scroll it away. */
+    html.menu-open, html.menu-open body { overflow: hidden; }
 }
 
 /* Phones: compact */
 @media (max-width: 639px) {
-    :root { --gutter: max(1rem, env(safe-area-inset-left, 0px)); --section: 3rem; --strip-h: calc(1.2rem + 4px + 1.2 * clamp(1rem, 4.3vw, 1.375rem)); }
+    :root { --gutter: max(1rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px)); --section: 3rem; --strip-h: calc(1.2rem + 4px + 1.2 * clamp(1rem, 4.3vw, 1.375rem)); }
     html { scroll-padding-top: 4.5rem; }
     body { font-size: 1rem; line-height: 1.5; }
     nav { padding: 0.5rem var(--gutter); }
@@ -880,8 +882,8 @@ main > .strip { position: relative; }
     .about-body p:first-child { font-size: 1.25rem; margin-bottom: 1rem; }
     .about-body p + p { margin-top: 0.9rem; }
     .fact, .stat { padding: 0.75rem 0 1.1rem; }
-    .stat { gap: 1rem; }
-    .stat dt { font-size: 0.9375rem; }
+    .stat { gap: 1rem; align-items: center; }
+    .stat dt { font-size: 0.9375rem; white-space: normal; }   /* long labels must wrap instead of being clipped on narrow screens */
     .fact dd { font-size: 1.0625rem; }
 
     .entry { grid-template-columns: 4.5rem 1fr; column-gap: 1rem; padding: 0.9rem 0 1.2rem; }
@@ -893,6 +895,8 @@ main > .strip { position: relative; }
     .entry h3 { font-size: 1.15rem; }
     .entry .what .meta { font-size: 0.75rem; }
     .entry .what .desc { font-size: 0.9375rem; }
+    /* Justification opens distracting rivers in narrow columns; hyphens still keep ragged edges tidy. */
+    .writing-entry .desc, .article-body p, .article-body li { text-align: left; }
 
     .skills { margin-top: 1.5rem; }
     .skill-row { padding: 0.9rem 0 1.1rem; }
@@ -917,6 +921,15 @@ main > .strip { position: relative; }
     .hero-lead { font-size: 0.9375rem; }
     .nav-links a { font-size: 1.25rem; }
     .skill-row li { font-size: 0.875rem; }
+}
+
+/* Touch usability: every tappable control gets a ~44px target on phones and small tablets */
+@media (max-width: 767px) {
+    .btn, .text-link, .back-link, .project-links a, .text-link-inline { min-height: 44px; }
+    .btn, .text-link { padding-block: 0.7rem; }
+    .back-link, .project-links a, .text-link-inline { display: inline-flex; align-items: center; }
+    .hero-actions .btn, .hero-actions .text-link { width: 44px; height: 44px; min-height: 44px; padding: 0; }
+    .skill-row li { min-height: 44px; }
 }
 
 /* Landscape phones: keep the nav bar slim */
@@ -1035,5 +1048,5 @@ main > .strip { position: relative; }
 @keyframes card-in { from { opacity: 0; translate: 0 1.5rem; } to { opacity: 1; translate: 0 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-    .btn, .text-link, .nav-links a, .back-to-top, .nav-overlay, .skill-row li, .project-links a::after { transition: none; }
+    .btn, .text-link, .nav-links a, .nav-toggle span, .back-to-top, .nav-overlay, .skill-row li, .project-links a::after { transition: none; }
 }

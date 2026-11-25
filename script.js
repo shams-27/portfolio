@@ -17,6 +17,9 @@ const navOverlay = document.getElementById('navOverlay');
 function setMenu(open) {
     navLinks.classList.toggle('open', open);
     navToggle.setAttribute('aria-expanded', String(open));
+    navToggle.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+    // Stop the page behind the menu from scrolling on touch devices.
+    document.documentElement.classList.toggle('menu-open', open);
     if (navOverlay) {
         navOverlay.classList.toggle('show', open);
         navOverlay.setAttribute('aria-hidden', String(!open));

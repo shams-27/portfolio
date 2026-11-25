@@ -1,7 +1,7 @@
 // Service worker: network-first for pages, stale-while-revalidate for same-origin assets.
 // Bump CACHE_NAME whenever a cached asset changes (see AGENTS.md). Cross-origin requests
 // (Google Sheets, the Devicon CDN fallback) are left to the browser, never cached here.
-const CACHE_NAME = 'portfolio-cache-v35';
+const CACHE_NAME = 'portfolio-cache-v37';
 const OFFLINE_URL = '/offline.html';
 const ASSETS_TO_CACHE = [
     '/',
