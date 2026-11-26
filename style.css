@@ -344,15 +344,6 @@ nav {
     letter-spacing: 0;
     color: var(--accent);
 }
-.sec-title::after {
-    content: '';
-    display: block;
-    width: 100%;
-    height: var(--hair);
-    margin-top: 1.25rem;
-    background: var(--black);
-}   /* rule under each title, tying it to the content grid */
-
 @media (min-width: 860px) {
     .section-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--col-gap); row-gap: 0; }
     .section-grid > .sec-title { grid-column: 1 / 5; grid-row: 1 / span 6; align-self: start; }
