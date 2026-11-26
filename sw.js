@@ -1,7 +1,7 @@
 // Service worker: network-first for pages, stale-while-revalidate for same-origin assets.
 // Bump CACHE_NAME whenever a cached asset changes (see AGENTS.md). Cross-origin requests
 // are left to the browser, never cached here.
-const CACHE_NAME = 'portfolio-cache-v44';
+const CACHE_NAME = 'portfolio-cache-v45';
 const OFFLINE_URL = '/offline.html';
 const ASSETS_TO_CACHE = [
     '/',
