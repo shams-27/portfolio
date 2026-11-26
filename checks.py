@@ -158,8 +158,11 @@ def check_sw() -> None:
 
 
 def check_profile_image() -> None:
-    """All homepage image signals must point at the portrait, not the portfolio card."""
+    """Homepage image signals must point at the portrait and its aspect-ratio crops."""
     expected = "https://shams.swe.bd/Shams.jpg"
+    variants = [expected,
+                "https://shams.swe.bd/Shams-square.jpg",
+                "https://shams.swe.bd/Shams-wide.jpg"]
     index = read(ROOT / "index.html")
     social = re.findall(
         r'<meta (?:property="og:image"|name="twitter:image") content="([^"]+)"', index
@@ -172,13 +175,17 @@ def check_profile_image() -> None:
             ld = json.loads(ld_text.group(1))
             primary = ld.get("primaryImageOfPage", {})
             person = ld.get("mainEntity", {})
-            image = person.get("image", {}) if isinstance(person, dict) else {}
+            image = person.get("image", []) if isinstance(person, dict) else []
+            if isinstance(image, dict):
+                image = [image.get("url")]
             for label, value in (
                 ("primaryImageOfPage", primary.get("url") if isinstance(primary, dict) else primary),
-                ("Person.image", image.get("url") if isinstance(image, dict) else image),
+                ("Person.image[0]", image[0] if image else None),
             ):
                 if value != expected:
                     fail(f"JSON-LD {label} should be {expected}, found {value}")
+            if image != variants:
+                fail(f"JSON-LD Person.image should be {variants}, found {image}")
         except json.JSONDecodeError:
             pass  # already reported by check_jsonld()
     try:
@@ -186,9 +193,13 @@ def check_profile_image() -> None:
         ns = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9",
               "i": "http://www.google.com/schemas/sitemap-image/1.1"}
         first = tree.find(".//s:url", ns)
-        loc = first.findtext("i:image/i:loc", "", ns) if first is not None else ""
-        if loc != expected:
-            fail(f"sitemap homepage image should be {expected}, found {loc}")
+        locs = ([node.text for node in first.findall("i:image/i:loc", ns)]
+                if first is not None else [])
+        if not locs or locs[0] != expected:
+            fail(f"sitemap homepage image should start with {expected}, found {locs}")
+        for url in variants[1:]:
+            if url not in locs:
+                fail(f"sitemap homepage image is missing {url}")
     except ET.ParseError:
         pass  # already reported by check_sitemap()
 

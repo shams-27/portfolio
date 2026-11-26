@@ -38,6 +38,8 @@ A minimalist, Swiss Style portfolio website for Shams Kabir (`https://shams.swe.
 ├── sitemap.xml         # Homepage + article URLs with image entries and lastmod dates
 ├── icon-c.svg          # Local C logo for skills section
 ├── Shams.jpg           # Hero portrait (800x1000)
+├── Shams-square.jpg    # 1:1 crop of the portrait for profile image markup
+├── Shams-wide.jpg      # 16:9 crop of the portrait for profile image markup
 ├── achievement.jpg     # DIU CodeTrap trophy photo
 ├── og-image.png        # Open Graph social preview card
 └── posts/              # Articles and case studies
@@ -195,7 +197,7 @@ python3 -m http.server 8000
 ### Maintenance
 1. Edit the relevant markup directly in `index.html`
 2. Update images when needed
-3. `og:image`, `twitter:image`, `link rel=image_src`, `primaryImageOfPage`, `Person.image`, and the sitemap homepage `image:loc` all use the portrait `Shams.jpg`; `checks.py` enforces this so Google shows the profile photo rather than the portfolio card
+3. `og:image`, `twitter:image`, `link rel=image_src`, `primaryImageOfPage`, and the first sitemap homepage `image:loc` use the portrait `Shams.jpg`; `Person.image` and the sitemap also list square and wide crops so Google can pick a suitable profile thumbnail. `checks.py` enforces this so Google shows the profile photo rather than the portfolio card
 4. Article pages keep their own article image; `og-image.png` remains the default in `posts/template.html`
 5. After any cached asset edit, run `python3 checks.py --bump`
 

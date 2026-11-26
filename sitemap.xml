@@ -2,13 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
     <url>
         <loc>https://shams.swe.bd/</loc>
-        <lastmod>2026-11-26</lastmod>
+        <lastmod>2026-11-27</lastmod>
         <changefreq>monthly</changefreq>
         <priority>1.0</priority>
         <image:image>
             <image:loc>https://shams.swe.bd/Shams.jpg</image:loc>
             <image:title>Shams Kabir</image:title>
             <image:caption>Portrait of Shams Kabir, Software Engineering undergraduate</image:caption>
+        </image:image>
+        <image:image>
+            <image:loc>https://shams.swe.bd/Shams-square.jpg</image:loc>
+            <image:title>Shams Kabir</image:title>
+            <image:caption>Square portrait of Shams Kabir</image:caption>
+        </image:image>
+        <image:image>
+            <image:loc>https://shams.swe.bd/Shams-wide.jpg</image:loc>
+            <image:title>Shams Kabir</image:title>
+            <image:caption>Wide portrait of Shams Kabir</image:caption>
         </image:image>
     </url>
     <url>
