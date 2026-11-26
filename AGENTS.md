@@ -4,7 +4,7 @@
 - **Checks**: `python3 checks.py` (local), `python3 checks.py --online` (also HEAD-checks every sitemap URL, needs network). `checks.py` is the source of truth over `DOCUMENTATION.md`.
 - **Markup**: `index.html` holds all Projects, Tech stack, and Writing content plus `ProfilePage`/`WebSite` JSON-LD. `posts/*.html` are standalone articles (`BlogPosting` JSON-LD); `posts/template.html` is boilerplate.
 - **Logic/Styles**: `script.js` (nav/scroll UI; `ResizeObserver` sets `--h`/`--hdr`), `style.css` (Swiss style, `--accent: #E4002B`, 12-col grid).
-- **Offline cache**: `sw.js` — network-first navigations with `/offline.html` fallback, stale-while-revalidate same-origin assets, `skipWaiting`; cross-origin untouched; currently `portfolio-cache-v51`. `content_cache/sw-fingerprint.json` is generated — never hand-edit.
+- **Offline cache**: `sw.js` — network-first navigations with `/offline.html` fallback, stale-while-revalidate same-origin assets, `skipWaiting`; cross-origin untouched; currently `portfolio-cache-v52`. `content_cache/sw-fingerprint.json` is generated — never hand-edit.
 
 ## Invariants
 - **Cache bump**: after ANY change to a precached asset (listed in `sw.js` `ASSETS_TO_CACHE`), run `python3 checks.py --bump`. It increments `CACHE_NAME`, rewrites the version line in this file, and records the new fingerprint; it then runs the local checks. Stale fingerprint or sw.js/AGENTS.md version drift fails `checks.py`.

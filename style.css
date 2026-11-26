@@ -87,7 +87,7 @@ body {
     font-size: 1.0625rem;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    overflow-x: clip;   /* clip doesn't create a scroll container, so sticky sections don't jitter on touch scroll */
     counter-reset: sec;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -818,12 +818,12 @@ footer p { max-width: 1400px; margin-inline: auto; }
 main > section {
     position: sticky;
     top: min(var(--hdr, 4.75rem), calc(100vh - var(--h, 0px)));
-    top: min(var(--hdr, 4.75rem), calc(100dvh - var(--h, 0px)));
+    top: min(var(--hdr, 4.75rem), calc(100svh - var(--h, 0px)));   /* svh stays fixed while mobile browser chrome hides on scroll */
     background-color: var(--bg);   /* pinned sections must be opaque */
     background-image:
         linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
         linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-    background-size: var(--grid-size) var(--grid-size);
+    background-size: var(--grid-size) var(--grid-size);   /* static: animating background-position repaints full-screen sticky sections on mobile */
 }
 main > .strip { position: relative; }
 #tech-stack, #contact { background-color: var(--bar); }
@@ -1206,13 +1206,6 @@ main > .strip { position: relative; }
     }
 }
 @keyframes card-in { from { opacity: 0; translate: 0 1.5rem; } to { opacity: 1; translate: 0 0; } }
-@keyframes grid-drift {
-    from { background-position: 0 0, 0 0; }
-    to { background-position: var(--grid-size) var(--grid-size), var(--grid-size) var(--grid-size); }
-}
-@media (prefers-reduced-motion: no-preference) {
-    main > section { animation: grid-drift 10s linear infinite; }
-}
 
 @media (prefers-reduced-motion: reduce) {
     .btn, .text-link, .nav-links a, .nav-toggle span, .back-to-top, .nav-overlay, .skill-row li, .project-links a::after, .project-links::after, .contact-social a { transition: none; }
