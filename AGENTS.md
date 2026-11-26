@@ -5,7 +5,7 @@
 - **Styles**: `style.css` (Swiss Style, `--accent: #E4002B`, 12-col grid, sticky sections, self-hosted `@font-face`)
 - **Logic**: `script.js` (nav/scroll UI, `ResizeObserver` for `--h`/`--hdr`, scroll reveals; no CMS or remote content)
 - **Scripts**: `checks.py` (validation + `checks.py --bump` for SW version)
-- **Offline Cache**: `sw.js` (network-first pages, stale-while-revalidate local assets, `/offline.html` fallback; currently `portfolio-cache-v46`)
+- **Offline Cache**: `sw.js` (network-first pages, stale-while-revalidate local assets, `/offline.html` fallback; currently `portfolio-cache-v49`)
 - **Assets**: `fonts/` (self-hosted woff2 + OFL licences), `icons/` (self-hosted Devicon 2.18 SVGs plus a local PowerShell mark), `content_cache/` (SW fingerprint only)
 - **Articles**: `posts/template.html`, `posts/*.html` (with `BlogPosting` JSON-LD)
 - **Current focus**: Testing `#writing` section (`hidden` removed from `#writing` and its nav `<li>` in `index.html`; re-add both to hide)
