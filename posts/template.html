@@ -8,12 +8,18 @@
     <meta name="description" content="One-line summary of the article for search engines and social cards.">
     <meta name="author" content="Shams Kabir">
     <link rel="canonical" href="https://shams.swe.bd/posts/post-slug.html">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="noindex, nofollow">
     <meta name="theme-color" content="#FFFFFF">
     <meta name="color-scheme" content="only light">
+    <meta name="supported-color-schemes" content="light">
+    <meta name="darkreader-lock">
+    <link rel="alternate" hreflang="x-default" href="https://shams.swe.bd/posts/post-slug.html">
+    <link rel="alternate" hreflang="en" href="https://shams.swe.bd/posts/post-slug.html">
     <meta property="og:title" content="Post Title — Shams Kabir">
     <meta property="og:description" content="One-line summary of the article for social cards.">
     <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Shams Kabir">
+    <meta property="og:locale" content="en_US">
     <meta property="og:url" content="https://shams.swe.bd/posts/post-slug.html">
     <meta property="og:image" content="https://shams.swe.bd/og-image.png?v=3">
     <meta property="og:image:width" content="1200">
@@ -142,6 +148,19 @@ int main(void) {
             addEventListener('resize', update);
             update();
         })();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
     </script>
 </body>
 

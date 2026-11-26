@@ -1,7 +1,7 @@
 // Service worker: network-first for pages, stale-while-revalidate for same-origin assets.
 // Bump CACHE_NAME whenever a cached asset changes (see AGENTS.md). Cross-origin requests
 // are left to the browser, never cached here.
-const CACHE_NAME = 'portfolio-cache-v49';
+const CACHE_NAME = 'portfolio-cache-v51';
 const OFFLINE_URL = '/offline.html';
 const ASSETS_TO_CACHE = [
     '/',
@@ -43,7 +43,8 @@ const ASSETS_TO_CACHE = [
     '/icons/mysql/mysql-original.svg',
     '/icons/mariadb/mariadb-original.svg',
     '/icons/antigravity/antigravity-original.svg',
-    '/icons/powershell/powershell-original.svg'
+    '/icons/powershell/powershell-original.svg',
+    '/icons/python/python-original.svg'
 ];
 
 self.addEventListener('install', (event) => {
@@ -54,8 +55,11 @@ self.addEventListener('install', (event) => {
                 ASSETS_TO_CACHE.map((url) => cache.add(new Request(url, { cache: 'reload' })))
             ))
             .then((results) => {
-                const failed = results.filter((r) => r.status === 'rejected');
+                const failed = ASSETS_TO_CACHE.filter((_, i) => results[i].status === 'rejected');
                 if (failed.length) console.warn('[sw] could not precache', failed.length, 'asset(s)');
+                if (['/', '/offline.html', '/style.css', '/script.js'].some((url) => failed.includes(url))) {
+                    throw new Error('[sw] core assets missing; install failed');
+                }
                 return self.skipWaiting();
             })
     );
@@ -99,7 +103,7 @@ self.addEventListener('fetch', (event) => {
     if (request.method !== 'GET') return;
     const url = new URL(request.url);
 
-    if (request.mode === 'navigate') {
+    if (request.mode === 'navigate' && url.origin === self.location.origin) {
         event.respondWith(networkFirst(request));
     } else if (url.origin === self.location.origin) {
         event.respondWith(staleWhileRevalidate(request, event));

@@ -1,5 +1,3 @@
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
 // Dark mode and the old sheet cache were removed; clear values saved by earlier visits
 try {
     localStorage.removeItem('theme');
@@ -48,7 +46,7 @@ if (navToggle && navLinks) {
     });
 
     // Close when tapping the dimmed area or pressing Escape
-    if (navOverlay) navOverlay.addEventListener('click', () => setMenu(false));
+    if (navOverlay) navOverlay.addEventListener('click', () => { setMenu(false); navToggle.focus(); });
     document.addEventListener('keydown', (e) => {
         if (!navLinks.classList.contains('open')) return;
         if (e.key === 'Escape') {
@@ -56,7 +54,7 @@ if (navToggle && navLinks) {
             navToggle.focus();
         } else if (e.key === 'Tab') {
             // Cycle focus between the toggle and the links while the menu is open.
-            const focusables = [navToggle, ...navLinks.querySelectorAll('a[href]')];
+            const focusables = [...navLinks.querySelectorAll('a[href]'), navToggle];
             const first = focusables[0];
             const last = focusables[focusables.length - 1];
             if (e.shiftKey && document.activeElement === first) {
@@ -71,7 +69,10 @@ if (navToggle && navLinks) {
 
     // Reset if the viewport grows past the mobile breakpoint
     window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => {
-        if (e.matches) setMenu(false);
+        if (e.matches) {
+            setMenu(false);
+            (navLinks.querySelector('a') || navToggle).focus();
+        }
     });
 }
 
@@ -140,7 +141,7 @@ onScroll();
 
 if (backToTopBtn) {
     backToTopBtn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+        window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     });
 }
 
@@ -155,7 +156,7 @@ if (stripTrack && stripTrack.firstElementChild) {
 
 // Cards fade and rise into view as they scroll on screen (skipped for reduced motion).
 function revealOnScroll(cards) {
-    if (prefersReducedMotion || !('IntersectionObserver' in window)) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
 
     cards.forEach((card) => card.classList.add('will-reveal'));
     const io = new IntersectionObserver((entries) => {
@@ -187,7 +188,7 @@ function el(tag, className, text) {
 // About stats: count-up on first reveal. The number ascends from zero to its value (3.90 runs 0.00 → 3.90, 100+ runs 000 → 100, 4th runs 0th → 4th) with an ease-out,
 // zero-padded to the final width so the mono font never shifts the suffix. The real text stays in a visually hidden span for screen readers.
 function shuffleStats() {
-    if (prefersReducedMotion || !('IntersectionObserver' in window)) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
     const DURATION = 1400;
 
     const items = new Map();
@@ -324,31 +325,38 @@ if ('ResizeObserver' in window) {
 
 // Pinned sections report their pinned position, so in-page links can't rely on the browser's own jump.
 // A section's natural position is the sum of the heights of everything above it.
+function scrollToId(id) {
+    const target = id ? document.getElementById(id) : null;
+    if (!target || !mainEl) return false;
+
+    let y;
+    if (target === mainEl) {
+        y = 0;
+    } else if (stackItems.includes(target)) {
+        y = mainEl.offsetTop;
+        for (const el of stackItems) {
+            if (el === target) break;
+            y += el.offsetHeight;
+        }
+        y -= headerEl ? headerEl.offsetHeight : 0;
+    } else {
+        return false;
+    }
+
+    window.scrollTo({ top: Math.max(0, y), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    history.replaceState(null, '', '#' + id);
+    // Move focus with the jump so keyboard and screen-reader users land on the section.
+    target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
+    return true;
+}
+
 document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener('click', (e) => {
-        const id = link.getAttribute('href').slice(1);
-        const target = id ? document.getElementById(id) : null;
-        if (!target || !mainEl) return;
-
-        let y;
-        if (target === mainEl) {
-            y = 0;
-        } else if (stackItems.includes(target)) {
-            y = mainEl.offsetTop;
-            for (const el of stackItems) {
-                if (el === target) break;
-                y += el.offsetHeight;
-            }
-            y -= headerEl ? headerEl.offsetHeight : 0;
-        } else {
-            return;
-        }
-
-        e.preventDefault();
-        window.scrollTo({ top: Math.max(0, y), behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-        history.replaceState(null, '', '#' + id);
-        // Move focus with the jump so keyboard and screen-reader users land on the section.
-        target.setAttribute('tabindex', '-1');
-        target.focus({ preventScroll: true });
+        if (scrollToId(link.getAttribute('href').slice(1))) e.preventDefault();
     });
 });
+
+if (location.hash) {
+    window.addEventListener('load', () => scrollToId(location.hash.slice(1)));
+}

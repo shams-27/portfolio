@@ -383,15 +383,8 @@ nav {
 footer p::before { content: ''; display: inline-block; width: 0.55em; height: 0.55em; margin-right: 0.7em; background: var(--accent); vertical-align: 0.04em; }
 .about-body strong { font-weight: 700; }
 
-.about-top { display: block; }
 @media (min-width: 860px) {
-    .about-top { display: block; }
     .about-top .about-body { max-width: none; }
-}
-
-/* Phones and small tablets */
-@media (max-width: 859px) {
-    .about-top { display: block; }
 }
 
 /* About stats: ruled rows, the big mono number on the left and a one-line label on the right. The markup is label then number (dt, dd); order: -1 puts the number first. */
@@ -428,7 +421,7 @@ footer p::before { content: ''; display: inline-block; width: 0.55em; height: 0.
 .tree > li:not(:last-child)::after { content: ''; position: absolute; left: 5px; top: calc(0.3rem + 12px); bottom: -1.8rem; width: 2px; background: var(--black); transform-origin: 0 0; }
 
 /* Tech stack: full-width ruled rows, category left, chips right */
-#tech-stack, #skills { background-color: var(--bar); padding-bottom: var(--section); }
+#tech-stack { background-color: var(--bar); padding-bottom: var(--section); }
 .skills { max-width: 1400px; margin: clamp(2rem, 5vw, 3.5rem) auto 0; padding-inline: var(--gutter); }
 .skill-row { display: grid; gap: 0.75rem var(--col-gap); padding: 1.1rem 0 1.5rem; border-top: var(--hair) solid var(--black); }
 .skill-row:first-child { border-top-width: var(--rule); }
@@ -833,11 +826,11 @@ main > section {
     background-size: var(--grid-size) var(--grid-size);
 }
 main > .strip { position: relative; }
-#tech-stack, #skills, #contact { background-color: var(--bar); }
+#tech-stack, #contact { background-color: var(--bar); }
 
 /* Layout stability: reserve height while the static content paints */
 #projects .list { min-height: 22rem; }
-#tech-stack .skills, #skills .skills { min-height: 18rem; }
+#tech-stack .skills { min-height: 18rem; }
 
 /* Tablet and up */
 @media (min-width: 640px) {

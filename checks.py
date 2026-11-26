@@ -74,10 +74,10 @@ def check_sitemap(online: bool) -> None:
     }
     if set(urls) != expected:
         fail(f"sitemap.xml: expected {sorted(expected)}, found {sorted(urls)}")
-    for url in urls:
-        node = next((u for u in tree.findall(".//s:url", ns) if u.findtext("s:loc", "", ns) == url), None)
-        if node is None or not node.findtext("s:lastmod", "", ns):
-            fail(f"sitemap.xml: {url} is missing lastmod")
+    for node in tree.findall(".//s:url", ns):
+        url = node.findtext("s:loc", "", ns)
+        if not url or not node.findtext("s:lastmod", "", ns):
+            fail(f"sitemap.xml: {url or '(missing loc)'} is missing lastmod")
     if online:
         for url in urls:
             try:
@@ -93,7 +93,7 @@ def check_links() -> None:
     for page in pages:
         text = read(page)
         ids = set(re.findall(r'\bid="([^"]+)"', text))
-        for href in re.findall(r'\bhref="([^"]+)"', text):
+        for href in re.findall(r'\b(?:href|src)="([^"]+)"', text):
             if href.startswith("#"):
                 if href[1:] and href[1:] not in ids:
                     fail(f"{page.name}: broken anchor {href}")
@@ -139,7 +139,9 @@ def check_sw() -> None:
     if "codeTrapStanding.jpg" in assets:
         fail("sw.js: codeTrapStanding.jpg must never be precached")
     current = fingerprint(assets)
-    if FINGERPRINT.exists() and json.loads(FINGERPRINT.read_text()) != current:
+    if not FINGERPRINT.exists():
+        fail("content_cache/sw-fingerprint.json is missing: run `python3 checks.py --bump`")
+    elif json.loads(FINGERPRINT.read_text()) != current:
         fail("cached assets changed: run `python3 checks.py --bump`")
     sw = read(ROOT / "sw.js")
     agents = read(ROOT / "AGENTS.md")
@@ -168,9 +170,12 @@ def check_profile_image() -> None:
     if ld_text:
         try:
             ld = json.loads(ld_text.group(1))
+            primary = ld.get("primaryImageOfPage", {})
+            person = ld.get("mainEntity", {})
+            image = person.get("image", {}) if isinstance(person, dict) else {}
             for label, value in (
-                ("primaryImageOfPage", ld.get("primaryImageOfPage", {}).get("url")),
-                ("Person.image", ld.get("mainEntity", {}).get("image", {}).get("url")),
+                ("primaryImageOfPage", primary.get("url") if isinstance(primary, dict) else primary),
+                ("Person.image", image.get("url") if isinstance(image, dict) else image),
             ):
                 if value != expected:
                     fail(f"JSON-LD {label} should be {expected}, found {value}")
@@ -196,8 +201,8 @@ def check_design_invariants() -> None:
         fail("style.css: bare `header` selector would overlap article headers")
     if "@media (prefers-reduced-motion: reduce)" not in css:
         fail("style.css: reduced-motion block missing")
-    for page in [ROOT / "index.html", ROOT / "posts/template.html", ROOT / "posts/diu-codetrap-2025.html"]:
-        if 'lang="en"' not in read(page):
+    for page in [ROOT / "index.html", *sorted((ROOT / "posts").glob("*.html"))]:
+        if not re.search(r'<html\b[^>]*\blang="en"', read(page)):
             fail(f"{page.name}: missing lang=en")
     index = read(ROOT / "index.html")
     if "color-scheme\" content=\"only light" not in index:
